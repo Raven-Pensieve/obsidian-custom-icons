@@ -17,7 +17,7 @@ interface IIcon {
 
 export const DEFAULT_SETTINGS: IPluginSettings = {
 	communityPlugins: {
-		default: { id: "", icon: "code", type: "lucide" },
+		default: { id: "", icon: "puzzle", type: "lucide" },
 		data: {},
 	},
 };
