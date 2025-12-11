@@ -116,15 +116,16 @@ export default class SettingsStore {
 		const pathParts = path.split(".");
 		let current: unknown = newSettings;
 
-		// 遍历路径，找到父对象
+		// 遍历路径，找到父对象，如果不存在则创建
 		for (let i = 0; i < pathParts.length - 1; i++) {
 			const part = pathParts[i];
-			if (
-				typeof current === "object" &&
-				current !== null &&
-				part in current
-			) {
-				current = (current as Record<string, unknown>)[part];
+			if (typeof current === "object" && current !== null) {
+				const currentRecord = current as Record<string, unknown>;
+				// 如果路径不存在，创建一个空对象
+				if (!(part in currentRecord)) {
+					currentRecord[part] = {};
+				}
+				current = currentRecord[part];
 			} else {
 				throw new Error(`Invalid setting path: ${path}`);
 			}
@@ -132,11 +133,7 @@ export default class SettingsStore {
 
 		// 设置最终值
 		const finalPart = pathParts[pathParts.length - 1];
-		if (
-			typeof current === "object" &&
-			current !== null &&
-			finalPart in current
-		) {
+		if (typeof current === "object" && current !== null) {
 			(current as Record<string, unknown>)[finalPart] = value;
 		} else {
 			throw new Error(`Invalid setting path: ${path}`);
@@ -166,7 +163,8 @@ export default class SettingsStore {
 			) {
 				current = (current as Record<string, unknown>)[part];
 			} else {
-				throw new Error(`Invalid setting path: ${path}`);
+				// 路径不存在，无需删除，直接返回
+				return;
 			}
 		}
 
@@ -178,11 +176,9 @@ export default class SettingsStore {
 			finalPart in current
 		) {
 			delete (current as Record<string, unknown>)[finalPart];
-		} else {
-			throw new Error(`Invalid setting path: ${path}`);
+			// 使用 updateSettings 方法更新设置
+			await this.updateSettings(newSettings);
 		}
-
-		// 使用 updateSettings 方法更新设置
-		await this.updateSettings(newSettings);
+		// 如果路径不存在，无需删除，直接返回
 	}
 }

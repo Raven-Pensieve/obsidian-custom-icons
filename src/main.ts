@@ -22,10 +22,10 @@ export default class CIPlugin extends Plugin {
 
 	async saveSettings() {
 		await this.saveData(this.settings);
-		this.addIconsToCommunityPlugin();
+		await this.addIconsToCommunityPlugin();
 	}
 
-	private addIconsToCommunityPlugin() {
+	private async addIconsToCommunityPlugin() {
 		const communityPluginTabContainer =
 			this.app.setting.communityPluginTabContainer;
 
