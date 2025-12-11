@@ -1,0 +1,496 @@
+<div class="modal-container mod-dim">
+  <div class="modal-bg" style="opacity: 0.85;"></div>
+  <div class="modal mod-settings mod-sidebar-layout">
+    <div class="modal-close-button mod-raised clickable-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24"
+        height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round" class="svg-icon lucide-x">
+        <path d="M18 6 6 18"></path>
+        <path d="m6 6 12 12"></path>
+      </svg></div>
+    <div class="modal-header">
+      <div class="modal-title">
+        <div class="clickable-icon modal-setting-back-button mod-raised"><svg xmlns="http://www.w3.org/2000/svg"
+            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-arrow-left">
+            <path d="m12 19-7-7 7-7"></path>
+            <path d="M19 12H5"></path>
+          </svg></div>页面预览
+      </div>
+    </div>
+    <div class="modal-content vertical-tabs-container">
+      <div class="vertical-tab-header">
+        <div class="vertical-tab-header-group">
+          <div class="vertical-tab-header-group-title">选项</div>
+          <div class="vertical-tab-header-group-items">
+            <div class="vertical-tab-nav-item tappable" data-setting-id="about">
+              <div class="vertical-tab-nav-item-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-circle-user">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <circle cx="12" cy="10" r="3"></circle>
+                  <path d="M7 20.662V19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1.662"></path>
+                </svg></div>
+              <div class="vertical-tab-nav-item-title">关于</div>
+              <div class="vertical-tab-nav-item-chevron"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-chevron-right">
+                  <path d="m9 18 6-6-6-6"></path>
+                </svg></div>
+            </div>
+            <div class="vertical-tab-nav-item tappable" data-setting-id="editor">
+              <div class="vertical-tab-nav-item-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-pen-line">
+                  <path d="M13 21h8"></path>
+                  <path
+                    d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z">
+                  </path>
+                </svg></div>
+              <div class="vertical-tab-nav-item-title">编辑器</div>
+              <div class="vertical-tab-nav-item-chevron"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-chevron-right">
+                  <path d="m9 18 6-6-6-6"></path>
+                </svg></div>
+            </div>
+            <div class="vertical-tab-nav-item tappable" data-setting-id="file">
+              <div class="vertical-tab-nav-item-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-folder-cog">
+                  <path
+                    d="M10.3 20H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.98a2 2 0 0 1 1.69.9l.66 1.2A2 2 0 0 0 12 6h8a2 2 0 0 1 2 2v3.3">
+                  </path>
+                  <path d="m14.305 19.53.923-.382"></path>
+                  <path d="m15.228 16.852-.923-.383"></path>
+                  <path d="m16.852 15.228-.383-.923"></path>
+                  <path d="m16.852 20.772-.383.924"></path>
+                  <path d="m19.148 15.228.383-.923"></path>
+                  <path d="m19.53 21.696-.382-.924"></path>
+                  <path d="m20.772 16.852.924-.383"></path>
+                  <path d="m20.772 19.148.924.383"></path>
+                  <circle cx="18" cy="18" r="3"></circle>
+                </svg></div>
+              <div class="vertical-tab-nav-item-title">文件与链接</div>
+              <div class="vertical-tab-nav-item-chevron"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-chevron-right">
+                  <path d="m9 18 6-6-6-6"></path>
+                </svg></div>
+            </div>
+            <div class="vertical-tab-nav-item tappable" data-setting-id="appearance">
+              <div class="vertical-tab-nav-item-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-palette">
+                  <path
+                    d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z">
+                  </path>
+                  <circle cx="13.5" cy="6.5" r="0.5"></circle>
+                  <circle cx="17.5" cy="10.5" r="0.5"></circle>
+                  <circle cx="6.5" cy="12.5" r="0.5"></circle>
+                  <circle cx="8.5" cy="7.5" r="0.5"></circle>
+                </svg></div>
+              <div class="vertical-tab-nav-item-title">外观</div>
+              <div class="vertical-tab-nav-item-chevron"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-chevron-right">
+                  <path d="m9 18 6-6-6-6"></path>
+                </svg></div>
+            </div>
+            <div class="vertical-tab-nav-item tappable" data-setting-id="hotkeys">
+              <div class="vertical-tab-nav-item-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-command">
+                  <path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3"></path>
+                </svg></div>
+              <div class="vertical-tab-nav-item-title">快捷键</div>
+              <div class="vertical-tab-nav-item-chevron"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-chevron-right">
+                  <path d="m9 18 6-6-6-6"></path>
+                </svg></div>
+            </div>
+            <div class="vertical-tab-nav-item tappable" data-setting-id="keychain">
+              <div class="vertical-tab-nav-item-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-key-round">
+                  <path
+                    d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z">
+                  </path>
+                  <circle cx="16.5" cy="7.5" r="0.5"></circle>
+                </svg></div>
+              <div class="vertical-tab-nav-item-title">Keychain</div>
+              <div class="vertical-tab-nav-item-chevron"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-chevron-right">
+                  <path d="m9 18 6-6-6-6"></path>
+                </svg></div>
+            </div>
+            <div class="vertical-tab-nav-item tappable" data-setting-id="plugins">
+              <div class="vertical-tab-nav-item-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-toy-brick">
+                  <rect x="3" y="8" width="18" height="12" rx="1"></rect>
+                  <path d="M10 8V5c0-.6-.4-1-1-1H6a1 1 0 0 0-1 1v3"></path>
+                  <path d="M19 8V5c0-.6-.4-1-1-1h-3a1 1 0 0 0-1 1v3"></path>
+                </svg></div>
+              <div class="vertical-tab-nav-item-title">核心插件</div>
+              <div class="vertical-tab-nav-item-chevron"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-chevron-right">
+                  <path d="m9 18 6-6-6-6"></path>
+                </svg></div>
+            </div>
+            <div class="vertical-tab-nav-item tappable" data-setting-id="community-plugins">
+              <div class="vertical-tab-nav-item-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-puzzle">
+                  <path
+                    d="M15.39 4.39a1 1 0 0 0 1.68-.474 2.5 2.5 0 1 1 3.014 3.015 1 1 0 0 0-.474 1.68l1.683 1.682a2.414 2.414 0 0 1 0 3.414L19.61 15.39a1 1 0 0 1-1.68-.474 2.5 2.5 0 1 0-3.014 3.015 1 1 0 0 1 .474 1.68l-1.683 1.682a2.414 2.414 0 0 1-3.414 0L8.61 19.61a1 1 0 0 0-1.68.474 2.5 2.5 0 1 1-3.014-3.015 1 1 0 0 0 .474-1.68l-1.683-1.682a2.414 2.414 0 0 1 0-3.414L4.39 8.61a1 1 0 0 1 1.68.474 2.5 2.5 0 1 0 3.014-3.015 1 1 0 0 1-.474-1.68l1.683-1.682a2.414 2.414 0 0 1 3.414 0z">
+                  </path>
+                </svg></div>
+              <div class="vertical-tab-nav-item-title">第三方插件</div>
+              <div class="vertical-tab-nav-item-chevron"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-chevron-right">
+                  <path d="m9 18 6-6-6-6"></path>
+                </svg></div>
+            </div>
+          </div>
+        </div>
+        <div class="vertical-tab-header-group">
+          <div class="vertical-tab-header-group-title" style="">核心插件</div>
+          <div class="vertical-tab-header-group-items">
+            <div class="vertical-tab-nav-item tappable" data-setting-id="canvas">
+              <div class="vertical-tab-nav-item-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-layout-dashboard">
+                  <rect x="3" y="3" width="7" height="9" rx="1"></rect>
+                  <rect x="14" y="3" width="7" height="5" rx="1"></rect>
+                  <rect x="14" y="12" width="7" height="9" rx="1"></rect>
+                  <rect x="3" y="16" width="7" height="5" rx="1"></rect>
+                </svg></div>
+              <div class="vertical-tab-nav-item-title">白板</div>
+              <div class="vertical-tab-nav-item-chevron"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-chevron-right">
+                  <path d="m9 18 6-6-6-6"></path>
+                </svg></div>
+            </div>
+            <div class="vertical-tab-nav-item tappable" data-setting-id="note-composer">
+              <div class="vertical-tab-nav-item-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-merge">
+                  <path d="m8 6 4-4 4 4"></path>
+                  <path d="M12 2v10.3a4 4 0 0 1-1.172 2.872L4 22"></path>
+                  <path d="m20 22-5-5"></path>
+                </svg></div>
+              <div class="vertical-tab-nav-item-title">笔记重组</div>
+              <div class="vertical-tab-nav-item-chevron"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-chevron-right">
+                  <path d="m9 18 6-6-6-6"></path>
+                </svg></div>
+            </div>
+            <div class="vertical-tab-nav-item tappable" data-setting-id="backlink">
+              <div class="vertical-tab-nav-item-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon links-coming-in">
+                  <path
+                    d="M8.70467 12C8.21657 11.6404 7.81269 11.1817 7.52044 10.6549C7.22819 10.1281 7.0544 9.54553 7.01086 8.94677C6.96732 8.348 7.05504 7.74701 7.26808 7.18456C7.48112 6.62212 7.81449 6.11138 8.24558 5.68697L10.7961 3.17516C11.5978 2.41258 12.6716 1.99062 13.7861 2.00016C14.9007 2.0097 15.9668 2.44997 16.755 3.22615C17.5431 4.00234 17.9902 5.05233 17.9998 6.14998C18.0095 7.24763 17.5811 8.30511 16.8067 9.09467L15.9014 10">
+                  </path>
+                  <path
+                    d="M11.2953 8C11.7834 8.35957 12.1873 8.81831 12.4796 9.34512C12.7718 9.87192 12.9456 10.4545 12.9891 11.0532C13.0327 11.652 12.945 12.253 12.7319 12.8154C12.5189 13.3779 12.1855 13.8886 11.7544 14.313L9.20392 16.8248C8.40221 17.5874 7.32844 18.0094 6.21389 17.9998C5.09933 17.9903 4.03318 17.55 3.24504 16.7738C2.4569 15.9977 2.00985 14.9477 2.00016 13.85C1.99047 12.7524 2.41893 11.6949 3.19326 10.9053L4.09859 10">
+                  </path>
+                  <path d="M17 21L14 18L17 15"></path>
+                  <path d="M21 18H14"></path>
+                </svg></div>
+              <div class="vertical-tab-nav-item-title">反向链接</div>
+              <div class="vertical-tab-nav-item-chevron"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-chevron-right">
+                  <path d="m9 18 6-6-6-6"></path>
+                </svg></div>
+            </div>
+            <div class="vertical-tab-nav-item tappable" data-setting-id="switcher">
+              <div class="vertical-tab-nav-item-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-file-search">
+                  <path
+                    d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z">
+                  </path>
+                  <path d="M14 2v5a1 1 0 0 0 1 1h5"></path>
+                  <circle cx="11.5" cy="14.5" r="2.5"></circle>
+                  <path d="M13.3 16.3 15 18"></path>
+                </svg></div>
+              <div class="vertical-tab-nav-item-title">快速切换</div>
+              <div class="vertical-tab-nav-item-chevron"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-chevron-right">
+                  <path d="m9 18 6-6-6-6"></path>
+                </svg></div>
+            </div>
+            <div class="vertical-tab-nav-item tappable" data-setting-id="command-palette">
+              <div class="vertical-tab-nav-item-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-terminal">
+                  <path d="M12 19h8"></path>
+                  <path d="m4 17 6-6-6-6"></path>
+                </svg></div>
+              <div class="vertical-tab-nav-item-title">命令面板</div>
+              <div class="vertical-tab-nav-item-chevron"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-chevron-right">
+                  <path d="m9 18 6-6-6-6"></path>
+                </svg></div>
+            </div>
+            <div class="vertical-tab-nav-item tappable" data-setting-id="templates">
+              <div class="vertical-tab-nav-item-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-files">
+                  <path d="M15 2h-4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8"></path>
+                  <path d="M16.706 2.706A2.4 2.4 0 0 0 15 2v5a1 1 0 0 0 1 1h5a2.4 2.4 0 0 0-.706-1.706z"></path>
+                  <path d="M5 7a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h8a2 2 0 0 0 1.732-1"></path>
+                </svg></div>
+              <div class="vertical-tab-nav-item-title">模板</div>
+              <div class="vertical-tab-nav-item-chevron"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-chevron-right">
+                  <path d="m9 18 6-6-6-6"></path>
+                </svg></div>
+            </div>
+            <div class="vertical-tab-nav-item tappable" data-setting-id="zk-prefixer">
+              <div class="vertical-tab-nav-item-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon sheets-in-box">
+                  <path d="M19 16V22"></path>
+                  <path d="M16 19H22"></path>
+                  <path
+                    d="M20.7297 13.0005C20.7297 12.4701 20.519 11.9613 20.1439 11.5863C19.7689 11.2112 19.2602 11.0005 18.7297 11.0005H4.72974C4.1993 11.0005 3.6906 11.2112 3.31552 11.5863C2.94045 11.9613 2.72974 12.4701 2.72974 13.0005L2.72974 19.9886C2.72974 20.519 2.94045 21.0277 3.31552 21.4028C3.6906 21.7779 4.1993 21.9886 4.72974 21.9886H13">
+                  </path>
+                  <path d="M21 8C21 8 21 7 20 7H4C3.00199 7 3 7.99347 3 7.99347"></path>
+                  <path d="M21 4C21 4 21.0066 3 20 3L4 3C3 3 3 4 3 4"></path>
+                </svg></div>
+              <div class="vertical-tab-nav-item-title">时间戳笔记生成器</div>
+              <div class="vertical-tab-nav-item-chevron"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-chevron-right">
+                  <path d="m9 18 6-6-6-6"></path>
+                </svg></div>
+            </div>
+            <div class="vertical-tab-nav-item tappable" data-setting-id="sync">
+              <div class="vertical-tab-nav-item-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-refresh-cw">
+                  <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
+                  <path d="M21 3v5h-5"></path>
+                  <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
+                  <path d="M8 16H3v5"></path>
+                </svg></div>
+              <div class="vertical-tab-nav-item-title">同步</div>
+              <div class="vertical-tab-nav-item-chevron"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-chevron-right">
+                  <path d="m9 18 6-6-6-6"></path>
+                </svg></div>
+            </div>
+            <div class="vertical-tab-nav-item tappable" data-setting-id="webviewer">
+              <div class="vertical-tab-nav-item-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-globe-2">
+                  <path d="M21.54 15H17a2 2 0 0 0-2 2v4.54"></path>
+                  <path d="M7 3.34V5a3 3 0 0 0 3 3a2 2 0 0 1 2 2c0 1.1.9 2 2 2a2 2 0 0 0 2-2c0-1.1.9-2 2-2h3.17"></path>
+                  <path d="M11 21.95V18a2 2 0 0 0-2-2a2 2 0 0 1-2-2v-1a2 2 0 0 0-2-2H2.05"></path>
+                  <circle cx="12" cy="12" r="10"></circle>
+                </svg></div>
+              <div class="vertical-tab-nav-item-title">网页浏览器</div>
+              <div class="vertical-tab-nav-item-chevron"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-chevron-right">
+                  <path d="m9 18 6-6-6-6"></path>
+                </svg></div>
+            </div>
+            <div class="vertical-tab-nav-item tappable" data-setting-id="file-recovery">
+              <div class="vertical-tab-nav-item-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-history">
+                  <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                  <path d="M3 3v5h5"></path>
+                  <path d="M12 7v5l4 2"></path>
+                </svg></div>
+              <div class="vertical-tab-nav-item-title">文件恢复</div>
+              <div class="vertical-tab-nav-item-chevron"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-chevron-right">
+                  <path d="m9 18 6-6-6-6"></path>
+                </svg></div>
+            </div>
+            <div class="vertical-tab-nav-item tappable is-active" data-setting-id="page-preview">
+              <div class="vertical-tab-nav-item-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-scan-eye">
+                  <path d="M3 7V5a2 2 0 0 1 2-2h2"></path>
+                  <path d="M17 3h2a2 2 0 0 1 2 2v2"></path>
+                  <path d="M21 17v2a2 2 0 0 1-2 2h-2"></path>
+                  <path d="M7 21H5a2 2 0 0 1-2-2v-2"></path>
+                  <circle cx="12" cy="12" r="1"></circle>
+                  <path d="M18.944 12.33a1 1 0 0 0 0-.66 7.5 7.5 0 0 0-13.888 0 1 1 0 0 0 0 .66 7.5 7.5 0 0 0 13.888 0">
+                  </path>
+                </svg></div>
+              <div class="vertical-tab-nav-item-title">页面预览</div>
+              <div class="vertical-tab-nav-item-chevron"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-chevron-right">
+                  <path d="m9 18 6-6-6-6"></path>
+                </svg></div>
+            </div>
+          </div>
+        </div>
+        <div class="vertical-tab-header-group">
+          <div class="vertical-tab-header-group-title" style="">第三方插件</div>
+          <div class="vertical-tab-header-group-items">
+            <div class="vertical-tab-nav-item tappable" data-setting-id="ace-code-editor">
+              <div class="vertical-tab-nav-item-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-square-dashed-bottom-code">
+                  <path d="M10 9.5 8 12l2 2.5"></path>
+                  <path d="M14 21h1"></path>
+                  <path d="m14 9.5 2 2.5-2 2.5"></path>
+                  <path d="M5 21a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2"></path>
+                  <path d="M9 21h1"></path>
+                </svg></div>
+              <div class="vertical-tab-nav-item-title">Ace Code Editor</div>
+              <div class="vertical-tab-nav-item-chevron"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-chevron-right">
+                  <path d="m9 18 6-6-6-6"></path>
+                </svg></div>
+            </div>
+            <div class="vertical-tab-nav-item tappable" data-setting-id="advanced-debug-mode">
+              <div class="vertical-tab-nav-item-title">Advanced Debug Mode</div>
+              <div class="vertical-tab-nav-item-chevron"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-chevron-right">
+                  <path d="m9 18 6-6-6-6"></path>
+                </svg></div>
+            </div>
+            <div class="vertical-tab-nav-item tappable" data-setting-id="attachment-pro">
+              <div class="vertical-tab-nav-item-title">Attachment Pro</div>
+              <div class="vertical-tab-nav-item-chevron"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-chevron-right">
+                  <path d="m9 18 6-6-6-6"></path>
+                </svg></div>
+            </div>
+            <div class="vertical-tab-nav-item tappable" data-setting-id="obsidian42-brat">
+              <div class="vertical-tab-nav-item-title">BRAT</div>
+              <div class="vertical-tab-nav-item-chevron"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-chevron-right">
+                  <path d="m9 18 6-6-6-6"></path>
+                </svg></div>
+            </div>
+            <div class="vertical-tab-nav-item tappable" data-setting-id="components">
+              <div class="vertical-tab-nav-item-title">Components</div>
+              <div class="vertical-tab-nav-item-chevron"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-chevron-right">
+                  <path d="m9 18 6-6-6-6"></path>
+                </svg></div>
+            </div>
+            <div class="vertical-tab-nav-item tappable" data-setting-id="obsidian-export-image">
+              <div class="vertical-tab-nav-item-title">Export Image plugin</div>
+              <div class="vertical-tab-nav-item-chevron"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-chevron-right">
+                  <path d="m9 18 6-6-6-6"></path>
+                </svg></div>
+            </div>
+            <div class="vertical-tab-nav-item tappable" data-setting-id="form-flow">
+              <div class="vertical-tab-nav-item-title">Form Flow</div>
+              <div class="vertical-tab-nav-item-chevron"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-chevron-right">
+                  <path d="m9 18 6-6-6-6"></path>
+                </svg></div>
+            </div>
+            <div class="vertical-tab-nav-item tappable" data-setting-id="legacy-vault-switcher">
+              <div class="vertical-tab-nav-item-title">Legacy vault switcher</div>
+              <div class="vertical-tab-nav-item-chevron"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-chevron-right">
+                  <path d="m9 18 6-6-6-6"></path>
+                </svg></div>
+            </div>
+            <div class="vertical-tab-nav-item tappable" data-setting-id="next-toc">
+              <div class="vertical-tab-nav-item-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-table-of-contents">
+                  <path d="M16 5H3"></path>
+                  <path d="M16 12H3"></path>
+                  <path d="M16 19H3"></path>
+                  <path d="M21 5h.01"></path>
+                  <path d="M21 12h.01"></path>
+                  <path d="M21 19h.01"></path>
+                </svg></div>
+              <div class="vertical-tab-nav-item-title">Next TOC</div>
+              <div class="vertical-tab-nav-item-chevron"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-chevron-right">
+                  <path d="m9 18 6-6-6-6"></path>
+                </svg></div>
+            </div>
+            <div class="vertical-tab-nav-item tappable" data-setting-id="note-definitions">
+              <div class="vertical-tab-nav-item-title">Note Definitions</div>
+              <div class="vertical-tab-nav-item-chevron"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-chevron-right">
+                  <path d="m9 18 6-6-6-6"></path>
+                </svg></div>
+            </div>
+            <div class="vertical-tab-nav-item tappable" data-setting-id="albus-status-bar-music">
+              <div class="vertical-tab-nav-item-title">Status Bar Music</div>
+              <div class="vertical-tab-nav-item-chevron"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-chevron-right">
+                  <path d="m9 18 6-6-6-6"></path>
+                </svg></div>
+            </div>
+            <div class="vertical-tab-nav-item tappable" data-setting-id="obsidian-style-settings">
+              <div class="vertical-tab-nav-item-title">Style Settings</div>
+              <div class="vertical-tab-nav-item-chevron"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-chevron-right">
+                  <path d="m9 18 6-6-6-6"></path>
+                </svg></div>
+            </div>
+            <div class="vertical-tab-nav-item tappable" data-setting-id="yearly-glance">
+              <div class="vertical-tab-nav-item-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-telescope">
+                  <path
+                    d="m10.065 12.493-6.18 1.318a.934.934 0 0 1-1.108-.702l-.537-2.15a1.07 1.07 0 0 1 .691-1.265l13.504-4.44">
+                  </path>
+                  <path d="m13.56 11.747 4.332-.924"></path>
+                  <path d="m16 21-3.105-6.21"></path>
+                  <path
+                    d="M16.485 5.94a2 2 0 0 1 1.455-2.425l1.09-.272a1 1 0 0 1 1.212.727l1.515 6.06a1 1 0 0 1-.727 1.213l-1.09.272a2 2 0 0 1-2.425-1.455z">
+                  </path>
+                  <path d="m6.158 8.633 1.114 4.456"></path>
+                  <path d="m8 21 3.105-6.21"></path>
+                  <circle cx="12" cy="13" r="2"></circle>
+                </svg></div>
+              <div class="vertical-tab-nav-item-title">Yearly Glance</div>
+              <div class="vertical-tab-nav-item-chevron"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="svg-icon lucide-chevron-right">
+                  <path d="m9 18 6-6-6-6"></path>
+                </svg></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="vertical-tab-content-container">
+      </div>
+    </div>
+  </div>
+</div>

@@ -8,6 +8,7 @@ import { Settings } from "./Settings";
 export class PluginSettingTab extends ObPluginSettingTab {
 	plugin: CIPlugin;
 	root: Root;
+	icon: string = "image";
 
 	constructor(plugin: CIPlugin) {
 		super(plugin.app, plugin);
