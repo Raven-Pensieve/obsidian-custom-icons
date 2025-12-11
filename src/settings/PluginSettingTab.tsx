@@ -1,15 +1,15 @@
 import { SettingsStoreContext } from "@src/context/SettingsStoreContext";
-import CPlugin from "@src/main";
+import CIPlugin from "@src/main";
 import { PluginSettingTab as ObPluginSettingTab } from "obsidian";
 import { StrictMode } from "react";
 import { createRoot, Root } from "react-dom/client";
 import { Settings } from "./Settings";
 
 export class PluginSettingTab extends ObPluginSettingTab {
-	plugin: CPlugin;
+	plugin: CIPlugin;
 	root: Root;
 
-	constructor(plugin: CPlugin) {
+	constructor(plugin: CIPlugin) {
 		super(plugin.app, plugin);
 		this.plugin = plugin;
 	}

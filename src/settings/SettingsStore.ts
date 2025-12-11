@@ -1,8 +1,8 @@
-import CPlugin from "@src/main";
+import CIPlugin from "@src/main";
 import { DEFAULT_SETTINGS, IPluginSettings } from "@src/types/types";
 
 export default class SettingsStore {
-	#plugin: CPlugin;
+	#plugin: CIPlugin;
 	#subscribers = new Set<() => void>();
 
 	#store = {
@@ -13,7 +13,7 @@ export default class SettingsStore {
 		getSnapshot: (): IPluginSettings => this.#plugin.settings,
 	};
 
-	constructor(plugin: CPlugin) {
+	constructor(plugin: CIPlugin) {
 		this.#plugin = plugin;
 	}
 
