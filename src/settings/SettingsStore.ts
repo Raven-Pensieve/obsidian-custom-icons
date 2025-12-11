@@ -38,7 +38,6 @@ export default class SettingsStore {
 	}
 
 	#mergeWithDefaults<T>(saved: unknown, defaults: T): T {
-		// 如果默认值是对象（且非数组），则递归按默认结构构建结果
 		if (
 			defaults !== null &&
 			typeof defaults === "object" &&
@@ -50,16 +49,33 @@ export default class SettingsStore {
 				unknown
 			>;
 			const savedRecord = (saved ?? {}) as Record<string, unknown>;
+
+			// 遍历默认配置的键
 			for (const key of Object.keys(defaultRecord)) {
-				result[key] = this.#mergeWithDefaults(
-					savedRecord[key],
-					defaultRecord[key]
-				);
+				const defaultValue = defaultRecord[key];
+				const savedValue = savedRecord[key];
+
+				// 如果默认值是空对象，且 saved 中有该字段且是对象，直接使用 saved 的值
+				if (
+					typeof defaultValue === "object" &&
+					defaultValue !== null &&
+					!Array.isArray(defaultValue) &&
+					Object.keys(defaultValue).length === 0 &&
+					typeof savedValue === "object" &&
+					savedValue !== null
+				) {
+					result[key] = savedValue;
+				} else {
+					result[key] = this.#mergeWithDefaults(
+						savedValue,
+						defaultValue
+					);
+				}
 			}
+
 			return result as unknown as T;
 		}
 
-		// 基元或数组：类型不匹配或未提供则回退到默认值
 		const isArrayDefault = Array.isArray(defaults as unknown);
 		const isArraySaved = Array.isArray(saved as unknown);
 		if (
