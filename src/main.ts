@@ -1,7 +1,7 @@
 import { Plugin } from "obsidian";
 import { PluginSettingTab } from "./settings/PluginSettingTab";
 import SettingsStore from "./settings/SettingsStore";
-import { DEFAULT_SETTINGS, IPluginSettings } from "./types/types";
+import { IPluginSettings } from "./types/types";
 import addIconToPluginNavItem from "./util/addIconToPluginNavItem";
 
 export default class CIPlugin extends Plugin {
@@ -22,6 +22,7 @@ export default class CIPlugin extends Plugin {
 
 	async saveSettings() {
 		await this.saveData(this.settings);
+		this.addIconsToCommunityPlugin();
 	}
 
 	private addIconsToCommunityPlugin() {
@@ -36,9 +37,10 @@ export default class CIPlugin extends Plugin {
 			const pluginId = navItemEl.getAttribute("data-setting-id");
 			if (!pluginId) return;
 
+			// 优先使用插件特定的图标配置，否则使用默认配置
 			const communityPlugin =
-				this.settings.communityPlugins[pluginId] ||
-				DEFAULT_SETTINGS.communityPlugins.default;
+				this.settings.communityPlugins.data[pluginId] ||
+				this.settings.communityPlugins.default;
 
 			addIconToPluginNavItem(navItemEl, communityPlugin);
 		});
