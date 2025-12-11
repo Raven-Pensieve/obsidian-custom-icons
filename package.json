@@ -1,7 +1,7 @@
 {
-	"name": "obsidian-plugin-starter",
+	"name": "Custom Icons",
 	"version": "1.0.0",
-	"description": "This is a sample plugin for Obsidian (https://obsidian.md)",
+	"description": "Enhance your workspace with customizable icons for documents and folders.",
 	"main": "main.js",
 	"scripts": {
 		"dev": "node scripts/esbuild.config.mjs",
@@ -22,7 +22,7 @@
 		"Obsidian Plugin"
 	],
 	"author": "RavenHogWarts",
-	"license": "MIT",
+	"license": "GPL-3.0-only",
 	"engines": {
 		"node": ">=18.x"
 	},
