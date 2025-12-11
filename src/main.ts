@@ -45,4 +45,38 @@ export default class CIPlugin extends Plugin {
 			addIconToPluginNavItem(navItemEl, communityPlugin);
 		});
 	}
+
+	// private manageLeaf(leaf: WorkspaceLeaf) {
+	// 	const leafType = leaf.getViewState().type;
+	// 	const leafContainerEl = leaf.view.containerEl;
+
+	// 	switch (leafType) {
+	// 		case "markdown":
+	// 			break;
+	// 		case "empty":
+	// 			break;
+	// 		case "file-explorer":
+	// 			break;
+	// 		case "search":
+	// 			break;
+	// 		case "bookmarks":
+	// 			break;
+	// 		case "tag":
+	// 			break;
+	// 		case "outline":
+	// 			break;
+	// 		case "all-properties":
+	// 			break;
+	// 		case "file-properties":
+	// 			break;
+	// 		case "outgoing-link":
+	// 			break;
+	// 		case "backlink":
+	// 			break;
+	// 		case "footnotes":
+	// 			break;
+	// 		default:
+	// 			break;
+	// 	}
+	// }
 }
