@@ -145,4 +145,44 @@ export default class SettingsStore {
 		// 使用 updateSettings 方法更新设置
 		await this.updateSettings(newSettings);
 	}
+
+	/**
+	 * 通过路径删除特定设置值
+	 * @param path 设置路径
+	 */
+	async deleteSettingByPath(path: string) {
+		// 创建设置的深拷贝
+		const newSettings = JSON.parse(JSON.stringify(this.#plugin.settings));
+		const pathParts = path.split(".");
+		let current: unknown = newSettings;
+
+		// 遍历路径，找到父对象
+		for (let i = 0; i < pathParts.length - 1; i++) {
+			const part = pathParts[i];
+			if (
+				typeof current === "object" &&
+				current !== null &&
+				part in current
+			) {
+				current = (current as Record<string, unknown>)[part];
+			} else {
+				throw new Error(`Invalid setting path: ${path}`);
+			}
+		}
+
+		// 删除最终属性
+		const finalPart = pathParts[pathParts.length - 1];
+		if (
+			typeof current === "object" &&
+			current !== null &&
+			finalPart in current
+		) {
+			delete (current as Record<string, unknown>)[finalPart];
+		} else {
+			throw new Error(`Invalid setting path: ${path}`);
+		}
+
+		// 使用 updateSettings 方法更新设置
+		await this.updateSettings(newSettings);
+	}
 }
