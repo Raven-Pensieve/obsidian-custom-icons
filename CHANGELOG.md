@@ -1,3 +1,12 @@
+# [1.0.0-beta.2](https://github.com/RavenHogWarts/obsidian-custom-icons/compare/1.0.0-beta.1...1.0.0-beta.2) (2025-12-11)
+
+
+### 🐛 Bug Fixes
+
+* 修复设置存储与图标更新的异步和路径处理 (#29) ([df4bcb9](https://github.com/RavenHogWarts/obsidian-custom-icons/commit/df4bcb9483410c32212b15e1f971fbdf26980f7f)), closes [#29](https://github.com/RavenHogWarts/obsidian-custom-icons/issues/29)
+
+
+
 # [1.0.0-beta.1](https://github.com/RavenHogWarts/obsidian-custom-icons/compare/0.6.3...1.0.0-beta.1) (2025-12-11)
 
 
