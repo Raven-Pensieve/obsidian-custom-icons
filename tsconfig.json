@@ -8,7 +8,7 @@
 		"allowJs": true,
 		"noImplicitAny": false,
 		"moduleResolution": "bundler",
-		"types": ["obsidian", "jest"],
+		"types": ["obsidian", "jest", "obsidian-typings"],
 		"importHelpers": true,
 		"isolatedModules": true,
 		"strictNullChecks": true,
