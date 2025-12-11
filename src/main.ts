@@ -1,285 +1,104 @@
-import { App, Plugin } from 'obsidian';
-import { CustomIconSettings, SidebarIcons, FolderIcons, FileIcons, InternalLinkIcons, DEFAULT_SETTINGS} from './types';
-import { EMPTY_PNG_DATA_URL } from './types';
-import { generateUniqueId, updatePreview, convertToCamelCase } from './utils/utils';
-import * as lucideIcons from 'lucide-static';
+import "@styles/styles";
+import { App, Editor, MarkdownView, Modal, Notice, Plugin } from "obsidian";
+import { PluginSettingTab } from "./settings/PluginSettingTab";
+import SettingsStore from "./settings/SettingsStore";
+import { IPluginSettings } from "./types/types";
 
-import { CustomIconSettingTab } from 'src/settings/settingstab';
+export default class CPlugin extends Plugin {
+	settings: IPluginSettings;
+	readonly settingsStore = new SettingsStore(this);
 
-const css_filename = "CustomIcon-AutoGen";
+	async onload() {
+		await this.settingsStore.loadSettings();
 
-export default class CustomIconPlugin extends Plugin {
-    settings: CustomIconSettings;
-    resourceBase: string;
-    themeObserver: MutationObserver | null = null;
-    
-    async onload() {
-        await this.loadSettings();
-        this.registerEvent(
-            this.app.workspace.on('layout-change', () => {
-                this.refreshSidebarIcons();
-            })
-        );
-        this.addSettingTab(new CustomIconSettingTab(this.app, this));
-        await this.genSnippetCSS(this);
-        this.observeThemeChange();
-    }
+		// This creates an icon in the left ribbon.
+		const ribbonIconEl = this.addRibbonIcon(
+			"dice",
+			"Sample Plugin",
+			(evt: MouseEvent) => {
+				// Called when the user clicks the icon.
+				new Notice("This is a notice!");
+			}
+		);
+		// Perform additional things with the ribbon
+		ribbonIconEl.addClass("my-plugin-ribbon-class");
 
-    onunload() {
-        // @ts-ignore
-        const customCss = this.app.customCss;
-        customCss.enabledSnippets.delete(css_filename);
-        customCss.requestLoadSnippets();
-        if (this.themeObserver) {
-            this.themeObserver.disconnect();
-            this.themeObserver = null;
-        }
-    }
+		// This adds a status bar item to the bottom of the app. Does not work on mobile apps.
+		const statusBarItemEl = this.addStatusBarItem();
+		statusBarItemEl.setText("Status Bar Text");
 
-    async loadSettings() {
-        this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
-        this.migrateData();
-    }
+		// This adds a simple command that can be triggered anywhere
+		this.addCommand({
+			id: "open-sample-modal-simple",
+			name: "Open sample modal (simple)",
+			callback: () => {
+				new SampleModal(this.app).open();
+			},
+		});
+		// This adds an editor command that can perform some operation on the current editor instance
+		this.addCommand({
+			id: "sample-editor-command",
+			name: "Sample editor command",
+			editorCallback: (editor: Editor, view: MarkdownView) => {
+				console.log(editor.getSelection());
+				editor.replaceSelection("Sample Editor Command");
+			},
+		});
+		// This adds a complex command that can check whether the current state of the app allows execution of the command
+		this.addCommand({
+			id: "open-sample-modal-complex",
+			name: "Open sample modal (complex)",
+			checkCallback: (checking: boolean) => {
+				// Conditions to check
+				const markdownView =
+					this.app.workspace.getActiveViewOfType(MarkdownView);
+				if (markdownView) {
+					// If checking is true, we're simply "checking" if the command can be run.
+					// If checking is false, then we want to actually perform the operation.
+					if (!checking) {
+						new SampleModal(this.app).open();
+					}
 
-    async saveSettings() {
-        await this.saveData(this.settings);
-    }
+					// This command will only show up in Command Palette when the check function returns true
+					return true;
+				}
+			},
+		});
 
-    observeThemeChange() {
-        this.themeObserver = new MutationObserver(mutations => {
-            mutations.forEach(mutation => {
-                if (mutation.attributeName === 'class') {
-                    const body = document.body;
-                    if (body.classList.contains('theme-light') || body.classList.contains('theme-dark')) {
-                        this.genSnippetCSS(this);
-                    }
-                }
-            });
-        });
+		// This adds a settings tab so the user can configure various aspects of the plugin
+		this.addSettingTab(new PluginSettingTab(this));
 
-        this.themeObserver.observe(document.body, {
-            attributes: true,
-            attributeFilter: ['class']
-        });
-    }
+		// If the plugin hooks up any global DOM events (on parts of the app that doesn't belong to this plugin)
+		// Using this function will automatically remove the event listener when this plugin is disabled.
+		this.registerDomEvent(document, "click", (evt: MouseEvent) => {
+			console.log("click", evt);
+		});
 
-    migrateData() {
-        if (this.settings.customIcons && this.settings.customIcons.length > 0) {
-            this.settings.SidebarIcons = [...this.settings.SidebarIcons, ...this.settings.customIcons];
-            delete (this.settings as { customIcons?: unknown }).customIcons;
-            this.saveSettings();
-        }
-    
-        this.settings.SidebarIcons.forEach(icon => {
-            if (icon.id.startsWith('icon')) {
-                icon.id = generateUniqueId("sidebar-icon");
-                this.saveSettings();
-            }
-        });
-    
-        this.settings.FolderIcons.forEach(icon => {
-            if (icon.id.startsWith('icon')) {
-                icon.id = generateUniqueId("folder-icon");
-                this.saveSettings();
-            }
-        });
-    
-        if (this.settings.FileIcons && this.settings.FileIcons.length > 0) {
-            this.settings.FileIcons.forEach(icon => {
-                if (typeof icon.path === 'string') {
-                    icon.path = [icon.path]; 
-                }
-            });
-            this.saveSettings();
-        }
-    }
+		// When registering intervals, this function will automatically clear the interval when the plugin is disabled.
+		this.registerInterval(
+			window.setInterval(() => console.log("setInterval"), 5 * 60 * 1000)
+		);
+	}
 
-    async genSnippetCSS(plugin: CustomIconPlugin) {
-        const content: string[] = [
-			"/* * WARNING: This file will be overwritten by plugin `Custom Icon`.",
-			"   * DO NOT EDIT THIS FILE DIRECTLY!!!",
-			"   * Do not edit this file directly!!!",
-			"*/",
-			"",
-		];
-        plugin.settings.SidebarIcons.forEach(iconSetting => {
-            content.push(this.genSidebarIconsEntryCSS(iconSetting));
-        });
-        plugin.settings.FolderIcons.forEach(iconSetting => {
-            content.push(this.genFolderIconsEntryCSS(iconSetting));
-        });
-        plugin.settings.FileIcons.forEach(iconSetting => {
-            content.push(this.genFileIconsEntryCSS(iconSetting));
-        });
-        plugin.settings.InternalLinkIcons.forEach(iconSetting => {
-            content.push(this.genInternalLinkIconsEntryCSS(iconSetting));
-        });
+	onunload() {}
 
-        const vault = plugin.app.vault;
-		const ob_config_path = vault.configDir;
-		const snippets_path = ob_config_path + "/snippets";
+	async saveSettings() {
+		await this.saveData(this.settings);
+	}
+}
 
-		const path = `${snippets_path}/${css_filename}.css`;
-		if (!(await vault.adapter.exists(snippets_path))) { await vault.adapter.mkdir(snippets_path); }
-		if (await vault.adapter.exists(path)) { await vault.adapter.remove(path) }
-		await plugin.app.vault.create(path, content.join('\n'));
-		// @ts-ignore
-		const customCss = plugin.app.customCss;
-        customCss.enabledSnippets.add(css_filename);
-        customCss.requestLoadSnippets();
-    }
+class SampleModal extends Modal {
+	constructor(app: App) {
+		super(app);
+	}
 
-    genSidebarIconsEntryCSS(settings: SidebarIcons): string {
-        const selector = `aria-label="${settings.label}"`;
-        const iconUrl = this.getResourcePathwithType(settings.image, settings.type);
-        let body: string[] = [
-            `.custom-icon.workspace-tab-header[${selector}] .workspace-tab-header-inner-icon::before {`,
-            `content: '';`,
-            `display: inline-block;`,
-            `width: 1em;`,
-            `height: 1em;`,
-            `background-color: transparent;`,
-            `background-blend-mode: normal;`,
-            `background-image: url("${iconUrl}");`,
-            `background-size: contain;`,
-            `background-repeat: no-repeat;`,
-            `background-position: center;`,
-            `}`,
-        ];
-        return body.join('\n');
-    }
-    genFolderIconsEntryCSS(settings: FolderIcons): string {
-        const selector = `data-path="${settings.path}"`;
-        const iconUrl = this.getResourcePathwithType(settings.image, settings.type);
-        let body: string[] = [
-            `.nav-folder-title[${selector}] .nav-folder-title-content::before {`,
-            `content: '';`,
-            `display: inline-block;`,
-            `width: 16px;`,
-            `height: 16px;`,
-            `margin: 0px 2px -4px 0px;`,
-            `background-color: transparent;`,
-            `background-blend-mode: normal;`,
-            `background-image: url("${iconUrl}");`,
-            `background-size: contain;`,
-            `background-repeat: no-repeat;`,
-            `}`,
-        ];
-        return body.join('\n');
-    }
-    genFileIconsEntryCSS(settings: FileIcons): string {
-        const iconUrl = this.getResourcePathwithType(settings.image, settings.type);
-        let body: string[] = settings.path.map((path) => {
-            const selector = `data-path$="${path}"`;
-            return [
-                `.nav-file-title[${selector}] .nav-file-title-content::before {`,
-                `content: '';`,
-                `display: inline-block;`,
-                `width: 16px;`,
-                `height: 16px;`,
-                `margin: 0px 2px -4px 0px;`,
-                `background-color: transparent;`,
-                `background-blend-mode: normal;`,
-                `background-image: url("${iconUrl}");`,
-                `background-size: contain;`,
-                `background-repeat: no-repeat;`,
-                `}`
-            ].join('\n');
-        });
-        return body.join('\n\n');
-    }
-    genInternalLinkIconsEntryCSS(settings: InternalLinkIcons): string {
-        const iconUrl = this.getResourcePathwithType(settings.image, settings.type);
-        let body: string[] = settings.path.map((path) => {
-            const selector = `data-href$="${path}"`;
-            return [
-                `.custom-icon .internal-link[${selector}]::before {`,
-                `content: '';`,
-                `display: inline-block;`,
-                `width: 16px;`,
-                `height: 16px;`,
-                `margin: 0px 2px -2px 0px;`,
-                `background-color: transparent;`,
-                `background-blend-mode: normal;`,
-                `background-image: url("${iconUrl}");`,
-                `background-size: contain;`,
-                `background-repeat: no-repeat;`,
-                `}`
-            ].join('\n');
-        });
-        return body.join('\n\n');
-    }
+	onOpen() {
+		const { contentEl } = this;
+		contentEl.setText("Woah!");
+	}
 
-    svgToDataURI(svgContent: string): string {
-        const encodedSVG = encodeURIComponent(svgContent);
-        const dataURI = `data:image/svg+xml;charset=utf-8,${encodedSVG}`;
-        return dataURI;
-    }
-    
-    getResourcePath(path: string): string {
-        let resourcePath = this.app.vault.adapter.getResourcePath("");
-		this.resourceBase = resourcePath.match(/(app:\/\/\w*?)\//)?.[1] as string;
-
-        if (/^(https?:\/\/|data:)/.test(path)) {
-            return path;
-        }
-    
-        if (path.startsWith("<svg")) {
-            return this.svgToDataURI(path);
-        }
-    
-        const adapter = this.app.vault.adapter;
-    
-        if (path.startsWith("/")) {
-            return this.resourceBase + path;
-        } else if (/^[c-zC-Z]:[\/\\]/.test(path)) {
-            return this.resourceBase +path.replace(/\\/g, '/').replace(/^([c-zC-Z]):/, '/$1:')
-        } else {
-            return adapter.getResourcePath(path);
-        }
-    }
-
-    getThemeColorVariable(variableName: string): string {
-        const style = getComputedStyle(document.body);
-        return style.getPropertyValue(variableName).trim();
-    }
-
-    getLucidePath(iconName: string): string {
-        const camelCaseIconName = convertToCamelCase(iconName);
-        let iconSvg = lucideIcons[camelCaseIconName as keyof typeof lucideIcons];
-        const iconColor = this.getThemeColorVariable('--tab-text-color-focused-active');
-        if (iconSvg && iconColor) {
-            iconSvg = iconSvg.replace(/stroke=".*?"/g, `stroke="${iconColor}"`);
-            return this.svgToDataURI(iconSvg);
-        } else {
-            return this.svgToDataURI('<svg></svg>');
-        }
-    }
-
-    getResourcePathwithType(path: string, type: string): string {
-        let PATH = path.trim();
-        switch(type){
-            case 'custom':
-                PATH = this.getResourcePath(path);
-                break;
-            case 'lucide':
-                PATH = this.getLucidePath(path);
-                break;
-            default:
-                PATH = this.getResourcePath(EMPTY_PNG_DATA_URL);
-                break;
-        }
-        return PATH;
-    }
-
-    refreshSidebarIcons() {
-        this.settings.SidebarIcons.forEach(icon => {
-            document.querySelectorAll(`.workspace-tab-header[aria-label="${icon.label}"]`)
-                .forEach(tabHeader => {
-                    tabHeader.classList.add('custom-icon');
-                    tabHeader.setAttribute('data-icon-id', icon.id);
-                });
-        });
-        
-    }
+	onClose() {
+		const { contentEl } = this;
+		contentEl.empty();
+	}
 }
