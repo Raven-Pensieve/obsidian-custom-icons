@@ -136,12 +136,17 @@ export const CommunityPlugin: FC = () => {
 											}
 											onChange={(value) => {
 												settingsStore.updateSettingByPath(
+													`communityPlugins.data.${plugin.id}.id`,
+													plugin.id
+												);
+												settingsStore.updateSettingByPath(
 													`communityPlugins.data.${plugin.id}.icon`,
 													value
 												);
 												settingsStore.updateSettingByPath(
-													`communityPlugins.data.${plugin.id}.id`,
-													plugin.id
+													`communityPlugins.data.${plugin.id}.type`,
+													settings.communityPlugins
+														.default.type
 												);
 											}}
 										/>

@@ -7,25 +7,33 @@ import addIconToPluginNavItem from "./util/addIconToPluginNavItem";
 export default class CIPlugin extends Plugin {
 	settings: IPluginSettings;
 	readonly settingsStore = new SettingsStore(this);
+	private mutationObserver: MutationObserver | null = null;
 
 	async onload() {
 		await this.settingsStore.loadSettings();
 
 		this.app.workspace.onLayoutReady(() => {
 			this.addIconsToCommunityPlugin();
+			this.setupMutationObserver();
 		});
 
 		this.addSettingTab(new PluginSettingTab(this));
 	}
 
-	onunload() {}
+	onunload() {
+		// 清理 MutationObserver
+		if (this.mutationObserver) {
+			this.mutationObserver.disconnect();
+			this.mutationObserver = null;
+		}
+	}
 
 	async saveSettings() {
 		await this.saveData(this.settings);
-		this.addIconsToCommunityPlugin();
+		await this.addIconsToCommunityPlugin();
 	}
 
-	private addIconsToCommunityPlugin() {
+	private async addIconsToCommunityPlugin() {
 		const communityPluginTabContainer =
 			this.app.setting.communityPluginTabContainer;
 
@@ -43,6 +51,41 @@ export default class CIPlugin extends Plugin {
 				this.settings.communityPlugins.default;
 
 			addIconToPluginNavItem(navItemEl, communityPlugin);
+		});
+	}
+
+	private setupMutationObserver() {
+		const communityPluginTabContainer =
+			this.app.setting.communityPluginTabContainer;
+
+		// 创建 MutationObserver 来监听新添加的插件项
+		this.mutationObserver = new MutationObserver((mutations) => {
+			mutations.forEach((mutation) => {
+				mutation.addedNodes.forEach((node) => {
+					// 检查添加的节点是否是插件导航项
+					if (
+						node instanceof HTMLElement &&
+						node.classList.contains("vertical-tab-nav-item") &&
+						node.hasAttribute("data-setting-id")
+					) {
+						const pluginId = node.getAttribute("data-setting-id");
+						if (!pluginId) return;
+
+						// 处理新添加的插件项
+						const communityPlugin =
+							this.settings.communityPlugins.data[pluginId] ||
+							this.settings.communityPlugins.default;
+
+						addIconToPluginNavItem(node, communityPlugin);
+					}
+				});
+			});
+		});
+
+		// 开始观察社区插件容器的子元素变化
+		this.mutationObserver.observe(communityPluginTabContainer, {
+			childList: true, // 监听直接子节点的添加/删除
+			subtree: true, // 监听所有后代节点
 		});
 	}
 
