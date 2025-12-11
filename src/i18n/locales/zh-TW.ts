@@ -1,7 +1,16 @@
 import { BaseMessage } from "@src/i18n/types";
 
 const translations: BaseMessage = {
-	"obsidian-plugin-starter": "Obsidian 插件入門",
+	settings: {
+		communityPlugin: {
+			name: "第三方外掛程式",
+			desc: "為第三方外掛程式設置中添加自訂圖示。",
+			pluginList: {
+				name: "外掛程式列表",
+				desc: "為沒有圖示的第三方外掛程式添加自訂圖示（修復 Obsidian v1.11.0）",
+			},
+		},
+	},
 };
 
 export default translations;
