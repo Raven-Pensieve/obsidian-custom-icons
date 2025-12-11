@@ -1,15 +1,11 @@
 export interface IPluginSettings {
 	communityPlugins: {
-		[pluginId: string]: ICommunityPluginIcon;
+		default: ICommunityPluginIcon;
+		data: Record<string, ICommunityPluginIcon>;
 	};
 }
 
 export interface ICommunityPluginIcon extends IIcon {}
-export const COMMUNITY_PLUGIN_ICON_DEFAULT: ICommunityPluginIcon = {
-	id: "",
-	icon: "code",
-	type: "lucide",
-};
 
 export type IconType = "lucide";
 
@@ -20,5 +16,8 @@ interface IIcon {
 }
 
 export const DEFAULT_SETTINGS: IPluginSettings = {
-	communityPlugins: {},
+	communityPlugins: {
+		default: { id: "", icon: "code", type: "lucide" },
+		data: {},
+	},
 };

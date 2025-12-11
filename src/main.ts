@@ -1,7 +1,7 @@
 import { Plugin } from "obsidian";
 import { PluginSettingTab } from "./settings/PluginSettingTab";
 import SettingsStore from "./settings/SettingsStore";
-import { COMMUNITY_PLUGIN_ICON_DEFAULT, IPluginSettings } from "./types/types";
+import { DEFAULT_SETTINGS, IPluginSettings } from "./types/types";
 import addIconToPluginNavItem from "./util/addIconToPluginNavItem";
 
 export default class CIPlugin extends Plugin {
@@ -38,7 +38,7 @@ export default class CIPlugin extends Plugin {
 
 			const communityPlugin =
 				this.settings.communityPlugins[pluginId] ||
-				COMMUNITY_PLUGIN_ICON_DEFAULT;
+				DEFAULT_SETTINGS.communityPlugins.default;
 
 			addIconToPluginNavItem(navItemEl, communityPlugin);
 		});
