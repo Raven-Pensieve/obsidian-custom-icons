@@ -76,8 +76,8 @@ export default class SettingsStore {
 			return result as unknown as T;
 		}
 
-		const isArrayDefault = Array.isArray(defaults as unknown);
-		const isArraySaved = Array.isArray(saved as unknown);
+		const isArrayDefault = Array.isArray(defaults);
+		const isArraySaved = Array.isArray(saved);
 		if (
 			saved === undefined ||
 			(typeof defaults !== typeof saved && !isArrayDefault) ||
