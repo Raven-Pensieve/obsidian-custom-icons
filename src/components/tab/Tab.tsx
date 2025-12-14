@@ -1,5 +1,6 @@
+import { SettingContainerContext } from "@src/context/SettingContext";
 import { Tabs } from "radix-ui";
-import { FC, ReactNode } from "react";
+import { FC, ReactNode, useEffect, useRef, useState } from "react";
 import "./Tab.css";
 
 export interface TabItem {
@@ -49,15 +50,38 @@ export const Tab: FC<TabProps> = ({
 
 			<div className="CI__tab-panels">
 				{items.map((item) => (
-					<Tabs.Content
-						key={item.id}
-						value={item.id}
-						className="CI__tab-panel"
-					>
+					<TabContentWrapper key={item.id} value={item.id}>
 						{item.content}
-					</Tabs.Content>
+					</TabContentWrapper>
 				))}
 			</div>
 		</Tabs.Root>
+	);
+};
+
+/**
+ * Wrapper component that provides the tab panel element as SettingContainerContext
+ */
+const TabContentWrapper: FC<{ value: string; children: ReactNode }> = ({
+	value,
+	children,
+}) => {
+	const panelRef = useRef<HTMLDivElement>(null);
+	const [containerEl, setContainerEl] = useState<HTMLElement | null>(null);
+
+	useEffect(() => {
+		if (panelRef.current) {
+			setContainerEl(panelRef.current);
+		}
+	}, []);
+
+	return (
+		<Tabs.Content ref={panelRef} value={value} className="CI__tab-panel">
+			{containerEl && (
+				<SettingContainerContext.Provider value={containerEl}>
+					{children}
+				</SettingContainerContext.Provider>
+			)}
+		</Tabs.Content>
 	);
 };
