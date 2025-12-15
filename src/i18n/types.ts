@@ -19,6 +19,7 @@ export type SettingsItem<T = Record<string, never>> = IBaseSettingsItem & T;
 export type BaseMessage = {
 	settings: {
 		communityPlugin: SettingsItem<{
+			enable: IBaseSettingsItem;
 			default: IBaseSettingsItem;
 			pluginList: IBaseSettingsItem;
 		}>;

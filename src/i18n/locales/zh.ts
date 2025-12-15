@@ -4,6 +4,10 @@ const translations: BaseMessage = {
 	settings: {
 		communityPlugin: {
 			name: "第三方插件",
+			enable: {
+				name: "启用功能",
+				desc: "为没有图标的第三方插件设置添加图标",
+			},
 			default: {
 				name: "默认图标",
 				desc: "为没有图标的第三方插件设置添加默认图标",
