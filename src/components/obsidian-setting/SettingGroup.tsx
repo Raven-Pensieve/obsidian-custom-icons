@@ -1,7 +1,7 @@
 import { SettingContainerContext } from "@src/context/SettingContext";
 import { useSettingContainer } from "@src/hooks/useSettingContext";
 import { SettingGroup as ObsidianSettingGroup } from "obsidian";
-import { FC, ReactNode, useEffect, useMemo, useState } from "react";
+import { FC, ReactNode, useEffect, useId, useMemo, useState } from "react";
 
 export interface SettingGroupProps {
 	/**
@@ -51,6 +51,9 @@ export const SettingGroup: FC<SettingGroupProps> = ({
 	const contextContainer = useSettingContainer();
 	const parentContainer = providedContainer ?? contextContainer;
 
+	// 生成唯一 ID 来标识这个 SettingGroup
+	const groupId = useId();
+
 	const [settingItemsContainer, setSettingItemsContainer] =
 		useState<HTMLElement | null>(null);
 
@@ -58,7 +61,7 @@ export const SettingGroup: FC<SettingGroupProps> = ({
 	const settingGroupData = useMemo(() => {
 		if (!parentContainer) {
 			throw new Error(
-				"SettingGroup must be used within a SettingContainer or provided a containerEl prop"
+				"SettingGroup must have a containerEl (either from context or props)"
 			);
 		}
 
@@ -80,15 +83,18 @@ export const SettingGroup: FC<SettingGroupProps> = ({
 		// </div>
 		// We need to find the .setting-items container
 
-		// The group element is added to parentContainer
-		// Find the setting-group div
-		const settingGroupEl = parentContainer.querySelector(
-			".setting-group:last-child"
-		) as HTMLElement;
+		// 使用唯一 ID 标记这个 setting-group 以便精确查询
+		const settingGroupEl = parentContainer.lastElementChild as HTMLElement;
 
-		if (!settingGroupEl) {
+		if (
+			!settingGroupEl ||
+			!settingGroupEl.classList.contains("setting-group")
+		) {
 			throw new Error("Failed to find setting-group element");
 		}
+
+		// 添加唯一标识符
+		settingGroupEl.setAttribute("data-group-id", groupId);
 
 		// Find the setting-items container inside it
 		const itemsContainer = settingGroupEl.querySelector(
@@ -103,7 +109,7 @@ export const SettingGroup: FC<SettingGroupProps> = ({
 		}
 
 		return { group, settingGroupEl, itemsContainer };
-	}, [parentContainer, className, title]);
+	}, [parentContainer, className, title, groupId]);
 
 	useEffect(() => {
 		// Set the correct container for children (the .setting-items div)

@@ -48,8 +48,15 @@ export const Button: FC<ButtonProps> = ({
 		return () => button.buttonEl.remove();
 	}, [button]);
 
+	// 分离 onClick 事件处理（事件处理器需要独立更新）
 	useEffect(() => {
-		if (onClick) button.onClick(onClick);
+		if (onClick) {
+			button.onClick(onClick);
+		}
+	}, [button, onClick]);
+
+	// 合并其他属性设置（这些属性变化时一起更新）
+	useEffect(() => {
 		if (icon) button.setIcon(icon);
 		if (typeof children === "string") button.setButtonText(children);
 		if (className) button.setClass(className);
@@ -63,17 +70,7 @@ export const Button: FC<ButtonProps> = ({
 					: [tooltip.text, tooltip.options];
 			button.setTooltip(args[0], args[1]);
 		}
-	}, [
-		button,
-		onClick,
-		icon,
-		children,
-		className,
-		disabled,
-		cta,
-		warning,
-		tooltip,
-	]);
+	}, [button, icon, children, className, disabled, cta, warning, tooltip]);
 
 	return <>{createPortal(children, button.buttonEl)}</>;
 };
@@ -105,8 +102,15 @@ export const ExtraButton: FC<ExtraButtonProps> = ({
 		return () => button.extraSettingsEl.remove();
 	}, [button]);
 
+	// 分离 onClick 事件处理
 	useEffect(() => {
-		if (onClick) button.onClick(onClick);
+		if (onClick) {
+			button.onClick(onClick);
+		}
+	}, [button, onClick]);
+
+	// 合并其他属性设置
+	useEffect(() => {
 		button.setIcon(icon);
 		if (disabled !== undefined) button.setDisabled(disabled);
 		if (tooltip) {
@@ -116,7 +120,7 @@ export const ExtraButton: FC<ExtraButtonProps> = ({
 					: [tooltip.text, tooltip.options];
 			button.setTooltip(args[0], args[1]);
 		}
-	}, [button, onClick, icon, disabled, tooltip]);
+	}, [button, icon, disabled, tooltip]);
 
 	return <>{createPortal(children, button.extraSettingsEl)}</>;
 };
@@ -146,8 +150,15 @@ export const Toggle: FC<ToggleProps> = ({
 		return () => toggle.toggleEl.remove();
 	}, [toggle]);
 
+	// 分离 onChange 事件处理
 	useEffect(() => {
-		if (onChange) toggle.onChange(onChange);
+		if (onChange) {
+			toggle.onChange(onChange);
+		}
+	}, [toggle, onChange]);
+
+	// 合并其他属性设置
+	useEffect(() => {
 		if (value !== undefined) toggle.setValue(value);
 		if (disabled !== undefined) toggle.setDisabled(disabled);
 		if (tooltip) {
@@ -157,7 +168,7 @@ export const Toggle: FC<ToggleProps> = ({
 					: [tooltip.text, tooltip.options];
 			toggle.setTooltip(args[0], args[1]);
 		}
-	}, [toggle, onChange, value, disabled, tooltip]);
+	}, [toggle, value, disabled, tooltip]);
 
 	return null;
 };
@@ -187,12 +198,19 @@ export const Text: FC<TextProps> = ({
 		return () => text.inputEl.remove();
 	}, [text]);
 
+	// 分离 onChange 事件处理
 	useEffect(() => {
-		if (onChange) text.onChange(onChange);
+		if (onChange) {
+			text.onChange(onChange);
+		}
+	}, [text, onChange]);
+
+	// 合并其他属性设置
+	useEffect(() => {
 		text.setValue(value ?? "");
 		if (placeholder) text.setPlaceholder(placeholder);
 		text.inputEl.readOnly = !!readonly;
-	}, [text, onChange, value, placeholder, readonly]);
+	}, [text, value, placeholder, readonly]);
 
 	return null;
 };
@@ -222,12 +240,19 @@ export const TextArea: FC<TextAreaProps> = ({
 		return () => textArea.inputEl.remove();
 	}, [textArea]);
 
+	// 分离 onChange 事件处理
 	useEffect(() => {
-		if (onChange) textArea.onChange(onChange);
+		if (onChange) {
+			textArea.onChange(onChange);
+		}
+	}, [textArea, onChange]);
+
+	// 合并其他属性设置
+	useEffect(() => {
 		if (value !== undefined) textArea.setValue(value);
 		if (placeholder) textArea.setPlaceholder(placeholder);
 		if (disabled !== undefined) textArea.setDisabled(disabled);
-	}, [textArea, onChange, value, placeholder, disabled]);
+	}, [textArea, value, placeholder, disabled]);
 
 	return null;
 };
@@ -251,21 +276,37 @@ export const Dropdown: FC<DropdownProps> = ({
 }) => {
 	const { slotEl } = useSettingSlot();
 
+	// 不在 useMemo 中添加 options，避免 options 引用变化时重建组件
 	const dropdown = useMemo(() => {
-		const d = new DropdownComponent(slotEl);
-		if (options) d.addOptions(options);
-		return d;
-	}, [slotEl, options]);
+		return new DropdownComponent(slotEl);
+	}, [slotEl]);
 
 	useEffect(() => {
 		return () => dropdown.selectEl.remove();
 	}, [dropdown]);
 
+	// 分离 onChange 事件处理
 	useEffect(() => {
-		if (onChange) dropdown.onChange(onChange);
+		if (onChange) {
+			dropdown.onChange(onChange);
+		}
+	}, [dropdown, onChange]);
+
+	// 处理 options 更新
+	useEffect(() => {
+		if (options) {
+			// 清空现有选项
+			dropdown.selectEl.empty();
+			// 添加新选项
+			dropdown.addOptions(options);
+		}
+	}, [dropdown, options]);
+
+	// 合并其他属性设置
+	useEffect(() => {
 		if (value !== undefined) dropdown.setValue(value);
 		dropdown.setDisabled(disabled ?? false);
-	}, [dropdown, onChange, value, disabled]);
+	}, [dropdown, value, disabled]);
 
 	return null;
 };
@@ -307,13 +348,20 @@ export const Slider: FC<SliderProps> = ({
 		return () => slider.sliderEl.remove();
 	}, [slider]);
 
+	// 分离 onChange 事件处理
 	useEffect(() => {
-		if (onChange) slider.onChange(onChange);
+		if (onChange) {
+			slider.onChange(onChange);
+		}
+	}, [slider, onChange]);
+
+	// 合并其他属性设置
+	useEffect(() => {
 		if (value !== undefined) slider.setValue(value);
 		if (disabled !== undefined) slider.setDisabled(disabled);
 		if (dynamicTooltip) slider.setDynamicTooltip();
 		if (instant !== undefined) slider.setInstant(instant);
-	}, [slider, onChange, value, disabled, dynamicTooltip, instant]);
+	}, [slider, value, disabled, dynamicTooltip, instant]);
 
 	return null;
 };
@@ -337,11 +385,18 @@ export const Color: FC<ColorProps> = ({ value, disabled, onChange }) => {
 		return () => color.colorPickerEl?.remove();
 	}, [color]);
 
+	// 分离 onChange 事件处理
 	useEffect(() => {
-		if (onChange) color.onChange(onChange);
+		if (onChange) {
+			color.onChange(onChange);
+		}
+	}, [color, onChange]);
+
+	// 合并其他属性设置
+	useEffect(() => {
 		if (value !== undefined) color.setValue(value);
 		if (disabled !== undefined) color.setDisabled(disabled);
-	}, [color, onChange, value, disabled]);
+	}, [color, value, disabled]);
 
 	return null;
 };
@@ -373,13 +428,20 @@ export const Search: FC<SearchProps> = ({
 		return () => search.containerEl?.remove();
 	}, [search]);
 
+	// 分离 onChange 事件处理
 	useEffect(() => {
-		if (onChange) search.onChange(onChange);
+		if (onChange) {
+			search.onChange(onChange);
+		}
+	}, [search, onChange]);
+
+	// 合并其他属性设置
+	useEffect(() => {
 		if (value !== undefined) search.setValue(value);
 		if (placeholder) search.setPlaceholder(placeholder);
 		if (disabled !== undefined) search.setDisabled(disabled);
 		if (className) search.setClass(className);
-	}, [search, onChange, value, placeholder, disabled, className]);
+	}, [search, value, placeholder, disabled, className]);
 
 	return null;
 };
@@ -446,13 +508,20 @@ export const MomentFormat: FC<MomentFormatProps> = ({
 		return () => momentFormat.inputEl.remove();
 	}, [momentFormat]);
 
+	// 分离 onChange 事件处理
 	useEffect(() => {
-		if (onChange) momentFormat.onChange(onChange);
+		if (onChange) {
+			momentFormat.onChange(onChange);
+		}
+	}, [momentFormat, onChange]);
+
+	// 合并其他属性设置
+	useEffect(() => {
 		if (value !== undefined) momentFormat.setValue(value);
 		if (placeholder) momentFormat.setPlaceholder(placeholder);
 		if (defaultFormat) momentFormat.setDefaultFormat(defaultFormat);
 		if (sampleEl) momentFormat.setSampleEl(sampleEl);
-	}, [momentFormat, onChange, value, placeholder, defaultFormat, sampleEl]);
+	}, [momentFormat, value, placeholder, defaultFormat, sampleEl]);
 
 	return null;
 };
