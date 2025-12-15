@@ -5,7 +5,10 @@ const translations: BaseMessage = {
 	settings: {
 		communityPlugin: {
 			name: "Community Plugins",
-			desc: "Add custom icons for community plugins settings.",
+			default: {
+				name: "Default Icon",
+				desc: "Set a default icon for community plugins without icons",
+			},
 			pluginList: {
 				name: "Plugin List",
 				desc: "Add custom icons for community plugins without icons (Fix for Obsidian v1.11.0)",

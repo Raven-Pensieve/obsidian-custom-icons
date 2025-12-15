@@ -11,7 +11,7 @@ export const SupportedLocales: Record<string, BaseMessage> = {
 
 interface IBaseSettingsItem {
 	name: string;
-	desc: string;
+	desc?: string;
 }
 export type SettingsItem<T = Record<string, never>> = IBaseSettingsItem & T;
 
@@ -19,6 +19,7 @@ export type SettingsItem<T = Record<string, never>> = IBaseSettingsItem & T;
 export type BaseMessage = {
 	settings: {
 		communityPlugin: SettingsItem<{
+			default: IBaseSettingsItem;
 			pluginList: IBaseSettingsItem;
 		}>;
 	};
