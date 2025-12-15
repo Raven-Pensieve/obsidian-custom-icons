@@ -3,29 +3,35 @@
  *
  * @example Basic usage
  * ```tsx
- * <SettingContainer>
- *   <SettingItem
- *     name="Enable Feature"
- *     desc="Turn this feature on or off"
- *     control={<Toggle value={enabled} onChange={setEnabled} />}
- *   />
- * </SettingContainer>
+ * // Tab component provides SettingContainerContext automatically
+ * <SettingItem
+ *   name="Enable Feature"
+ *   desc="Turn this feature on or off"
+ *   control={<Toggle value={enabled} onChange={setEnabled} />}
+ * />
  * ```
  *
  * @example With groups
  * ```tsx
- * <SettingContainer>
- *   <SettingGroup title="Appearance" desc="Customize how things look">
- *     <SettingItem
- *       name="Theme"
- *       control={<Dropdown options={{light: "Light", dark: "Dark"}} />}
- *     />
- *     <SettingItem
- *       name="Font Size"
- *       control={<Slider min={10} max={20} value={14} />}
- *     />
- *   </SettingGroup>
- * </SettingContainer>
+ * <SettingGroup title="Appearance">
+ *   <SettingItem
+ *     name="Theme"
+ *     control={<Dropdown options={{light: "Light", dark: "Dark"}} />}
+ *   />
+ *   <SettingItem
+ *     name="Font Size"
+ *     control={<Slider min={10} max={20} value={14} />}
+ *   />
+ * </SettingGroup>
+ * ```
+ *
+ * @example Manual container (if needed)
+ * ```tsx
+ * <SettingItem
+ *   containerEl={myElement}
+ *   name="Custom Setting"
+ *   control={<Toggle />}
+ * />
  * ```
  */
 
@@ -66,8 +72,6 @@ export type {
 	TextProps,
 	ToggleProps,
 } from "./Controls";
-export { SettingContainer } from "./SettingContainer";
-export type { SettingContainerProps } from "./SettingContainer";
 export { SettingGroup } from "./SettingGroup";
 export type { SettingGroupProps } from "./SettingGroup";
 export { SettingItem } from "./SettingItem";

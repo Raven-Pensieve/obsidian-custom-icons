@@ -102,7 +102,7 @@ export const SettingItem: FC<SettingItemProps> = ({
 
 	if (!containerEl) {
 		throw new Error(
-			"SettingItem must be used within a SettingContainer or provided a containerEl prop"
+			"SettingItem must have a containerEl (either from context or props)"
 		);
 	}
 
@@ -122,26 +122,25 @@ export const SettingItem: FC<SettingItemProps> = ({
 		};
 	}, [setting]);
 
-	// Apply className
+	// Apply basic settings (合并多个相关的设置以减少 DOM 操作)
 	useEffect(() => {
-		if (className) {
-			const classes = className.split(/\s+/).filter(Boolean);
-			classes.forEach((cls) => setting.setClass(cls));
+		// Set name if provided
+		if (name && typeof name === "string") {
+			setting.setName(name);
 		}
-	}, [setting, className]);
 
-	// Apply disabled state
-	useEffect(() => {
+		// Set desc if provided
+		if (desc && typeof desc === "string") {
+			setting.setDesc(desc);
+		}
+
+		// Apply disabled state
 		setting.setDisabled(disabled);
-	}, [setting, disabled]);
 
-	// Apply visibility
-	useEffect(() => {
+		// Apply visibility
 		setting.setVisibility(visible);
-	}, [setting, visible]);
 
-	// Apply tooltip
-	useEffect(() => {
+		// Apply tooltip
 		if (tooltip) {
 			if (typeof tooltip === "string") {
 				setting.setTooltip(tooltip);
@@ -149,21 +148,20 @@ export const SettingItem: FC<SettingItemProps> = ({
 				setting.setTooltip(tooltip.text, tooltip.options);
 			}
 		}
-	}, [setting, tooltip]);
+	}, [setting, name, desc, disabled, visible, tooltip]);
 
-	// Set name if provided
+	// Apply className (需要单独处理，因为需要清理)
 	useEffect(() => {
-		if (name && typeof name === "string") {
-			setting.setName(name);
-		}
-	}, [setting, name]);
+		if (!className) return;
 
-	// Set desc if provided
-	useEffect(() => {
-		if (desc && typeof desc === "string") {
-			setting.setDesc(desc);
-		}
-	}, [setting, desc]);
+		const classes = className.split(/\s+/).filter(Boolean);
+		classes.forEach((cls) => setting.setClass(cls));
+
+		// 清理函数：在 className 变化或组件卸载时移除旧的类
+		return () => {
+			classes.forEach((cls) => setting.settingEl.classList.remove(cls));
+		};
+	}, [setting, className]);
 
 	// Create slot contexts
 	const slots = useMemo(
