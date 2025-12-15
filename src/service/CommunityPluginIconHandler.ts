@@ -1,6 +1,6 @@
 import { ICommunityPluginIcon } from "@src/types/types";
-import addIconToPluginNavItem from "../addIconToPluginNavItem";
-import { AbstractIconHandler } from "../IconHandler";
+import addIconToPluginNavItem from "@src/util/addIconToPluginNavItem";
+import { AbstractIconHandler } from "@src/util/IconHandler";
 
 interface ICommunityPluginConfig {
 	enable: boolean;

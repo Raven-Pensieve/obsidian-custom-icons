@@ -1,9 +1,9 @@
 import { Plugin } from "obsidian";
+import CommunityPluginIconHandler from "./service/CommunityPluginIconHandler";
 import { PluginSettingTab } from "./settings/PluginSettingTab";
 import SettingsStore from "./settings/SettingsStore";
 import { IPluginSettings } from "./types/types";
 import IconManager from "./util/IconManager";
-import CommunityPluginIconHandler from "./util/handlers/CommunityPluginIconHandler";
 
 export default class CIPlugin extends Plugin {
 	settings: IPluginSettings;
