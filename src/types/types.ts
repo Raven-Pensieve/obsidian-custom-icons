@@ -4,6 +4,17 @@ export interface IPluginSettings {
 		default: ICommunityPluginIcon;
 		data: Record<string, ICommunityPluginIcon>;
 	};
+	// 扩展示例：侧边栏视图图标
+	// sidebarViews: {
+	// 	enable: boolean;
+	// 	data: Record<string, IViewIcon>;
+	// };
+	// 扩展示例：文件浏览器图标
+	// fileExplorer: {
+	// 	enable: boolean;
+	// 	folderIcons: Record<string, IFolderIcon>;
+	// 	fileIcons: Record<string, IFileIcon>;
+	// };
 }
 
 export interface ICommunityPluginIcon extends IIcon {}
