@@ -1,10 +1,14 @@
 import { IconPicker } from "@src/components/icon-picker/IconPicker";
+import {
+	ExtraButton,
+	SettingGroup,
+	SettingItem,
+} from "@src/components/obsidian-setting";
 import usePluginSettings from "@src/hooks/usePluginSettings";
 import useSettingsStore from "@src/hooks/useSettingsStore";
 import { t } from "@src/i18n/i18n";
 import { DEFAULT_SETTINGS } from "@src/types/types";
 import { FC, useMemo } from "react";
-import { ObsidianSetting } from "../ObsidianSetting";
 
 export const CommunityPlugin: FC = () => {
 	const settingsStore = useSettingsStore();
@@ -47,116 +51,85 @@ export const CommunityPlugin: FC = () => {
 	return (
 		<>
 			{/* 默认图标设置 */}
-			<ObsidianSetting.Container>
-				<ObsidianSetting
-					slots={{
-						name: t("settings.communityPlugin.name"),
-						desc: t("settings.communityPlugin.desc"),
-						control: (
-							<>
-								{/* <ObsidianSetting.Dropdown
-									value={
-										settings.communityPlugins.default.type
-									}
-									options={{
-										lucide: "Lucide",
-									}}
-									onChange={(value) => {
-										settingsStore.updateSettingByPath(
-											"communityPlugins.default.type",
-											value
-										);
-									}}
-								/> */}
-								<ObsidianSetting.ExtraButton
-									icon="reset"
-									onClick={() => {
-										settingsStore.updateSettingByPath(
-											"communityPlugins.default",
-											DEFAULT_SETTINGS.communityPlugins
-												.default
-										);
-									}}
-								/>
-								<IconPicker
-									app={settingsStore.app}
-									value={
-										settings.communityPlugins.default.icon
-									}
-									onChange={(value) => {
-										settingsStore.updateSettingByPath(
-											"communityPlugins.default.icon",
-											value
-										);
-									}}
-								/>
-							</>
-						),
-					}}
-				/>
-			</ObsidianSetting.Container>
-
-			{/* 插件列表标题 */}
-			<ObsidianSetting.Container>
-				<ObsidianSetting
-					slots={{
-						name: t("settings.communityPlugin.pluginList.name"),
-						desc: t("settings.communityPlugin.pluginList.desc"),
-					}}
-					heading={true}
-				/>
-			</ObsidianSetting.Container>
-
-			{/* 所有已安装插件的图标设置 */}
-			{installedPlugins.map((plugin) => {
-				const pluginIcon = settings.communityPlugins.data[plugin.id];
-
-				return (
-					<ObsidianSetting.Container key={plugin.id}>
-						<ObsidianSetting
-							slots={{
-								name: plugin.id,
-								desc: "",
-								control: (
-									<>
-										<ObsidianSetting.ExtraButton
-											icon="reset"
-											onClick={() => {
-												settingsStore.deleteSettingByPath(
-													`communityPlugins.data.${plugin.id}`
-												);
-											}}
-										/>
-										<IconPicker
-											app={settingsStore.app}
-											value={
-												pluginIcon?.icon ||
-												settings.communityPlugins
-													.default.icon
-											}
-											onChange={(value) => {
-												settingsStore.updateSettingByPath(
-													`communityPlugins.data.${plugin.id}.id`,
-													plugin.id
-												);
-												settingsStore.updateSettingByPath(
-													`communityPlugins.data.${plugin.id}.icon`,
-													value
-												);
-												settingsStore.updateSettingByPath(
-													`communityPlugins.data.${plugin.id}.type`,
-													settings.communityPlugins
-														.default.type
-												);
-											}}
-										/>
-									</>
-								),
+			<SettingItem
+				name={t("settings.communityPlugin.name")}
+				desc={t("settings.communityPlugin.desc")}
+				control={
+					<>
+						<ExtraButton
+							icon="reset"
+							tooltip="重置为默认"
+							onClick={() => {
+								settingsStore.updateSettingByPath(
+									"communityPlugins.default",
+									DEFAULT_SETTINGS.communityPlugins.default
+								);
 							}}
 						/>
-					</ObsidianSetting.Container>
-				);
-			})}
+						<IconPicker
+							app={settingsStore.app}
+							value={settings.communityPlugins.default.icon}
+							onChange={(value) => {
+								settingsStore.updateSettingByPath(
+									"communityPlugins.default.icon",
+									value
+								);
+							}}
+						/>
+					</>
+				}
+			/>
+
+			{/* 插件列表分组 */}
+			<SettingGroup title={t("settings.communityPlugin.pluginList.name")}>
+				{installedPlugins.map((plugin) => {
+					const pluginIcon =
+						settings.communityPlugins.data[plugin.id];
+
+					return (
+						<SettingItem
+							key={plugin.id}
+							name={plugin.id}
+							control={
+								<>
+									<ExtraButton
+										icon="reset"
+										tooltip="重置图标"
+										onClick={() => {
+											settingsStore.deleteSettingByPath(
+												`communityPlugins.data.${plugin.id}`
+											);
+										}}
+									/>
+									<IconPicker
+										app={settingsStore.app}
+										value={
+											pluginIcon?.icon ||
+											settings.communityPlugins.default
+												.icon
+										}
+										onChange={(value) => {
+											settingsStore.updateSettingByPath(
+												`communityPlugins.data.${plugin.id}.id`,
+												plugin.id
+											);
+											settingsStore.updateSettingByPath(
+												`communityPlugins.data.${plugin.id}.icon`,
+												value
+											);
+											settingsStore.updateSettingByPath(
+												`communityPlugins.data.${plugin.id}.type`,
+												settings.communityPlugins
+													.default.type
+											);
+										}}
+									/>
+								</>
+							}
+						/>
+					);
+				})}
+			</SettingGroup>
 		</>
 	);
 };
