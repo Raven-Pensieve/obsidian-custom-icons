@@ -3,6 +3,7 @@ import {
 	ExtraButton,
 	SettingGroup,
 	SettingItem,
+	Toggle,
 } from "@src/components/obsidian-setting";
 import usePluginSettings from "@src/hooks/usePluginSettings";
 import useSettingsStore from "@src/hooks/useSettingsStore";
@@ -53,6 +54,23 @@ export const CommunityPlugin: FC = () => {
 			{/* 默认图标设置 */}
 			<SettingGroup>
 				<SettingItem
+					name={t("settings.communityPlugin.enable.name")}
+					desc={t("settings.communityPlugin.enable.desc")}
+					control={
+						<>
+							<Toggle
+								value={settings.communityPlugins.enable}
+								onChange={async (value) => {
+									await settingsStore.updateSettingByPath(
+										"communityPlugins.enable",
+										value
+									);
+								}}
+							/>
+						</>
+					}
+				/>
+				<SettingItem
 					name={t("settings.communityPlugin.default.name")}
 					desc={t("settings.communityPlugin.default.desc")}
 					control={
@@ -60,8 +78,8 @@ export const CommunityPlugin: FC = () => {
 							<ExtraButton
 								icon="reset"
 								tooltip="重置为默认"
-								onClick={() => {
-									settingsStore.updateSettingByPath(
+								onClick={async () => {
+									await settingsStore.updateSettingByPath(
 										"communityPlugins.default",
 										DEFAULT_SETTINGS.communityPlugins
 											.default
@@ -71,8 +89,8 @@ export const CommunityPlugin: FC = () => {
 							<IconPicker
 								app={settingsStore.app}
 								value={settings.communityPlugins.default.icon}
-								onChange={(value) => {
-									settingsStore.updateSettingByPath(
+								onChange={async (value) => {
+									await settingsStore.updateSettingByPath(
 										"communityPlugins.default.icon",
 										value
 									);
@@ -98,8 +116,8 @@ export const CommunityPlugin: FC = () => {
 									<ExtraButton
 										icon="reset"
 										tooltip="重置图标"
-										onClick={() => {
-											settingsStore.deleteSettingByPath(
+										onClick={async () => {
+											await settingsStore.deleteSettingByPath(
 												`communityPlugins.data.${plugin.id}`
 											);
 										}}
@@ -111,16 +129,16 @@ export const CommunityPlugin: FC = () => {
 											settings.communityPlugins.default
 												.icon
 										}
-										onChange={(value) => {
-											settingsStore.updateSettingByPath(
+										onChange={async (value) => {
+											await settingsStore.updateSettingByPath(
 												`communityPlugins.data.${plugin.id}.id`,
 												plugin.id
 											);
-											settingsStore.updateSettingByPath(
+											await settingsStore.updateSettingByPath(
 												`communityPlugins.data.${plugin.id}.icon`,
 												value
 											);
-											settingsStore.updateSettingByPath(
+											await settingsStore.updateSettingByPath(
 												`communityPlugins.data.${plugin.id}.type`,
 												settings.communityPlugins
 													.default.type

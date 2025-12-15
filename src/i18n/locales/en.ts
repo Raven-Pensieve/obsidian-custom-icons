@@ -4,14 +4,18 @@ import { BaseMessage } from "@src/i18n/types";
 const translations: BaseMessage = {
 	settings: {
 		communityPlugin: {
-			name: "Community Plugins",
+			name: "Community plugins",
+			enable: {
+				name: "Enable feature",
+				desc: "Add icons for community plugins without icons",
+			},
 			default: {
-				name: "Default Icon",
+				name: "Default icon",
 				desc: "Set a default icon for community plugins without icons",
 			},
 			pluginList: {
-				name: "Plugin List",
-				desc: "Add custom icons for community plugins without icons (Fix for Obsidian v1.11.0)",
+				name: "Plugin list",
+				desc: "Add custom icons for community plugins without icons (fix for Obsidian v1.11.0)",
 			},
 		},
 	},

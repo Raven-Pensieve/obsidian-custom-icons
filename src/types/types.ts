@@ -1,5 +1,6 @@
 export interface IPluginSettings {
 	communityPlugins: {
+		enable: boolean;
 		default: ICommunityPluginIcon;
 		data: Record<string, ICommunityPluginIcon>;
 	};
@@ -17,6 +18,7 @@ interface IIcon {
 
 export const DEFAULT_SETTINGS: IPluginSettings = {
 	communityPlugins: {
+		enable: false,
 		default: { id: "", icon: "puzzle", type: "lucide" },
 		data: {},
 	},

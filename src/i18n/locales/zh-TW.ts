@@ -4,6 +4,10 @@ const translations: BaseMessage = {
 	settings: {
 		communityPlugin: {
 			name: "第三方外掛程式",
+			enable: {
+				name: "啟用功能",
+				desc: "為沒有圖示的第三方外掛程式設定添加圖示",
+			},
 			default: {
 				name: "預設圖示",
 				desc: "為沒有圖示的第三方外掛程式設定添加預設圖示",
