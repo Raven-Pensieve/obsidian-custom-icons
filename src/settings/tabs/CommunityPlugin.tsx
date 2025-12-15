@@ -51,34 +51,37 @@ export const CommunityPlugin: FC = () => {
 	return (
 		<>
 			{/* 默认图标设置 */}
-			<SettingItem
-				name={t("settings.communityPlugin.name")}
-				desc={t("settings.communityPlugin.desc")}
-				control={
-					<>
-						<ExtraButton
-							icon="reset"
-							tooltip="重置为默认"
-							onClick={() => {
-								settingsStore.updateSettingByPath(
-									"communityPlugins.default",
-									DEFAULT_SETTINGS.communityPlugins.default
-								);
-							}}
-						/>
-						<IconPicker
-							app={settingsStore.app}
-							value={settings.communityPlugins.default.icon}
-							onChange={(value) => {
-								settingsStore.updateSettingByPath(
-									"communityPlugins.default.icon",
-									value
-								);
-							}}
-						/>
-					</>
-				}
-			/>
+			<SettingGroup>
+				<SettingItem
+					name={t("settings.communityPlugin.default.name")}
+					desc={t("settings.communityPlugin.default.desc")}
+					control={
+						<>
+							<ExtraButton
+								icon="reset"
+								tooltip="重置为默认"
+								onClick={() => {
+									settingsStore.updateSettingByPath(
+										"communityPlugins.default",
+										DEFAULT_SETTINGS.communityPlugins
+											.default
+									);
+								}}
+							/>
+							<IconPicker
+								app={settingsStore.app}
+								value={settings.communityPlugins.default.icon}
+								onChange={(value) => {
+									settingsStore.updateSettingByPath(
+										"communityPlugins.default.icon",
+										value
+									);
+								}}
+							/>
+						</>
+					}
+				/>
+			</SettingGroup>
 
 			{/* 插件列表分组 */}
 			<SettingGroup title={t("settings.communityPlugin.pluginList.name")}>
