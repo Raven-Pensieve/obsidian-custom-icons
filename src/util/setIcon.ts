@@ -6,6 +6,11 @@ import { getLucideIcon } from "./getLucideIcons";
 
 // 存储已创建的 React root，用于清理
 const rootMap = new WeakMap<HTMLElement, Root>();
+// 存储元素当前的图标信息，用于避免不必要的重新渲染
+const iconStateMap = new WeakMap<
+	HTMLElement,
+	{ type: IconType; icon: string }
+>();
 
 /**
  * 在指定元素中渲染图标
@@ -22,6 +27,18 @@ export default function (
 	icon: string,
 	options?: { append?: boolean }
 ): HTMLElement | void {
+	// 检查图标是否已经是目标图标，如果是则跳过渲染（仅对非 append 模式）
+	if (!options?.append) {
+		const currentState = iconStateMap.get(el);
+		if (
+			currentState &&
+			currentState.type === iconType &&
+			currentState.icon === icon
+		) {
+			return; // 图标没有变化，跳过渲染
+		}
+	}
+
 	// 支持 lucide-react (v0.561.0) 图标
 	if (iconType === "lucide") {
 		const IconComponent = getLucideIcon(icon);
@@ -67,6 +84,9 @@ export default function (
 							className: "lucide-icon",
 						})
 					);
+
+					// 更新图标状态
+					iconStateMap.set(el, { type: iconType, icon });
 				}
 			} catch (error) {
 				console.error(`Error rendering Lucide icon "${icon}":`, error);
@@ -76,6 +96,8 @@ export default function (
 						root.unmount();
 						rootMap.delete(el);
 					}
+					// 清理图标状态
+					iconStateMap.delete(el);
 				}
 			}
 		} else {
@@ -90,5 +112,6 @@ export function cleanupIcon(el: HTMLElement) {
 		existingRoot.unmount();
 		rootMap.delete(el);
 	}
+	iconStateMap.delete(el);
 	el.empty();
 }

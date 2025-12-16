@@ -28,8 +28,23 @@ export default function (
 		} else {
 			navItemEl.appendChild(iconContainer);
 		}
+	} else {
+		// 检查图标是否需要更新（通过数据属性）
+		const currentType = iconContainer.getAttribute("data-icon-type");
+		const currentIcon = iconContainer.getAttribute("data-icon-name");
+
+		if (
+			currentType === communityPlugin.type &&
+			currentIcon === communityPlugin.icon
+		) {
+			return; // 图标没有变化，跳过更新
+		}
 	}
 
-	// 更新图标（无论是新创建的还是已存在的）
+	// 更新图标（无论是新创建的还是已存在但需要更新的）
 	setIcon(iconContainer, communityPlugin.type, communityPlugin.icon);
+
+	// 保存图标信息到数据属性
+	iconContainer.setAttribute("data-icon-type", communityPlugin.type);
+	iconContainer.setAttribute("data-icon-name", communityPlugin.icon);
 }
