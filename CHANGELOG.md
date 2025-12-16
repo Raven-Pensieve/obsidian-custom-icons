@@ -1,3 +1,17 @@
+# [1.0.0-beta.4](https://github.com/RavenHogWarts/obsidian-custom-icons/compare/1.0.0-beta.3...1.0.0-beta.4) (2025-12-16)
+
+
+### ♻️ Refactor
+
+* 调整插件加载顺序和初始化逻辑 (#40) ([e1fe645](https://github.com/RavenHogWarts/obsidian-custom-icons/commit/e1fe64519682e435967c23b27e01f456d7017f8c)), closes [#40](https://github.com/RavenHogWarts/obsidian-custom-icons/issues/40)
+
+
+### ✨ Features
+
+* 避免重复渲染并缓存图标状态 (#41) ([9479aad](https://github.com/RavenHogWarts/obsidian-custom-icons/commit/9479aad977eefc454d7a41cf4c06da6519af2441)), closes [#41](https://github.com/RavenHogWarts/obsidian-custom-icons/issues/41)
+
+
+
 # [1.0.0-beta.3](https://github.com/RavenHogWarts/obsidian-custom-icons/compare/1.0.0-beta.2...1.0.0-beta.3) (2025-12-16)
 
 
