@@ -10,7 +10,7 @@ export const SupportedLocales: Record<string, BaseMessage> = {
 };
 
 interface IBaseSettingsItem {
-	name: string;
+	name?: string;
 	desc?: string;
 }
 export type SettingsItem<T = Record<string, never>> = IBaseSettingsItem & T;
@@ -21,6 +21,10 @@ export type BaseMessage = {
 		communityPlugin: SettingsItem<{
 			enable: IBaseSettingsItem;
 			default: IBaseSettingsItem;
+			search: SettingsItem<{
+				placeholder?: string;
+				noneFound?: string;
+			}>;
 			pluginList: IBaseSettingsItem;
 		}>;
 	};

@@ -12,6 +12,10 @@ const translations: BaseMessage = {
 				name: "默认图标",
 				desc: "为没有图标的第三方插件设置添加默认图标",
 			},
+			search: {
+				placeholder: "输入插件名称...",
+				noneFound: "未找到匹配的插件",
+			},
 			pluginList: {
 				name: "插件列表",
 				desc: "为没有图标的第三方插件添加自定义图标（修复 Obsidian v1.11.0）",

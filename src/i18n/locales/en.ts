@@ -13,6 +13,10 @@ const translations: BaseMessage = {
 				name: "Default icon",
 				desc: "Set a default icon for community plugins without icons",
 			},
+			search: {
+				placeholder: "Enter plugin name or ID...",
+				noneFound: "No matching plugins found",
+			},
 			pluginList: {
 				name: "Plugin list",
 				desc: "Add custom icons for community plugins without icons (fix for Obsidian v1.11.0)",
