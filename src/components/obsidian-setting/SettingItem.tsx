@@ -119,6 +119,7 @@ export const SettingItem: FC<SettingItemProps> = ({
 	useEffect(() => {
 		return () => {
 			setting.clear();
+			setting.settingEl.remove(); // 确保 DOM 元素被移除
 		};
 	}, [setting]);
 
