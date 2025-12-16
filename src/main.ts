@@ -11,14 +11,11 @@ export default class CIPlugin extends Plugin {
 	readonly iconManager = new IconManager(this.app);
 
 	async onload() {
-		await this.settingsStore.loadSettings();
-
-		// 注册所有图标处理器
 		this.registerIconHandlers();
 
+		await this.settingsStore.loadSettings();
+
 		this.app.workspace.onLayoutReady(() => {
-			// 初始化并应用所有图标处理器
-			this.iconManager.updateSettings(this.settings);
 			this.iconManager.applyAll();
 		});
 
@@ -26,7 +23,6 @@ export default class CIPlugin extends Plugin {
 	}
 
 	onunload() {
-		// 清理所有图标处理器
 		this.iconManager.cleanupAll();
 	}
 
