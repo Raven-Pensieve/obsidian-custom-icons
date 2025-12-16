@@ -2,41 +2,71 @@ import * as icons from "lucide-react";
 
 /**
  * 获取所有可用的 Lucide 图标名称列表
- * 从 lucide-react 包中提取所有图标组件名称
+ * 从 lucide-react 包中提取所有唯一的图标组件名称
+ *
+ * lucide-react 导出多种格式：
+ * - PascalCase (如 Apple)
+ * - PascalCaseIcon (如 AppleIcon)
+ * - LucidePascalCase (如 LucideApple)
+ *
+ * 我们需要去重，只保留唯一的图标
  */
 export function getLucideIconNames(): string[] {
-	const iconNames: string[] = [];
+	const iconSet = new Set<string>();
+	const excludedKeys = new Set([
+		"default",
+		"createLucideIcon",
+		"icons",
+		"Icon",
+	]);
 
 	for (const key in icons) {
+		// 跳过特殊导出
+		if (excludedKeys.has(key)) {
+			continue;
+		}
+
 		const value = icons[key as keyof typeof icons];
 
-		// lucide-react 导出三种格式：
-		// 1. PascalCase (如 Apple)
-		// 2. PascalCaseIcon (如 AppleIcon)
-		// 3. LucidePascalCase (如 LucideApple)
-		// 我们只使用第一种 PascalCase 格式
+		// 图标组件是对象（React 组件），不是简单的函数
+		// 跳过 undefined 和 null
 		if (
-			key !== "default" &&
-			key !== "createLucideIcon" &&
-			!key.startsWith("Lucide") && // 过滤掉 Lucide 前缀的版本
-			!key.endsWith("Icon") && // 过滤掉 Icon 后缀的版本
-			/^[A-Z]/.test(key) &&
-			value !== undefined
+			!value ||
+			typeof value === "string" ||
+			typeof value === "number" ||
+			typeof value === "boolean"
 		) {
+			continue;
+		}
+
+		// 去除后缀和前缀，提取基础名称
+		let baseName = key;
+
+		// 先去除 "Lucide" 前缀
+		if (baseName.startsWith("Lucide")) {
+			baseName = baseName.slice(6);
+		}
+
+		// 再去除 "Icon" 后缀
+		if (baseName.endsWith("Icon")) {
+			baseName = baseName.slice(0, -4);
+		}
+
+		// 确保是 PascalCase 格式（以大写字母开头且不为空）
+		if (baseName && /^[A-Z]/.test(baseName)) {
 			// 将 PascalCase 转换为 kebab-case
-			const iconName = key
+			const iconName = baseName
 				.replace(/([A-Z])/g, "-$1")
 				.toLowerCase()
 				.slice(1);
 
-			// 过滤掉空字符串
 			if (iconName) {
-				iconNames.push(iconName);
+				iconSet.add(iconName);
 			}
 		}
 	}
 
-	return iconNames.sort();
+	return Array.from(iconSet).sort();
 }
 
 /**
