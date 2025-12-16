@@ -1,6 +1,7 @@
 import { IconPicker } from "@src/components/icon-picker/IconPicker";
 import {
 	ExtraButton,
+	Search,
 	SettingGroup,
 	SettingItem,
 	Toggle,
@@ -9,11 +10,12 @@ import usePluginSettings from "@src/hooks/usePluginSettings";
 import useSettingsStore from "@src/hooks/useSettingsStore";
 import { t } from "@src/i18n/i18n";
 import { DEFAULT_SETTINGS } from "@src/types/types";
-import { FC, useMemo } from "react";
+import { FC, useMemo, useState } from "react";
 
 export const CommunityPlugin: FC = () => {
 	const settingsStore = useSettingsStore();
 	const settings = usePluginSettings(settingsStore);
+	const [searchQuery, setSearchQuery] = useState("");
 
 	// 获取 communityPluginTabContainer 中的所有插件
 	const installedPlugins = useMemo(() => {
@@ -26,11 +28,13 @@ export const CommunityPlugin: FC = () => {
 
 		const plugins: Array<{
 			id: string;
+			name: string;
 		}> = [];
+		const seenIds = new Set<string>(); // 用于去重
 
 		pluginNavItems.forEach((navItemEl) => {
 			const pluginId = navItemEl.getAttribute("data-setting-id");
-			if (!pluginId) return;
+			if (!pluginId || seenIds.has(pluginId)) return; // 跳过空ID和重复ID
 
 			// 检查是否存在原生图标（没有 custom-icon 类的）
 			const nativeIcon = navItemEl.querySelector(
@@ -40,14 +44,30 @@ export const CommunityPlugin: FC = () => {
 
 			const manifest = settingsStore.app.plugins.manifests[pluginId];
 			if (manifest) {
+				seenIds.add(pluginId); // 标记已处理
 				plugins.push({
 					id: pluginId,
+					name: manifest.name,
 				});
 			}
 		});
 
-		return plugins;
-	}, [settingsStore.app.setting.communityPluginTabContainer]);
+		// 按插件名称排序，确保顺序稳定
+		return plugins.sort((a, b) => a.name.localeCompare(b.name));
+	}, [settingsStore.app.plugins.manifests]);
+
+	// 根据搜索查询过滤插件
+	const filteredPlugins = useMemo(() => {
+		if (!searchQuery.trim()) {
+			return installedPlugins;
+		}
+		const query = searchQuery.toLowerCase();
+		const filtered = installedPlugins.filter((plugin) => {
+			return plugin.name.toLowerCase().includes(query);
+		});
+		// 过滤后仍然需要排序，确保顺序稳定
+		return filtered.sort((a, b) => a.name.localeCompare(b.name));
+	}, [installedPlugins, searchQuery]);
 
 	return (
 		<>
@@ -103,14 +123,31 @@ export const CommunityPlugin: FC = () => {
 
 			{/* 插件列表分组 */}
 			<SettingGroup title={t("settings.communityPlugin.pluginList.name")}>
-				{installedPlugins.map((plugin) => {
+				<SettingItem
+					name={
+						<Search
+							value={searchQuery}
+							onChange={(value) => setSearchQuery(value)}
+							placeholder={t(
+								"settings.communityPlugin.search.placeholder"
+							)}
+						/>
+					}
+				/>
+
+				{filteredPlugins.length === 0 && searchQuery.trim() && (
+					<SettingItem name="未找到匹配的插件" />
+				)}
+
+				{filteredPlugins.map((plugin, index) => {
 					const pluginIcon =
 						settings.communityPlugins.data[plugin.id];
 
 					return (
 						<SettingItem
-							key={plugin.id}
-							name={plugin.id}
+							key={`${plugin.id}-${index}`}
+							name={plugin.name}
+							desc={plugin.id}
 							control={
 								<>
 									<ExtraButton
