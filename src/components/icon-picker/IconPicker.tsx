@@ -1,11 +1,6 @@
-import {
-	App,
-	FuzzyMatch,
-	FuzzySuggestModal,
-	getIconIds,
-	IconName,
-	setIcon,
-} from "obsidian";
+import { getLucideIconNames } from "@src/util/getLucideIcons";
+import setIcon from "@src/util/setIcon";
+import { App, FuzzyMatch, FuzzySuggestModal } from "obsidian";
 import * as React from "react";
 import "./IconPicker.css";
 
@@ -33,7 +28,7 @@ export const IconPicker: React.FC<IconPickerProps> = ({
 
 	React.useEffect(() => {
 		if (buttonRef.current) {
-			setIcon(buttonRef.current, selectedIcon);
+			setIcon(buttonRef.current, "lucide", selectedIcon);
 		}
 	}, [selectedIcon]);
 
@@ -51,7 +46,7 @@ export const IconPicker: React.FC<IconPickerProps> = ({
 	);
 };
 
-class IconSelector extends FuzzySuggestModal<IconName> {
+class IconSelector extends FuzzySuggestModal<string> {
 	private callback: (icon: string) => void;
 
 	constructor(app: App, callback: (icon: string) => void) {
@@ -64,22 +59,26 @@ class IconSelector extends FuzzySuggestModal<IconName> {
 		]);
 	}
 
-	getItems(): IconName[] {
-		return getIconIds().map((id) => id.replace("lucide-", ""));
+	getItems(): string[] {
+		const icons = getLucideIconNames();
+		return icons;
 	}
 
-	getItemText(icon: IconName): string {
+	getItemText(icon: string): string {
 		return icon;
 	}
 
-	renderSuggestion(item: FuzzyMatch<IconName>, el: HTMLElement) {
-		super.renderSuggestion(item, el);
+	renderSuggestion(item: FuzzyMatch<string>, el: HTMLElement) {
 		el.addClass("CI__icon-suggestion");
-		setIcon(el, item.item);
+
+		// 将图标作为子元素追加，而不是替换整个元素内容
+		setIcon(el, "lucide", item.item, { append: true });
+
+		// 创建文本容器（与图标 SVG 同级）
 		el.createSpan({ text: item.item });
 	}
 
-	onChooseItem(item: IconName, evt: MouseEvent | KeyboardEvent): void {
+	onChooseItem(item: string, evt: MouseEvent | KeyboardEvent): void {
 		this.callback(item);
 	}
 }
