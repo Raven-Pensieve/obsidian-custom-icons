@@ -1,6 +1,6 @@
 import { ICommunityPluginIcon } from "@src/types/types";
-import addIconToPluginNavItem from "@src/util/addIconToPluginNavItem";
 import { AbstractIconHandler } from "@src/util/IconHandler";
+import setIcon from "@src/util/setIcon";
 
 interface ICommunityPluginConfig {
 	enable: boolean;
@@ -71,7 +71,55 @@ export default class CommunityPluginIconHandler extends AbstractIconHandler<ICom
 		const iconConfig =
 			this.settings.data[pluginId] || this.settings.default;
 
-		addIconToPluginNavItem(navItemEl, iconConfig);
+		this.addIconToPluginNavItem(navItemEl, iconConfig);
+	}
+
+	private addIconToPluginNavItem(
+		navItemEl: HTMLElement,
+		communityPlugin: ICommunityPluginIcon
+	) {
+		// 检查是否存在原生图标（没有 custom-icon 类的）
+		const nativeIcon = navItemEl.querySelector(
+			".vertical-tab-nav-item-icon:not(.custom-icon)"
+		);
+		if (nativeIcon) return; // 如果是原生图标，不做修改
+
+		// 查找或创建自定义图标容器
+		let iconContainer = navItemEl.querySelector(
+			".vertical-tab-nav-item-icon.custom-icon"
+		) as HTMLElement;
+
+		if (!iconContainer) {
+			// 如果不存在自定义图标容器，创建一个
+			iconContainer = navItemEl.createDiv({
+				cls: ["vertical-tab-nav-item-icon", "custom-icon"],
+			});
+
+			const firstChild = navItemEl.children[0];
+			if (firstChild) {
+				navItemEl.insertBefore(iconContainer, firstChild);
+			} else {
+				navItemEl.appendChild(iconContainer);
+			}
+		} else {
+			// 检查图标是否需要更新（通过数据属性）
+			const currentType = iconContainer.getAttribute("data-icon-type");
+			const currentIcon = iconContainer.getAttribute("data-icon-name");
+
+			if (
+				currentType === communityPlugin.type &&
+				currentIcon === communityPlugin.icon
+			) {
+				return; // 图标没有变化，跳过更新
+			}
+		}
+
+		// 更新图标（无论是新创建的还是已存在但需要更新的）
+		setIcon(iconContainer, communityPlugin.type, communityPlugin.icon);
+
+		// 保存图标信息到数据属性
+		iconContainer.setAttribute("data-icon-type", communityPlugin.type);
+		iconContainer.setAttribute("data-icon-name", communityPlugin.icon);
 	}
 
 	/**
