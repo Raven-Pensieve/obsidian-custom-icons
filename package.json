@@ -34,7 +34,6 @@
 		"@typescript-eslint/eslint-plugin": "8.49.0",
 		"@typescript-eslint/parser": "^8.49.0",
 		"builtin-modules": "5.0.0",
-		"conventional-changelog-cli": "^5.0.0",
 		"esbuild": "0.27.1",
 		"eslint": "^9.39.2",
 		"eslint-plugin-obsidianmd": "^0.1.9",
