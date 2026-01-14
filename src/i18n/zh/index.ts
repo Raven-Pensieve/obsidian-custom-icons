@@ -1,6 +1,6 @@
-import { BaseMessage } from "@src/i18n/types";
+import type { BaseTranslation } from "../i18n-types";
 
-const translations: BaseMessage = {
+const zh = {
 	settings: {
 		communityPlugin: {
 			name: "第三方插件",
@@ -11,6 +11,7 @@ const translations: BaseMessage = {
 			default: {
 				name: "默认图标",
 				desc: "为没有图标的第三方插件设置添加默认图标",
+				resetTooltip: "重置",
 			},
 			search: {
 				placeholder: "输入插件名称...",
@@ -19,9 +20,10 @@ const translations: BaseMessage = {
 			pluginList: {
 				name: "插件列表",
 				desc: "为没有图标的第三方插件添加自定义图标（修复 Obsidian v1.11.0）",
+				resetTooltip: "重置为默认图标",
 			},
 		},
 	},
-};
+} satisfies BaseTranslation;
 
-export default translations;
+export default zh;

@@ -1,6 +1,6 @@
-import { BaseMessage } from "@src/i18n/types";
+import type { BaseTranslation } from "../i18n-types";
 
-const translations: BaseMessage = {
+const zh_TW = {
 	settings: {
 		communityPlugin: {
 			name: "第三方外掛程式",
@@ -11,6 +11,7 @@ const translations: BaseMessage = {
 			default: {
 				name: "預設圖示",
 				desc: "為沒有圖示的第三方外掛程式設定添加預設圖示",
+				resetTooltip: "重置",
 			},
 			search: {
 				placeholder: "輸入外掛程式名稱或ID...",
@@ -19,9 +20,10 @@ const translations: BaseMessage = {
 			pluginList: {
 				name: "外掛程式列表",
 				desc: "為沒有圖示的第三方外掛程式添加自訂圖示（修復 Obsidian v1.11.0）",
+				resetTooltip: "重置爲預設圖示",
 			},
 		},
 	},
-};
+} satisfies BaseTranslation;
 
-export default translations;
+export default zh_TW;

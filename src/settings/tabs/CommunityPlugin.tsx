@@ -8,7 +8,7 @@ import {
 } from "@src/components/obsidian-setting";
 import usePluginSettings from "@src/hooks/usePluginSettings";
 import useSettingsStore from "@src/hooks/useSettingsStore";
-import { t } from "@src/i18n/i18n";
+import { LL } from "@src/i18n/i18n";
 import { DEFAULT_SETTINGS } from "@src/types/types";
 import { FC, useMemo, useState } from "react";
 
@@ -74,8 +74,8 @@ export const CommunityPlugin: FC = () => {
 			{/* 默认图标设置 */}
 			<SettingGroup>
 				<SettingItem
-					name={t("settings.communityPlugin.enable.name")}
-					desc={t("settings.communityPlugin.enable.desc")}
+					name={LL.settings.communityPlugin.enable.name()}
+					desc={LL.settings.communityPlugin.enable.desc()}
 					control={
 						<>
 							<Toggle
@@ -91,13 +91,13 @@ export const CommunityPlugin: FC = () => {
 					}
 				/>
 				<SettingItem
-					name={t("settings.communityPlugin.default.name")}
-					desc={t("settings.communityPlugin.default.desc")}
+					name={LL.settings.communityPlugin.default.name()}
+					desc={LL.settings.communityPlugin.default.desc()}
 					control={
 						<>
 							<ExtraButton
 								icon="reset"
-								tooltip="重置为默认"
+								tooltip={LL.settings.communityPlugin.default.resetTooltip()}
 								onClick={async () => {
 									await settingsStore.updateSettingByPath(
 										"communityPlugins.default",
@@ -122,21 +122,21 @@ export const CommunityPlugin: FC = () => {
 			</SettingGroup>
 
 			{/* 插件列表分组 */}
-			<SettingGroup title={t("settings.communityPlugin.pluginList.name")}>
+			<SettingGroup title={LL.settings.communityPlugin.pluginList.name()}>
 				<SettingItem
 					name={
 						<Search
 							value={searchQuery}
 							onChange={(value) => setSearchQuery(value)}
-							placeholder={t(
-								"settings.communityPlugin.search.placeholder"
-							)}
+							placeholder={LL.settings.communityPlugin.search.placeholder()}
 						/>
 					}
 				/>
 
 				{filteredPlugins.length === 0 && searchQuery.trim() && (
-					<SettingItem name="未找到匹配的插件" />
+					<SettingItem
+						name={LL.settings.communityPlugin.search.noneFound()}
+					/>
 				)}
 
 				{filteredPlugins.map((plugin, index) => {
@@ -152,7 +152,7 @@ export const CommunityPlugin: FC = () => {
 								<>
 									<ExtraButton
 										icon="reset"
-										tooltip="重置图标"
+										tooltip={LL.settings.communityPlugin.pluginList.resetTooltip()}
 										onClick={async () => {
 											await settingsStore.deleteSettingByPath(
 												`communityPlugins.data.${plugin.id}`
