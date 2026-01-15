@@ -1,3 +1,31 @@
+# [1.0.0](https://github.com/RavenHogWarts/obsidian-custom-icons/compare/1.0.0-beta.4...1.0.0) (2026-01-15)
+
+
+### ♻️ Refactor
+
+* 将图标逻辑内联到处理器类 (#45) ([351ecc7](https://github.com/RavenHogWarts/obsidian-custom-icons/commit/351ecc7f76b458ef966fc14d66db27e85165be63)), closes [#45](https://github.com/RavenHogWarts/obsidian-custom-icons/issues/45)
+* **icon:** 统一 SVG 图标的 class 名称 (#49) ([df71555](https://github.com/RavenHogWarts/obsidian-custom-icons/commit/df71555a3825a575463cbaec3c30dfc611a13312)), closes [#49](https://github.com/RavenHogWarts/obsidian-custom-icons/issues/49)
+
+
+### ✨ Features
+
+* 优化 Lucide 图标测试与去重提取 (#43) ([0b86533](https://github.com/RavenHogWarts/obsidian-custom-icons/commit/0b865335ba9edb58df4963c43e2b19cc77de0d91)), closes [#43](https://github.com/RavenHogWarts/obsidian-custom-icons/issues/43)
+* 增加随机图标功能 (#50) ([80fb973](https://github.com/RavenHogWarts/obsidian-custom-icons/commit/80fb973efbeea028e524191ca0e9a74f801dd732)), closes [#50](https://github.com/RavenHogWarts/obsidian-custom-icons/issues/50)
+* **i18n:** 初始化 typesafe-i18n 支持并修正脚本导入 (#47) ([79bc277](https://github.com/RavenHogWarts/obsidian-custom-icons/commit/79bc277ba2abbd6111c169afabb6e52c0cb5af9e)), closes [#47](https://github.com/RavenHogWarts/obsidian-custom-icons/issues/47)
+
+
+### 📝 Documentation
+
+* update README and CONTRIBUTING texts (#51) ([7c73455](https://github.com/RavenHogWarts/obsidian-custom-icons/commit/7c73455964c0e3c66238cf29d4c3b456aa485445)), closes [#51](https://github.com/RavenHogWarts/obsidian-custom-icons/issues/51)
+
+
+### 🔨 Chore
+
+* 修改 FUNDING (#48) ([b59bac5](https://github.com/RavenHogWarts/obsidian-custom-icons/commit/b59bac5c9211c623b1919da2e56fe2a70b8db141)), closes [#48](https://github.com/RavenHogWarts/obsidian-custom-icons/issues/48)
+* remove conventional-changelog related deps (#44) ([5c577a9](https://github.com/RavenHogWarts/obsidian-custom-icons/commit/5c577a9f3b0dab88533f3461b90850f1a6d48326)), closes [#44](https://github.com/RavenHogWarts/obsidian-custom-icons/issues/44)
+
+
+
 # [1.0.0-beta.4](https://github.com/RavenHogWarts/obsidian-custom-icons/compare/1.0.0-beta.3...1.0.0-beta.4) (2025-12-16)
 
 
