@@ -64,7 +64,7 @@ export default function (
 					const svgElement = tempContainer.firstChild as SVGElement;
 					if (svgElement) {
 						el.appendChild(svgElement);
-						return svgElement as any;
+						return svgElement as unknown as HTMLElement;
 					}
 				} else {
 					// 替换元素内容（原有逻辑，使用 React root）
@@ -123,7 +123,7 @@ export default function (
 				svgElement.classList.add("svg-icon");
 
 				el.appendChild(svgElement);
-				return svgElement as any;
+				return svgElement as unknown as HTMLElement;
 			}
 		} else {
 			const existingRoot = rootMap.get(el);
