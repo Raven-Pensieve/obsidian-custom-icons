@@ -81,7 +81,7 @@ export default function (
 						React.createElement(IconComponent, {
 							size: 16,
 							strokeWidth: 2,
-							className: "lucide-icon",
+							className: "svg-icon",
 						})
 					);
 
