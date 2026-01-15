@@ -1,4 +1,4 @@
-English | [中文](https://github.com/RavenHogWarts/obsidian-custom-icons/blob/master/README-zh.md)
+English | [中文](https://github.com/RavenHogWarts/obsidian-custom-icons/blob/master/README.ZH.md)
 
 # Custom Icons
 
@@ -10,25 +10,19 @@ Enhance your workspace with customizable icons for documents and folders.
 [![GitHub Issues](https://img.shields.io/github/issues/RavenHogWarts/obsidian-custom-icons?style=flat&label=Issues)](https://github.com/RavenHogWarts/obsidian-custom-icons/issues)
 [![GitHub Last Commit](https://img.shields.io/github/last-commit/RavenHogWarts/obsidian-custom-icons?style=flat&label=Last%20Commit)](https://github.com/RavenHogWarts/obsidian-custom-icons/commits/master)
 
+
+## v1.0 Important Notice: Remaster and Breaking Changes
+
+Version **v1.0** of this plugin introduces **breaking changes** and a complete **remaster**.
+
+- **Support for Obsidian 1.11**: Aligned with the new "Settings Page Icons" feature in Obsidian 1.11, this plugin now allows you to **customize icons for the settings page**.
+- **Future Roadmap**: Features from versions prior to 1.0 (previously relying on CSS) are planned to be reimplemented using a new method in the future, and CSS-based configuration will no longer be supported.
+
+Please be aware of these changes to ensure your setup continues to work correctly.
+
 ## Usage
 
-Currently, there are two ways to set the icons:
-
-- Custom: This includes using online URLs, local relative or absolute file paths, Base64 encodings, or SVG tags.
-- Lucide icons: This method requires only the name of the icon from [Lucide](https://lucide.dev/icons/). Note that the official Obsidian icons also use Lucide icons.
-
-### Examples
-
-- Online URL: `https://www.example.com/favicon.ico`
-- Local images:
-  - Relative path: `.obsidian/svg/example.svg`
-  - Absolute path (Unix-style): `/Users/YourUsername/Pictures/example.jpg`
-  - Absolute path (Windows-style): `D:\Pictures\example.png`
-- Base64 encoding: Starting with `data:`
-- SVG tags: Enclosed within `<svg></svg>` tags
-- Lucide source icons: Directly use the icon name from Lucide.
-
-![Usage](attachment/Usage_EN.png)
+![Usage](attachment/Usage.EN.png)
 
 ## Installation
 ### Community plugin market installation

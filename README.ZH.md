@@ -10,24 +10,21 @@
 [![GitHub Issues](https://img.shields.io/github/issues/RavenHogWarts/obsidian-custom-icons?style=flat&label=问题)](https://github.com/RavenHogWarts/obsidian-custom-icons/issues)
 [![GitHub Last Commit](https://img.shields.io/github/last-commit/RavenHogWarts/obsidian-custom-icons?style=flat&label=最后提交)](https://github.com/RavenHogWarts/obsidian-custom-icons/commits/master)
 
-## 使用方法
 
-目前，有两种设置图标的方法：
-- 自定义：包括使用在线 URL、本地相对（绝对）文件路径、Base64 编码或 SVG 标签。
-- Lucide 图标：此方法仅需从 [Lucide](https://lucide.dev/icons/) 获取图标名称。值得注意的是，官方图标也使用 Lucide 图标。
 
-### 示例
+## v1.0 重要公告：重制版与破坏性更新
 
-- 在线 URL：`https://www.example.com/favicon.ico`
-- 本地图片：
-  - 相对路径：`.obsidian/svg/example.svg`
-  - 绝对路径（Unix 风格）：`/Users/YourUsername/Pictures/example.jpg`
-  - 绝对路径（Windows 风格）：`D:\Pictures\example.png`
-- Base64 编码：以 `data:` 开头
-- SVG 标签：包裹在 `<svg></svg>` 标签内
-- Lucide 源图标：直接使用来自 Lucide 的图标名称。
+本插件 **v1.0** 版本引入了**破坏性更新**，对插件进行了全面**重制**。
 
-![使用方法](attachment/Usage_CN.png)
+- **适配 Obsidian 1.11**：针对 Obsidian 1.11 版本新增的“设置页图标”功能，本插件现在支持**自定义设置页图标**。
+- **未来规划**：1.0 版本之前的旧功能（依赖 CSS 实现的部分）计划在未来版本中通过新方法实现，并将不再支持通过 CSS 方式进行自定义。
+
+请务必留意以避免配置失效，建议查看最新的使用文档。
+
+## 使用
+
+![Usage](attachment/Usage.ZH.png)
+
 
 ## 安装方法
 ### 社区插件市场安装
