@@ -1,3 +1,5 @@
+import { SvgLib } from "@src/components/icon-library/SvgLib";
+import { Tab, TabItem } from "@src/components/tab/Tab";
 import { SettingsStoreContext } from "@src/context/SettingsStoreContext";
 import { LL } from "@src/i18n/i18n";
 import CIPlugin from "@src/main";
@@ -26,6 +28,14 @@ export class CustomIconLibView extends ItemView {
 		return "library";
 	}
 
+	tabItems: TabItem[] = [
+		{
+			id: "svg",
+			title: LL.view.CustomIconLib.svg.tabName(),
+			content: <SvgLib />,
+		},
+	];
+
 	async onOpen() {
 		this.root = createRoot(this.contentEl);
 		this.root.render(
@@ -33,7 +43,7 @@ export class CustomIconLibView extends ItemView {
 				<SettingsStoreContext.Provider
 					value={this.plugin.settingsStore}
 				>
-					<></>
+					<Tab items={this.tabItems} />
 				</SettingsStoreContext.Provider>
 			</StrictMode>
 		);

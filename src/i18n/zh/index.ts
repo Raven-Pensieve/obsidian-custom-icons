@@ -32,6 +32,17 @@ const zh = {
 		CustomIconLib: {
 			name: "自定义图标库",
 			command: "打开自定义图标库",
+			add: "添加",
+			delete: "删除",
+			cancel: "取消",
+			searchPlaceholder: "搜索图标...",
+			svg: {
+				tabName: "SVG",
+				addForm: {
+					idPlaceholder: "图标ID (例如: my-icon)",
+					contentPlaceholder: "SVG 内容 (<svg>...</svg>)",
+				},
+			},
 		},
 	},
 } satisfies BaseTranslation;
