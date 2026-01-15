@@ -1,8 +1,9 @@
 import { addIcon, removeIcon } from "obsidian";
 import { ICustomIconLib } from "../types/types";
 import { AbstractIconHandler } from "../util/IconHandler";
+import { cleanSvg } from "../util/svgUtils";
 
-export default class CustomIconHandler extends AbstractIconHandler<ICustomIconLib> {
+export default class CustomIconLibHandler extends AbstractIconHandler<ICustomIconLib> {
 	readonly id = "customIconLib";
 
 	apply(): void {
@@ -13,7 +14,8 @@ export default class CustomIconHandler extends AbstractIconHandler<ICustomIconLi
 				const id = icon.id.startsWith("CI-")
 					? icon.id
 					: `CI-${icon.id}`;
-				addIcon(id, icon.content);
+				const content = cleanSvg(icon.content);
+				addIcon(id, content);
 			}
 		});
 	}

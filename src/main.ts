@@ -1,7 +1,7 @@
 import { Plugin } from "obsidian";
 import { LL } from "./i18n/i18n";
 import CommunityPluginIconHandler from "./service/CommunityPluginIconHandler";
-import CustomIconHandler from "./service/CustomIconHandler";
+import CustomIconLibHandler from "./service/CustomIconLibHandler";
 import { PluginSettingTab } from "./settings/PluginSettingTab";
 import SettingsStore from "./settings/SettingsStore";
 import { IPluginSettings } from "./types/types";
@@ -74,7 +74,7 @@ export default class CIPlugin extends Plugin {
 	private registerIconHandlers() {
 		// 注册社区插件图标处理器
 		this.iconManager.registerHandler(new CommunityPluginIconHandler());
-		this.iconManager.registerHandler(new CustomIconHandler());
+		this.iconManager.registerHandler(new CustomIconLibHandler());
 
 		// 扩展示例：添加更多处理器
 		// this.iconManager.registerHandler(new SidebarViewIconHandler());

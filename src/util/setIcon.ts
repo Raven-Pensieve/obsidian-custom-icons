@@ -1,5 +1,5 @@
 import { IconType } from "@src/types/types";
-import { setIcon } from "obsidian";
+import { setIcon as obsidianSetIcon } from "obsidian";
 import * as React from "react";
 import { Root, createRoot } from "react-dom/client";
 import { renderToStaticMarkup } from "react-dom/server";
@@ -105,7 +105,51 @@ export default function (
 			console.warn(`Lucide icon "${icon}" not found`);
 		}
 	} else if (iconType === "svg") {
-		setIcon(el, icon);
+		if (options?.append) {
+			const tempContainer = document.createElement("div");
+			obsidianSetIcon(tempContainer, icon);
+			if (tempContainer.children.length === 0) {
+				obsidianSetIcon(tempContainer, `CI-${icon}`);
+			}
+
+			const svgElement = tempContainer.querySelector("svg");
+			if (svgElement) {
+				if (!svgElement.getAttribute("width")) {
+					svgElement.setAttribute("width", "16");
+				}
+				if (!svgElement.getAttribute("height")) {
+					svgElement.setAttribute("height", "16");
+				}
+				svgElement.classList.add("svg-icon");
+
+				el.appendChild(svgElement);
+				return svgElement as any;
+			}
+		} else {
+			const existingRoot = rootMap.get(el);
+			if (existingRoot) {
+				existingRoot.unmount();
+				rootMap.delete(el);
+			}
+
+			el.empty();
+			obsidianSetIcon(el, icon);
+			if (el.children.length === 0) {
+				obsidianSetIcon(el, `CI-${icon}`);
+			}
+			iconStateMap.set(el, { type: iconType, icon });
+
+			const svgElement = el.querySelector("svg");
+			if (svgElement) {
+				if (!svgElement.getAttribute("width")) {
+					svgElement.setAttribute("width", "16");
+				}
+				if (!svgElement.getAttribute("height")) {
+					svgElement.setAttribute("height", "16");
+				}
+				svgElement.classList.add("svg-icon");
+			}
+		}
 	}
 }
 
