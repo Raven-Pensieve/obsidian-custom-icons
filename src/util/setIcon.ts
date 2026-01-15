@@ -1,6 +1,7 @@
 import { IconType } from "@src/types/types";
+import { setIcon } from "obsidian";
 import * as React from "react";
-import { createRoot, Root } from "react-dom/client";
+import { Root, createRoot } from "react-dom/client";
 import { renderToStaticMarkup } from "react-dom/server";
 import { getLucideIcon } from "./getLucideIcons";
 
@@ -103,6 +104,8 @@ export default function (
 		} else {
 			console.warn(`Lucide icon "${icon}" not found`);
 		}
+	} else if (iconType === "svg") {
+		setIcon(el, icon);
 	}
 }
 
