@@ -21,6 +21,7 @@ export default class CIPlugin extends Plugin {
 		this.registerIconHandlers();
 
 		await this.settingsStore.loadSettings();
+		new CustomIconLibHandler().apply();
 
 		this.registerLeafViews();
 		this.registerCommands();
