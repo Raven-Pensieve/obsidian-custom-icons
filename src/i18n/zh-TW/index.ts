@@ -28,6 +28,12 @@ const zh_TW = {
 			},
 		},
 	},
+	view: {
+		CustomIconLib: {
+			name: "自訂圖示庫",
+			command: "打開自訂圖示庫",
+		},
+	},
 } satisfies BaseTranslation;
 
 export default zh_TW;

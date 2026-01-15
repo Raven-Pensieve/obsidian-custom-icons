@@ -28,6 +28,12 @@ const zh = {
 			},
 		},
 	},
+	view: {
+		CustomIconLib: {
+			name: "自定义图标库",
+			command: "打开自定义图标库",
+		},
+	},
 } satisfies BaseTranslation;
 
 export default zh;

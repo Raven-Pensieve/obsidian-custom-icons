@@ -28,6 +28,12 @@ const en = {
 			},
 		},
 	},
+	view: {
+		CustomIconLib: {
+			name: "Custom icon library",
+			command: "Open custom icon library",
+		},
+	},
 } satisfies BaseTranslation;
 
 export default en;

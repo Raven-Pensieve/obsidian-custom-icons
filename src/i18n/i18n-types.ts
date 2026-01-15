@@ -87,6 +87,18 @@ type RootTranslation = {
 			}
 		}
 	}
+	view: {
+		CustomIconLib: {
+			/**
+			 * 自​定​义​图​标​库
+			 */
+			name: string
+			/**
+			 * 打​开​自​定​义​图​标​库
+			 */
+			command: string
+		}
+	}
 }
 
 export type TranslationFunctions = {
@@ -160,6 +172,18 @@ export type TranslationFunctions = {
 				 */
 				dicesTooltip: () => LocalizedString
 			}
+		}
+	}
+	view: {
+		CustomIconLib: {
+			/**
+			 * 自定义图标库
+			 */
+			name: () => LocalizedString
+			/**
+			 * 打开自定义图标库
+			 */
+			command: () => LocalizedString
 		}
 	}
 }
