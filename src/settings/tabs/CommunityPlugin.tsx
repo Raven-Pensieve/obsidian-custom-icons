@@ -96,6 +96,11 @@ export const CommunityPlugin: FC = () => {
 					control={
 						<>
 							<ExtraButton
+								icon="dices"
+								tooltip={LL.settings.communityPlugin.default.dicesTooltip()}
+								onClick={async () => {}}
+							/>
+							<ExtraButton
 								icon="reset"
 								tooltip={LL.settings.communityPlugin.default.resetTooltip()}
 								onClick={async () => {
@@ -131,6 +136,13 @@ export const CommunityPlugin: FC = () => {
 							placeholder={LL.settings.communityPlugin.search.placeholder()}
 						/>
 					}
+					control={
+						<ExtraButton
+							icon="dices"
+							tooltip={LL.settings.communityPlugin.search.dicesTooltip()}
+							onClick={async () => {}}
+						/>
+					}
 				/>
 
 				{filteredPlugins.length === 0 && searchQuery.trim() && (
@@ -150,6 +162,11 @@ export const CommunityPlugin: FC = () => {
 							desc={plugin.id}
 							control={
 								<>
+									<ExtraButton
+										icon="dices"
+										tooltip={LL.settings.communityPlugin.pluginList.dicesTooltip()}
+										onClick={async () => {}}
+									/>
 									<ExtraButton
 										icon="reset"
 										tooltip={LL.settings.communityPlugin.pluginList.resetTooltip()}

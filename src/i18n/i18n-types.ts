@@ -44,6 +44,10 @@ type RootTranslation = {
 				 * 重​置
 				 */
 				resetTooltip: string
+				/**
+				 * 随​机
+				 */
+				dicesTooltip: string
 			}
 			search: {
 				/**
@@ -54,6 +58,14 @@ type RootTranslation = {
 				 * 未​找​到​匹​配​的​插​件
 				 */
 				noneFound: string
+				/**
+				 * 重​置​所​有​为​默​认​图​标
+				 */
+				resetTooltip: string
+				/**
+				 * 随​机​所​有​图​标
+				 */
+				dicesTooltip: string
 			}
 			pluginList: {
 				/**
@@ -68,6 +80,10 @@ type RootTranslation = {
 				 * 重​置​为​默​认​图​标
 				 */
 				resetTooltip: string
+				/**
+				 * 随​机​图​标
+				 */
+				dicesTooltip: string
 			}
 		}
 	}
@@ -103,6 +119,10 @@ export type TranslationFunctions = {
 				 * 重置
 				 */
 				resetTooltip: () => LocalizedString
+				/**
+				 * 随机
+				 */
+				dicesTooltip: () => LocalizedString
 			}
 			search: {
 				/**
@@ -113,6 +133,14 @@ export type TranslationFunctions = {
 				 * 未找到匹配的插件
 				 */
 				noneFound: () => LocalizedString
+				/**
+				 * 重置所有为默认图标
+				 */
+				resetTooltip: () => LocalizedString
+				/**
+				 * 随机所有图标
+				 */
+				dicesTooltip: () => LocalizedString
 			}
 			pluginList: {
 				/**
@@ -127,6 +155,10 @@ export type TranslationFunctions = {
 				 * 重置为默认图标
 				 */
 				resetTooltip: () => LocalizedString
+				/**
+				 * 随机图标
+				 */
+				dicesTooltip: () => LocalizedString
 			}
 		}
 	}
