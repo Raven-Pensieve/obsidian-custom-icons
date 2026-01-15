@@ -10,6 +10,7 @@ import usePluginSettings from "@src/hooks/usePluginSettings";
 import useSettingsStore from "@src/hooks/useSettingsStore";
 import { LL } from "@src/i18n/i18n";
 import { DEFAULT_SETTINGS } from "@src/types/types";
+import { getRandomIcon, getUniqueRandomIcons } from "@src/util/randomIcon";
 import { FC, useMemo, useState } from "react";
 
 export const CommunityPlugin: FC = () => {
@@ -96,6 +97,19 @@ export const CommunityPlugin: FC = () => {
 					control={
 						<>
 							<ExtraButton
+								icon="dices"
+								tooltip={LL.settings.communityPlugin.default.dicesTooltip()}
+								onClick={async () => {
+									const randomIcon = getRandomIcon();
+									if (randomIcon) {
+										await settingsStore.updateSettingByPath(
+											"communityPlugins.default.icon",
+											randomIcon
+										);
+									}
+								}}
+							/>
+							<ExtraButton
 								icon="reset"
 								tooltip={LL.settings.communityPlugin.default.resetTooltip()}
 								onClick={async () => {
@@ -131,6 +145,55 @@ export const CommunityPlugin: FC = () => {
 							placeholder={LL.settings.communityPlugin.search.placeholder()}
 						/>
 					}
+					control={
+						<>
+							<ExtraButton
+								icon="dices"
+								tooltip={LL.settings.communityPlugin.search.dicesTooltip()}
+								onClick={async () => {
+									const count = filteredPlugins.length;
+									// Generate unique random icons for the filtered plugins
+									const randomIcons =
+										getUniqueRandomIcons(count);
+
+									for (let i = 0; i < count; i++) {
+										const plugin = filteredPlugins[i];
+										const icon = randomIcons[i];
+										// We need to persist the id structure first if it doesn't exist?
+										// updateSettingByPath handles object creation if path segments exist,
+										// but 'data' is a Record.
+										// Safest is to update id first then icon.
+										await settingsStore.updateSettingByPath(
+											`communityPlugins.data.${plugin.id}.id`,
+											plugin.id
+										);
+										await settingsStore.updateSettingByPath(
+											`communityPlugins.data.${plugin.id}.icon`,
+											icon
+										);
+										await settingsStore.updateSettingByPath(
+											`communityPlugins.data.${plugin.id}.type`,
+											settings.communityPlugins.default
+												.type
+										);
+									}
+								}}
+							/>
+							<ExtraButton
+								icon="reset"
+								tooltip={LL.settings.communityPlugin.search.resetTooltip()}
+								onClick={async () => {
+									const count = filteredPlugins.length;
+									for (let i = 0; i < count; i++) {
+										const plugin = filteredPlugins[i];
+										await settingsStore.deleteSettingByPath(
+											`communityPlugins.data.${plugin.id}`
+										);
+									}
+								}}
+							/>
+						</>
+					}
 				/>
 
 				{filteredPlugins.length === 0 && searchQuery.trim() && (
@@ -150,6 +213,37 @@ export const CommunityPlugin: FC = () => {
 							desc={plugin.id}
 							control={
 								<>
+									<ExtraButton
+										icon="dices"
+										tooltip={LL.settings.communityPlugin.pluginList.dicesTooltip()}
+										onClick={async () => {
+											const currentIcon =
+												settings.communityPlugins.data[
+													plugin.id
+												]?.icon ||
+												settings.communityPlugins
+													.default.icon;
+
+											const randomIcon =
+												getRandomIcon(currentIcon);
+
+											if (randomIcon) {
+												await settingsStore.updateSettingByPath(
+													`communityPlugins.data.${plugin.id}.id`,
+													plugin.id
+												);
+												await settingsStore.updateSettingByPath(
+													`communityPlugins.data.${plugin.id}.icon`,
+													randomIcon
+												);
+												await settingsStore.updateSettingByPath(
+													`communityPlugins.data.${plugin.id}.type`,
+													settings.communityPlugins
+														.default.type
+												);
+											}
+										}}
+									/>
 									<ExtraButton
 										icon="reset"
 										tooltip={LL.settings.communityPlugin.pluginList.resetTooltip()}
