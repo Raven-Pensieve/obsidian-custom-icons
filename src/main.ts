@@ -1,3 +1,4 @@
+import "@styles/styles";
 import { Plugin } from "obsidian";
 import { LL } from "./i18n/i18n";
 import CommunityPluginIconHandler from "./service/CommunityPluginIconHandler";
@@ -48,7 +49,7 @@ export default class CIPlugin extends Plugin {
 	private registerLeafViews() {
 		this.registerView(
 			VIEW_TYPE_CUSTOM_ICON_LIB,
-			(leaf) => new CustomIconLibView(leaf, this)
+			(leaf) => new CustomIconLibView(leaf, this),
 		);
 	}
 
