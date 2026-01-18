@@ -3,7 +3,6 @@ import useSettingsStore from "@src/hooks/useSettingsStore";
 import { LL } from "@src/i18n/i18n";
 import React, { useMemo, useState } from "react";
 import { IconCard } from "../icon-card/IconCard";
-import "./SvgLib.css";
 
 export const SvgLib: React.FC = () => {
 	const store = useSettingsStore();
@@ -31,7 +30,7 @@ export const SvgLib: React.FC = () => {
 		const result = icons.filter(
 			(icon) =>
 				!searchQuery ||
-				icon.id.toLowerCase().includes(searchQuery.toLowerCase())
+				icon.id.toLowerCase().includes(searchQuery.toLowerCase()),
 		);
 
 		result.sort((a, b) => {
@@ -68,7 +67,7 @@ export const SvgLib: React.FC = () => {
 	const handleDeleteIcon = async (iconId: string) => {
 		const currentSvgIcons = settings.customIconLib.svg;
 		const newSvgIcons = currentSvgIcons.filter(
-			(icon) => icon.id !== iconId
+			(icon) => icon.id !== iconId,
 		);
 		await store.updateSettingByPath("customIconLib.svg", newSvgIcons);
 	};
