@@ -1,0 +1,72 @@
+.ci-lib-icon__card {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: space-between;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-m);
+	padding: var(--size-4-3);
+	background-color: var(--background-secondary);
+	transition: all 0.2s ease;
+	position: relative;
+	aspect-ratio: 1;
+
+	&:hover {
+		border-color: var(--interactive-accent);
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+		transform: translateY(-2px);
+	}
+}
+
+.ci-lib-icon__card-icon {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+
+	svg {
+		width: 32px;
+		height: 32px;
+		color: var(--text-normal);
+	}
+}
+
+.ci-lib-icon__card-name {
+	font-size: var(--font-ui-small);
+	color: var(--text-muted);
+	text-align: center;
+	width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	margin-top: var(--size-4-2);
+}
+
+.ci-lib-icon__card-delete {
+	position: absolute;
+	top: 4px;
+	right: 4px;
+	width: 20px;
+	height: 20px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: transparent;
+	border: none;
+	color: var(--text-faint);
+	opacity: 0;
+	transition: all 0.2s ease;
+	border-radius: var(--radius-s);
+	cursor: pointer;
+	box-shadow: none !important;
+
+	&:hover {
+		background-color: var(--background-modifier-error);
+		color: var(--text-on-accent);
+	}
+}
+
+.ci-lib-icon__card:hover .ci-lib-icon__card-delete {
+	opacity: 1;
+}

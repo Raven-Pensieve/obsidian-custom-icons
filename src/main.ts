@@ -1,9 +1,16 @@
 import { Plugin } from "obsidian";
+import { LL } from "./i18n/i18n";
 import CommunityPluginIconHandler from "./service/CommunityPluginIconHandler";
+import CustomIconLibHandler from "./service/CustomIconLibHandler";
 import { PluginSettingTab } from "./settings/PluginSettingTab";
 import SettingsStore from "./settings/SettingsStore";
 import { IPluginSettings } from "./types/types";
 import IconManager from "./util/IconManager";
+import openPluginView from "./util/openPluginView";
+import {
+	CustomIconLibView,
+	VIEW_TYPE_CUSTOM_ICON_LIB,
+} from "./views/CustomIconLibView";
 
 export default class CIPlugin extends Plugin {
 	settings: IPluginSettings;
@@ -14,6 +21,11 @@ export default class CIPlugin extends Plugin {
 		this.registerIconHandlers();
 
 		await this.settingsStore.loadSettings();
+		new CustomIconLibHandler().apply();
+
+		this.registerLeafViews();
+		this.registerCommands();
+		this.registerRibbonCommands();
 
 		this.app.workspace.onLayoutReady(() => {
 			this.iconManager.applyAll();
@@ -33,6 +45,29 @@ export default class CIPlugin extends Plugin {
 		this.iconManager.applyAll();
 	}
 
+	private registerLeafViews() {
+		this.registerView(
+			VIEW_TYPE_CUSTOM_ICON_LIB,
+			(leaf) => new CustomIconLibView(leaf, this)
+		);
+	}
+
+	private registerCommands() {
+		this.addCommand({
+			id: "open-icon-library",
+			name: LL.view.CustomIconLib.command(),
+			callback: () => {
+				openPluginView(this.app, VIEW_TYPE_CUSTOM_ICON_LIB);
+			},
+		});
+	}
+
+	private registerRibbonCommands() {
+		this.addRibbonIcon("library", LL.view.CustomIconLib.command(), () => {
+			openPluginView(this.app, VIEW_TYPE_CUSTOM_ICON_LIB);
+		});
+	}
+
 	/**
 	 * 注册所有图标处理器
 	 * 在这里添加新的处理器以扩展功能
@@ -40,6 +75,7 @@ export default class CIPlugin extends Plugin {
 	private registerIconHandlers() {
 		// 注册社区插件图标处理器
 		this.iconManager.registerHandler(new CommunityPluginIconHandler());
+		this.iconManager.registerHandler(new CustomIconLibHandler());
 
 		// 扩展示例：添加更多处理器
 		// this.iconManager.registerHandler(new SidebarViewIconHandler());

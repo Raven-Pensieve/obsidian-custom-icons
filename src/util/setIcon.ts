@@ -1,6 +1,7 @@
 import { IconType } from "@src/types/types";
+import { setIcon as obsidianSetIcon } from "obsidian";
 import * as React from "react";
-import { createRoot, Root } from "react-dom/client";
+import { Root, createRoot } from "react-dom/client";
 import { renderToStaticMarkup } from "react-dom/server";
 import { getLucideIcon } from "./getLucideIcons";
 
@@ -63,7 +64,7 @@ export default function (
 					const svgElement = tempContainer.firstChild as SVGElement;
 					if (svgElement) {
 						el.appendChild(svgElement);
-						return svgElement as any;
+						return svgElement as unknown as HTMLElement;
 					}
 				} else {
 					// 替换元素内容（原有逻辑，使用 React root）
@@ -102,6 +103,52 @@ export default function (
 			}
 		} else {
 			console.warn(`Lucide icon "${icon}" not found`);
+		}
+	} else if (iconType === "svg") {
+		if (options?.append) {
+			const tempContainer = document.createElement("div");
+			obsidianSetIcon(tempContainer, icon);
+			if (tempContainer.children.length === 0) {
+				obsidianSetIcon(tempContainer, `CI-${icon}`);
+			}
+
+			const svgElement = tempContainer.querySelector("svg");
+			if (svgElement) {
+				if (!svgElement.getAttribute("width")) {
+					svgElement.setAttribute("width", "16");
+				}
+				if (!svgElement.getAttribute("height")) {
+					svgElement.setAttribute("height", "16");
+				}
+				svgElement.classList.add("svg-icon");
+
+				el.appendChild(svgElement);
+				return svgElement as unknown as HTMLElement;
+			}
+		} else {
+			const existingRoot = rootMap.get(el);
+			if (existingRoot) {
+				existingRoot.unmount();
+				rootMap.delete(el);
+			}
+
+			el.empty();
+			obsidianSetIcon(el, icon);
+			if (el.children.length === 0) {
+				obsidianSetIcon(el, `CI-${icon}`);
+			}
+			iconStateMap.set(el, { type: iconType, icon });
+
+			const svgElement = el.querySelector("svg");
+			if (svgElement) {
+				if (!svgElement.getAttribute("width")) {
+					svgElement.setAttribute("width", "16");
+				}
+				if (!svgElement.getAttribute("height")) {
+					svgElement.setAttribute("height", "16");
+				}
+				svgElement.classList.add("svg-icon");
+			}
 		}
 	}
 }

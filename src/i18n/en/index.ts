@@ -28,6 +28,23 @@ const en = {
 			},
 		},
 	},
+	view: {
+		CustomIconLib: {
+			name: "Custom icon library",
+			command: "Open custom icon library",
+			add: "Add",
+			delete: "Delete",
+			cancel: "Cancel",
+			searchPlaceholder: "Search icon...",
+			svg: {
+				tabName: "SVG",
+				addForm: {
+					idPlaceholder: "Icon ID (e.g: my-icon)",
+					contentPlaceholder: "SVG content (<svg>...</svg>)",
+				},
+			},
+		},
+	},
 } satisfies BaseTranslation;
 
 export default en;

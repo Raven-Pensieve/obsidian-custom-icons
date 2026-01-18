@@ -28,6 +28,23 @@ const zh_TW = {
 			},
 		},
 	},
+	view: {
+		CustomIconLib: {
+			name: "自訂圖示庫",
+			command: "打開自訂圖示庫",
+			add: "添加",
+			delete: "刪除",
+			cancel: "取消",
+			searchPlaceholder: "搜索圖示...",
+			svg: {
+				tabName: "SVG",
+				addForm: {
+					idPlaceholder: "圖示ID (例如: my-icon)",
+					contentPlaceholder: "SVG 內容 (<svg>...</svg>)",
+				},
+			},
+		},
+	},
 } satisfies BaseTranslation;
 
 export default zh_TW;

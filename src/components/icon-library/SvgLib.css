@@ -1,0 +1,54 @@
+.ci-lib-container {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	padding: var(--size-4-3);
+	gap: var(--size-4-3);
+}
+
+.ci-lib__toolbar {
+	display: flex;
+	gap: var(--size-4-2);
+	align-items: center;
+	padding-bottom: var(--size-4-2);
+	border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.ci-lib__search {
+	flex: 1;
+
+	input {
+		width: 100%;
+	}
+}
+
+.ci-lib__grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+	gap: var(--size-4-3);
+	overflow-y: auto;
+	padding: 4px;
+}
+
+.ci-lib__add-form {
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-4-2);
+	padding: var(--size-4-3);
+	border: 1px solid var(--interactive-accent);
+	border-radius: var(--radius-m);
+	background-color: var(--background-secondary-alt);
+	margin-bottom: var(--size-4-3);
+}
+
+.ci-lib__add-form__textarea {
+	resize: vertical;
+	width: 100%;
+	font-family: monospace;
+}
+
+.ci-lib__add-form__buttons {
+	display: flex;
+	justify-content: flex-end;
+	gap: "8px";
+}

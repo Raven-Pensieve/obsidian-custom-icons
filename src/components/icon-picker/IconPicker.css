@@ -1,3 +1,55 @@
+/* Main Switcher Container */
+.CI__icon-picker-switcher {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 4px;
+	background-color: var(--background-modifier-form-field);
+	border-radius: 10px;
+	border: 1px solid var(--background-modifier-border);
+	width: fit-content;
+	min-width: 200px;
+	box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Individual Buttons */
+.CI__icon-picker-switcher button {
+	flex: 1;
+	background: transparent;
+	border: none;
+	box-shadow: none;
+	color: var(--text-muted);
+	font-size: 13px;
+	font-weight: 600;
+	padding: 8px 16px;
+	border-radius: 7px;
+	cursor: pointer;
+	transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+	height: auto;
+	text-transform: capitalize;
+	position: relative;
+	overflow: hidden;
+}
+
+/* Hover State */
+.CI__icon-picker-switcher button:hover {
+	color: var(--text-normal);
+	background-color: var(--background-modifier-hover);
+}
+
+/* Active State - Premium Look */
+.CI__icon-picker-switcher button.active {
+	background-color: var(--interactive-accent);
+	color: var(--text-on-accent);
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Active Hover - Maintain separation */
+.CI__icon-picker-switcher button.active:hover {
+	background-color: var(--interactive-accent-hover);
+}
+
+/* --- Original Icon Picker Trigger Styling --- */
 .CI__icon-picker {
 	display: inline-flex;
 	align-items: center;
@@ -5,30 +57,34 @@
 	width: 32px;
 	height: 32px;
 	cursor: pointer;
-	border-radius: 4px;
+	border-radius: 6px; /* Slightly more rounded */
 	background-color: var(--background-modifier-form-field);
 	border: 1px solid var(--background-modifier-border);
 	color: var(--text-muted);
 	transition: all 0.2s ease;
-
-	&:hover {
-		background-color: var(--background-modifier-form-field-highlighted);
-		color: var(--text-normal);
-		border-color: var(--interactive-accent);
-	}
-
-	&:active {
-		transform: scale(0.96);
-	}
 }
 
+.CI__icon-picker:hover {
+	background-color: var(--background-modifier-form-field-highlighted);
+	color: var(--text-normal);
+	border-color: var(--interactive-accent);
+	box-shadow: 0 0 0 1px var(--interactive-accent); /* Focus ring effect */
+}
+
+.CI__icon-picker:active {
+	transform: scale(0.96);
+}
+
+/* --- Suggestion Item Styling --- */
 .CI__icon-suggestion {
 	display: flex;
 	align-items: center;
 	gap: 12px;
+	padding: 8px 12px; /* Add padding for better touch target */
 	transition: background-color 0.2s ease;
+	border-radius: 4px;
+}
 
-	:hover {
-		background-color: var(--background-modifier-hover);
-	}
+.CI__icon-suggestion:hover {
+	background-color: var(--background-modifier-hover);
 }

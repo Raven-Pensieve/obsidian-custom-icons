@@ -87,6 +87,50 @@ type RootTranslation = {
 			}
 		}
 	}
+	view: {
+		CustomIconLib: {
+			/**
+			 * 自​定​义​图​标​库
+			 */
+			name: string
+			/**
+			 * 打​开​自​定​义​图​标​库
+			 */
+			command: string
+			/**
+			 * 添​加
+			 */
+			add: string
+			/**
+			 * 删​除
+			 */
+			'delete': string
+			/**
+			 * 取​消
+			 */
+			cancel: string
+			/**
+			 * 搜​索​图​标​.​.​.
+			 */
+			searchPlaceholder: string
+			svg: {
+				/**
+				 * S​V​G
+				 */
+				tabName: string
+				addForm: {
+					/**
+					 * 图​标​I​D​ ​(​例​如​:​ ​m​y​-​i​c​o​n​)
+					 */
+					idPlaceholder: string
+					/**
+					 * S​V​G​ ​内​容​ ​(​<​s​v​g​>​.​.​.​<​/​s​v​g​>​)
+					 */
+					contentPlaceholder: string
+				}
+			}
+		}
+	}
 }
 
 export type TranslationFunctions = {
@@ -159,6 +203,50 @@ export type TranslationFunctions = {
 				 * 随机图标
 				 */
 				dicesTooltip: () => LocalizedString
+			}
+		}
+	}
+	view: {
+		CustomIconLib: {
+			/**
+			 * 自定义图标库
+			 */
+			name: () => LocalizedString
+			/**
+			 * 打开自定义图标库
+			 */
+			command: () => LocalizedString
+			/**
+			 * 添加
+			 */
+			add: () => LocalizedString
+			/**
+			 * 删除
+			 */
+			'delete': () => LocalizedString
+			/**
+			 * 取消
+			 */
+			cancel: () => LocalizedString
+			/**
+			 * 搜索图标...
+			 */
+			searchPlaceholder: () => LocalizedString
+			svg: {
+				/**
+				 * SVG
+				 */
+				tabName: () => LocalizedString
+				addForm: {
+					/**
+					 * 图标ID (例如: my-icon)
+					 */
+					idPlaceholder: () => LocalizedString
+					/**
+					 * SVG 内容 (<svg>...</svg>)
+					 */
+					contentPlaceholder: () => LocalizedString
+				}
 			}
 		}
 	}

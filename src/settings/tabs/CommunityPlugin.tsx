@@ -123,10 +123,15 @@ export const CommunityPlugin: FC = () => {
 							<IconPicker
 								app={settingsStore.app}
 								value={settings.communityPlugins.default.icon}
-								onChange={async (value) => {
+								type={settings.communityPlugins.default.type}
+								onChange={async (value, type) => {
 									await settingsStore.updateSettingByPath(
 										"communityPlugins.default.icon",
 										value
+									);
+									await settingsStore.updateSettingByPath(
+										"communityPlugins.default.type",
+										type
 									);
 								}}
 							/>
@@ -260,7 +265,12 @@ export const CommunityPlugin: FC = () => {
 											settings.communityPlugins.default
 												.icon
 										}
-										onChange={async (value) => {
+										type={
+											pluginIcon?.type ||
+											settings.communityPlugins.default
+												.type
+										}
+										onChange={async (value, type) => {
 											await settingsStore.updateSettingByPath(
 												`communityPlugins.data.${plugin.id}.id`,
 												plugin.id
@@ -271,8 +281,7 @@ export const CommunityPlugin: FC = () => {
 											);
 											await settingsStore.updateSettingByPath(
 												`communityPlugins.data.${plugin.id}.type`,
-												settings.communityPlugins
-													.default.type
+												type
 											);
 										}}
 									/>

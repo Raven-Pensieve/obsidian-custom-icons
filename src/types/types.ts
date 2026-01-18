@@ -15,16 +15,30 @@ export interface IPluginSettings {
 	// 	folderIcons: Record<string, IFolderIcon>;
 	// 	fileIcons: Record<string, IFileIcon>;
 	// };
+	customIconLib: ICustomIconLib;
 }
 
+// Reference
 export interface ICommunityPluginIcon extends IIcon {}
 
-export type IconType = "lucide";
-
+// Definition
 interface IIcon {
 	id: string;
 	icon: string;
 	type: IconType;
+}
+
+export type IconType = "lucide" | "svg";
+
+// Library
+export interface ICustomIconLib {
+	svg: ICustomSVGIcon[];
+}
+
+// Definition
+export interface ICustomSVGIcon {
+	id: string;
+	content: string;
 }
 
 export const DEFAULT_SETTINGS: IPluginSettings = {
@@ -32,5 +46,8 @@ export const DEFAULT_SETTINGS: IPluginSettings = {
 		enable: false,
 		default: { id: "", icon: "puzzle", type: "lucide" },
 		data: {},
+	},
+	customIconLib: {
+		svg: [],
 	},
 };

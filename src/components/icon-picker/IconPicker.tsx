@@ -1,3 +1,6 @@
+import usePluginSettings from "@src/hooks/usePluginSettings";
+import useSettingsStore from "@src/hooks/useSettingsStore";
+import { IconType } from "@src/types/types";
 import { getLucideIconNames } from "@src/util/getLucideIcons";
 import setIcon from "@src/util/setIcon";
 import { App, FuzzyMatch, FuzzySuggestModal } from "obsidian";
@@ -7,35 +10,58 @@ import "./IconPicker.css";
 interface IconPickerProps {
 	app: App;
 	value: string;
-	onChange: (value: string) => void;
+	type: IconType;
+	onChange: (value: string, type: IconType) => void;
 }
 
 export const IconPicker: React.FC<IconPickerProps> = ({
 	app,
 	value,
+	type,
 	onChange,
 }) => {
+	const settingsStore = useSettingsStore();
+	const settings = usePluginSettings(settingsStore);
+
+	const iconItems = React.useMemo(() => {
+		return {
+			lucide: getLucideIconNames(),
+			svg: settings.customIconLib.svg.map((icon) => icon.id),
+		};
+	}, [settings.customIconLib.svg]);
+
 	const [selectedIcon, setSelectedIcon] = React.useState<string>(value);
+	const [selectedType, setSelectedType] = React.useState<IconType>(type);
 	const buttonRef = React.useRef<HTMLDivElement>(null);
 
 	const handleClick = () => {
-		const modal = new IconSelector(app, (icon) => {
-			setSelectedIcon(icon);
-			onChange(icon);
-		});
+		const modal = new IconSelector(
+			app,
+			iconItems,
+			selectedType,
+			(icon, type) => {
+				setSelectedIcon(icon);
+				setSelectedType(type);
+				onChange(icon, type);
+			}
+		);
 		modal.open();
 	};
 
 	React.useEffect(() => {
 		if (buttonRef.current) {
-			setIcon(buttonRef.current, "lucide", selectedIcon);
+			setIcon(buttonRef.current, selectedType, selectedIcon);
 		}
-	}, [selectedIcon]);
+	}, [selectedIcon, selectedType]);
 
-	// 监听外部 value 变化，同步更新 selectedIcon 状态
+	// 监听外部 value 和 type 变化，同步更新内部状态
 	React.useEffect(() => {
 		setSelectedIcon(value);
 	}, [value]);
+
+	React.useEffect(() => {
+		setSelectedType(type);
+	}, [type]);
 
 	return (
 		<div
@@ -47,10 +73,19 @@ export const IconPicker: React.FC<IconPickerProps> = ({
 };
 
 class IconSelector extends FuzzySuggestModal<string> {
-	private callback: (icon: string) => void;
+	private callback: (icon: string, type: IconType) => void;
+	private iconItems: Record<IconType, string[]>;
+	private currentType: IconType;
 
-	constructor(app: App, callback: (icon: string) => void) {
+	constructor(
+		app: App,
+		iconItems: Record<IconType, string[]>,
+		initialType: IconType,
+		callback: (icon: string, type: IconType) => void
+	) {
 		super(app);
+		this.iconItems = iconItems;
+		this.currentType = initialType;
 		this.callback = callback;
 		this.setInstructions([
 			{ command: "↑↓", purpose: "Navigate" },
@@ -59,9 +94,59 @@ class IconSelector extends FuzzySuggestModal<string> {
 		]);
 	}
 
+	onOpen(): void {
+		super.onOpen();
+		this.addTypeSwitcher();
+	}
+
+	private addTypeSwitcher() {
+		const container = this.modalEl.createDiv({
+			cls: "CI__icon-picker-switcher",
+		});
+
+		// Insert before the input container (this.inputEl.parentElement)
+		// this.inputEl.parentElement is usually .prompt-input-container
+		if (
+			this.inputEl &&
+			this.inputEl.parentElement &&
+			this.inputEl.parentElement.parentElement
+		) {
+			this.inputEl.parentElement.parentElement.insertBefore(
+				container,
+				this.inputEl.parentElement
+			);
+		} else {
+			// Fallback if structure is different
+			this.modalEl.prepend(container);
+		}
+
+		const types = Object.keys(this.iconItems) as IconType[];
+
+		types.forEach((type) => {
+			const btn = container.createEl("button", {
+				text: type,
+				cls: type === this.currentType ? "active" : "",
+			});
+			btn.addEventListener("click", () => {
+				if (this.currentType !== type) {
+					this.currentType = type;
+					// Update button styles
+					container
+						.querySelectorAll("button")
+						.forEach((b) => b.removeClass("active"));
+					btn.addClass("active");
+
+					// Trigger input event to refresh list
+					this.inputEl.dispatchEvent(new Event("input"));
+
+					this.inputEl.focus();
+				}
+			});
+		});
+	}
+
 	getItems(): string[] {
-		const icons = getLucideIconNames();
-		return icons;
+		return this.iconItems[this.currentType] || [];
 	}
 
 	getItemText(icon: string): string {
@@ -71,14 +156,14 @@ class IconSelector extends FuzzySuggestModal<string> {
 	renderSuggestion(item: FuzzyMatch<string>, el: HTMLElement) {
 		el.addClass("CI__icon-suggestion");
 
-		// 将图标作为子元素追加，而不是替换整个元素内容
-		setIcon(el, "lucide", item.item, { append: true });
+		// 将图标作为子元素追加
+		setIcon(el, this.currentType, item.item, { append: true });
 
-		// 创建文本容器（与图标 SVG 同级）
+		// 创建文本容器
 		el.createSpan({ text: item.item });
 	}
 
 	onChooseItem(item: string, evt: MouseEvent | KeyboardEvent): void {
-		this.callback(item);
+		this.callback(item, this.currentType);
 	}
 }
