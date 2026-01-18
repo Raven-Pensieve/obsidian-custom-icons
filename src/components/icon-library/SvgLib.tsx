@@ -1,7 +1,9 @@
 import usePluginSettings from "@src/hooks/usePluginSettings";
 import useSettingsStore from "@src/hooks/useSettingsStore";
 import { LL } from "@src/i18n/i18n";
-import React, { useMemo, useState } from "react";
+import { CirclePlus } from "lucide-react";
+import { setIcon } from "obsidian";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { IconCard } from "../icon-card/IconCard";
 import { AddSvgModal } from "./AddSvgModal";
 
@@ -13,6 +15,7 @@ export const SvgLib: React.FC = () => {
 	// Local State
 	const [searchQuery, setSearchQuery] = useState("");
 	const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+	const sortButtonRef = useRef<HTMLButtonElement>(null);
 
 	// Filter and Sort Icons
 	const filteredIcons = useMemo(() => {
@@ -39,25 +42,43 @@ export const SvgLib: React.FC = () => {
 		return result;
 	}, [settings.customIconLib.svg, searchQuery, sortOrder]);
 
+	// Update sort button icon when sortOrder changes
+	useEffect(() => {
+		if (sortButtonRef.current) {
+			sortButtonRef.current.empty();
+			const iconName =
+				sortOrder === "asc" ? "arrow-up-az" : "arrow-up-za";
+			setIcon(sortButtonRef.current, iconName);
+		}
+	}, [sortOrder]);
+
 	// Handlers
+	const handleToggleSort = () => {
+		setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
+	};
+
+	const handleSubmit = async (
+		icons: Array<{ id: string; content: string }>,
+	) => {
+		const currentSvgIcons = settings.customIconLib.svg;
+		const newIcons = icons.filter(
+			(icon) =>
+				!currentSvgIcons.some((existing) => existing.id === icon.id),
+		);
+
+		if (newIcons.length === 0) {
+			return;
+		}
+
+		const newSvgIcons = [...currentSvgIcons, ...newIcons];
+		await store.updateSettingByPath("customIconLib.svg", newSvgIcons);
+	};
+
 	const handleOpenAddModal = () => {
-		const modal = new AddSvgModal(app, async (icons) => {
-			const currentSvgIcons = settings.customIconLib.svg;
-			const newIcons = icons.filter(
-				(icon) =>
-					!currentSvgIcons.some(
-						(existing) => existing.id === icon.id,
-					),
-			);
-
-			if (newIcons.length === 0) {
-				return;
-			}
-
-			const newSvgIcons = [...currentSvgIcons, ...newIcons];
-			await store.updateSettingByPath("customIconLib.svg", newSvgIcons);
-		});
-		modal.open();
+		new AddSvgModal(store.plugin, {
+			title: LL.view.CustomIconLib.svg.addModal.title(),
+			onSubmit: handleSubmit,
+		}).open();
 	};
 
 	const handleDeleteIcon = async (iconId: string) => {
@@ -81,19 +102,14 @@ export const SvgLib: React.FC = () => {
 					/>
 				</div>
 
-				<select
-					value={sortOrder}
-					onChange={(e) =>
-						setSortOrder(e.target.value as "asc" | "desc")
-					}
-					className="dropdown"
-				>
-					<option value="asc">A-Z</option>
-					<option value="desc">Z-A</option>
-				</select>
+				<button
+					ref={sortButtonRef}
+					onClick={handleToggleSort}
+					aria-label={sortOrder === "asc" ? "A-Z" : "Z-A"}
+				/>
 
 				<button onClick={handleOpenAddModal}>
-					{LL.view.CustomIconLib.add()}
+					<CirclePlus className="svg-icon" />
 				</button>
 			</div>
 

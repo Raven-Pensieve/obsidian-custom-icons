@@ -118,16 +118,6 @@ type RootTranslation = {
 				 * S​V​G
 				 */
 				tabName: string
-				addForm: {
-					/**
-					 * 图​标​I​D​ ​(​例​如​:​ ​m​y​-​i​c​o​n​)
-					 */
-					idPlaceholder: string
-					/**
-					 * S​V​G​ ​内​容​ ​(​<​s​v​g​>​.​.​.​<​/​s​v​g​>​)
-					 */
-					contentPlaceholder: string
-				}
 				addModal: {
 					/**
 					 * 添​加​ ​S​V​G​ ​图​标
@@ -141,6 +131,14 @@ type RootTranslation = {
 					 * 上​传​文​件
 					 */
 					uploadMode: string
+					/**
+					 * 图​标​I​D​ ​(​例​如​:​ ​m​y​-​i​c​o​n​)
+					 */
+					idPlaceholder: string
+					/**
+					 * S​V​G​ ​内​容​ ​(​<​s​v​g​>​.​.​.​<​/​s​v​g​>​)
+					 */
+					contentPlaceholder: string
 					/**
 					 * 选​择​ ​S​V​G​ ​文​件
 					 */
@@ -264,16 +262,6 @@ export type TranslationFunctions = {
 				 * SVG
 				 */
 				tabName: () => LocalizedString
-				addForm: {
-					/**
-					 * 图标ID (例如: my-icon)
-					 */
-					idPlaceholder: () => LocalizedString
-					/**
-					 * SVG 内容 (<svg>...</svg>)
-					 */
-					contentPlaceholder: () => LocalizedString
-				}
 				addModal: {
 					/**
 					 * 添加 SVG 图标
@@ -287,6 +275,14 @@ export type TranslationFunctions = {
 					 * 上传文件
 					 */
 					uploadMode: () => LocalizedString
+					/**
+					 * 图标ID (例如: my-icon)
+					 */
+					idPlaceholder: () => LocalizedString
+					/**
+					 * SVG 内容 (<svg>...</svg>)
+					 */
+					contentPlaceholder: () => LocalizedString
 					/**
 					 * 选择 SVG 文件
 					 */

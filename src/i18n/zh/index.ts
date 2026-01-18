@@ -38,16 +38,15 @@ const zh = {
 			searchPlaceholder: "搜索图标...",
 			svg: {
 				tabName: "SVG",
-				addForm: {
-					idPlaceholder: "图标ID (例如: my-icon)",
-					contentPlaceholder: "SVG 内容 (<svg>...</svg>)",
-				},
 				addModal: {
 					title: "添加 SVG 图标",
 					pasteMode: "粘贴源码",
 					uploadMode: "上传文件",
+					idPlaceholder: "图标ID (例如: my-icon)",
+					contentPlaceholder: "SVG 内容 (<svg>...</svg>)",
 					selectFiles: "选择 SVG 文件",
-					selectFilesDesc: "可以选择多个 SVG 文件进行批量添加，将使用文件名作为图标 ID。",
+					selectFilesDesc:
+						"可以选择多个 SVG 文件进行批量添加，将使用文件名作为图标 ID。",
 					selectedFiles: "已选择 {count:number} 个文件",
 				},
 			},

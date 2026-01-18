@@ -38,14 +38,12 @@ const en = {
 			searchPlaceholder: "Search icon...",
 			svg: {
 				tabName: "SVG",
-				addForm: {
-					idPlaceholder: "Icon ID (e.g: my-icon)",
-					contentPlaceholder: "SVG content (<svg>...</svg>)",
-				},
 				addModal: {
 					title: "Add svg Icon",
 					pasteMode: "Paste Code",
 					uploadMode: "Upload Files",
+					idPlaceholder: "Icon ID (e.g: my-icon)",
+					contentPlaceholder: "SVG content (<svg>...</svg>)",
 					selectFiles: "Select svg files",
 					selectFilesDesc:
 						"You can select multiple svg files to batch add icons. File names will be used as icon IDs.",

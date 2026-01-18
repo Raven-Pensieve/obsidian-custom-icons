@@ -1,67 +1,24 @@
 import { LL } from "@src/i18n/i18n";
-import { App, Modal } from "obsidian";
-import React, { useState } from "react";
-import { createRoot, Root } from "react-dom/client";
-import "./AddSvgModal.css";
+import CIPlugin from "@src/main";
+import { useState } from "react";
+import { BaseModal } from "../modal/BaseModal";
+import { Tab, TabItem } from "../tab/Tab";
 
 interface AddSvgModalProps {
-	app: App;
+	title: string;
 	onSubmit: (icons: Array<{ id: string; content: string }>) => Promise<void>;
 }
 
-export class AddSvgModal extends Modal {
-	private root: Root | null = null;
-	private onSubmit: (
-		icons: Array<{ id: string; content: string }>,
-	) => Promise<void>;
-
-	constructor(
-		app: App,
-		onSubmit: (
-			icons: Array<{ id: string; content: string }>,
-		) => Promise<void>,
-	) {
-		super(app);
-		this.onSubmit = onSubmit;
-	}
-
-	onOpen() {
-		const { contentEl } = this;
-		contentEl.empty();
-		contentEl.addClass("ci-add-svg-modal");
-
-		this.root = createRoot(contentEl);
-		this.root.render(
-			<AddSvgModalContent
-				onSubmit={async (icons) => {
-					await this.onSubmit(icons);
-					this.close();
-				}}
-				onCancel={() => this.close()}
-			/>,
-		);
-	}
-
-	onClose() {
-		if (this.root) {
-			this.root.unmount();
-			this.root = null;
-		}
-		const { contentEl } = this;
-		contentEl.empty();
-	}
+interface AddSvgModalViewProps extends AddSvgModalProps {
+	plugin: CIPlugin;
+	onClose: () => void;
 }
 
-interface AddSvgModalContentProps {
-	onSubmit: (icons: Array<{ id: string; content: string }>) => Promise<void>;
-	onCancel: () => void;
-}
-
-const AddSvgModalContent: React.FC<AddSvgModalContentProps> = ({
+const AddSvgModalView: React.FC<AddSvgModalViewProps> = ({
 	onSubmit,
-	onCancel,
+	onClose,
 }) => {
-	const [mode, setMode] = useState<"paste" | "upload">("paste");
+	const [activeTab, setActiveTab] = useState<"paste" | "upload">("paste");
 	const [iconId, setIconId] = useState("");
 	const [iconContent, setIconContent] = useState("");
 	const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -74,7 +31,7 @@ const AddSvgModalContent: React.FC<AddSvgModalContentProps> = ({
 	};
 
 	const handleSubmit = async () => {
-		if (mode === "paste") {
+		if (activeTab === "paste") {
 			// 粘贴模式：验证单个图标
 			if (!iconId.trim() || !iconContent.trim()) {
 				return;
@@ -101,115 +58,76 @@ const AddSvgModalContent: React.FC<AddSvgModalContentProps> = ({
 		}
 	};
 
+	const pasteTab = (
+		<div className="ci-lib__add-form">
+			<input
+				className="ci-lib__add-form__input"
+				type="text"
+				placeholder={LL.view.CustomIconLib.svg.addModal.idPlaceholder()}
+				value={iconId}
+				onChange={(e) => setIconId(e.target.value)}
+			/>
+			<textarea
+				className="ci-lib__add-form__textarea"
+				placeholder={LL.view.CustomIconLib.svg.addModal.contentPlaceholder()}
+				rows={10}
+				value={iconContent}
+				onChange={(e) => setIconContent(e.target.value)}
+			/>
+		</div>
+	);
+
+	const uploadTab = (
+		<div className="ci-lib__add-form">
+			<input
+				className="ci-lib__add-form__input ci-lib-svg-upload-input"
+				type="file"
+				accept=".svg"
+				multiple
+				onChange={handleFileChange}
+			/>
+		</div>
+	);
+
+	const tabItems: TabItem[] = [
+		{
+			id: "paste",
+			title: LL.view.CustomIconLib.svg.addModal.pasteMode(),
+			content: pasteTab,
+		},
+		{
+			id: "upload",
+			title: LL.view.CustomIconLib.svg.addModal.uploadMode(),
+			content: uploadTab,
+		},
+	];
+
 	return (
-		<div className="ci-add-svg-modal__content">
-			<h2>{LL.view.CustomIconLib.svg.addModal.title()}</h2>
-
-			{/* 模式切换 */}
-			<div className="ci-add-svg-modal__tabs">
-				<button
-					className={`ci-add-svg-modal__tab ${mode === "paste" ? "is-active" : ""}`}
-					onClick={() => setMode("paste")}
-				>
-					{LL.view.CustomIconLib.svg.addModal.pasteMode()}
-				</button>
-				<button
-					className={`ci-add-svg-modal__tab ${mode === "upload" ? "is-active" : ""}`}
-					onClick={() => setMode("upload")}
-				>
-					{LL.view.CustomIconLib.svg.addModal.uploadMode()}
-				</button>
-			</div>
-
-			{/* 粘贴模式 */}
-			{mode === "paste" && (
-				<div className="ci-add-svg-modal__paste-form">
-					<div className="setting-item">
-						<div className="setting-item-info">
-							<div className="setting-item-name">
-								{LL.view.CustomIconLib.svg.addForm.idPlaceholder()}
-							</div>
-						</div>
-						<div className="setting-item-control">
-							<input
-								type="text"
-								placeholder={LL.view.CustomIconLib.svg.addForm.idPlaceholder()}
-								value={iconId}
-								onChange={(e) => setIconId(e.target.value)}
-							/>
-						</div>
-					</div>
-
-					<div className="setting-item">
-						<div className="setting-item-info">
-							<div className="setting-item-name">
-								{LL.view.CustomIconLib.svg.addForm.contentPlaceholder()}
-							</div>
-						</div>
-						<div className="setting-item-control">
-							<textarea
-								placeholder={LL.view.CustomIconLib.svg.addForm.contentPlaceholder()}
-								rows={10}
-								value={iconContent}
-								onChange={(e) => setIconContent(e.target.value)}
-							/>
-						</div>
-					</div>
-				</div>
-			)}
-
-			{/* 上传模式 */}
-			{mode === "upload" && (
-				<div className="ci-add-svg-modal__upload-form">
-					<div className="setting-item">
-						<div className="setting-item-info">
-							<div className="setting-item-name">
-								{LL.view.CustomIconLib.svg.addModal.selectFiles()}
-							</div>
-							<div className="setting-item-description">
-								{LL.view.CustomIconLib.svg.addModal.selectFilesDesc()}
-							</div>
-						</div>
-						<div className="setting-item-control">
-							<input
-								type="file"
-								accept=".svg"
-								multiple
-								onChange={handleFileChange}
-							/>
-						</div>
-					</div>
-
-					{selectedFiles.length > 0 && (
-						<div className="ci-add-svg-modal__file-list">
-							<div className="setting-item-name">
-								{LL.view.CustomIconLib.svg.addModal.selectedFiles(
-									{
-										count: selectedFiles.length,
-									},
-								)}
-							</div>
-							<ul>
-								{selectedFiles.map((file, index) => (
-									<li key={index}>
-										{file.name.replace(/\.svg$/i, "")}
-									</li>
-								))}
-							</ul>
-						</div>
-					)}
-				</div>
-			)}
-
-			{/* 按钮 */}
-			<div className="modal-button-container">
+		<>
+			<Tab
+				items={tabItems}
+				defaultValue="paste"
+				onChange={(value) => setActiveTab(value as "paste" | "upload")}
+			/>
+			<div className="ci-modal-button-container">
 				<button className="mod-cta" onClick={handleSubmit}>
 					{LL.view.CustomIconLib.add()}
 				</button>
-				<button onClick={onCancel}>
+				<button onClick={onClose}>
 					{LL.view.CustomIconLib.cancel()}
 				</button>
 			</div>
-		</div>
+		</>
 	);
 };
+
+export class AddSvgModal extends BaseModal<AddSvgModalViewProps> {
+	constructor(plugin: CIPlugin, props: AddSvgModalProps) {
+		const viewProps = {
+			...props,
+			plugin,
+		};
+
+		super(plugin, AddSvgModalView, viewProps, "");
+	}
+}
