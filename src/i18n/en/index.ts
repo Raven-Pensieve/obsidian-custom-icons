@@ -42,6 +42,15 @@ const en = {
 					idPlaceholder: "Icon ID (e.g: my-icon)",
 					contentPlaceholder: "SVG content (<svg>...</svg>)",
 				},
+				addModal: {
+					title: "Add svg Icon",
+					pasteMode: "Paste Code",
+					uploadMode: "Upload Files",
+					selectFiles: "Select svg files",
+					selectFilesDesc:
+						"You can select multiple svg files to batch add icons. File names will be used as icon IDs.",
+					selectedFiles: "{count:number} file(s) selected",
+				},
 			},
 		},
 	},

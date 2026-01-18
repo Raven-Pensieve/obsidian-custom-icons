@@ -1,0 +1,80 @@
+.ci-add-svg-modal {
+	min-width: 500px;
+	max-width: 700px;
+}
+
+.ci-add-svg-modal__content {
+	padding: 20px;
+}
+
+.ci-add-svg-modal__content h2 {
+	margin-top: 0;
+	margin-bottom: 20px;
+}
+
+.ci-add-svg-modal__tabs {
+	display: flex;
+	gap: 10px;
+	margin-bottom: 20px;
+	border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.ci-add-svg-modal__tab {
+	padding: 8px 16px;
+	background: transparent;
+	border: none;
+	border-bottom: 2px solid transparent;
+	cursor: pointer;
+	font-size: 14px;
+	color: var(--text-muted);
+	transition: all 0.2s;
+}
+
+.ci-add-svg-modal__tab:hover {
+	color: var(--text-normal);
+}
+
+.ci-add-svg-modal__tab.is-active {
+	color: var(--text-accent);
+	border-bottom-color: var(--text-accent);
+}
+
+.ci-add-svg-modal__paste-form,
+.ci-add-svg-modal__upload-form {
+	margin-bottom: 20px;
+}
+
+.ci-add-svg-modal__paste-form input,
+.ci-add-svg-modal__paste-form textarea {
+	width: 100%;
+}
+
+.ci-add-svg-modal__upload-form input[type="file"] {
+	width: 100%;
+}
+
+.ci-add-svg-modal__file-list {
+	margin-top: 15px;
+	padding: 10px;
+	background: var(--background-secondary);
+	border-radius: 5px;
+}
+
+.ci-add-svg-modal__file-list ul {
+	margin: 10px 0 0 0;
+	padding-left: 20px;
+	max-height: 200px;
+	overflow-y: auto;
+}
+
+.ci-add-svg-modal__file-list li {
+	padding: 4px 0;
+	color: var(--text-normal);
+}
+
+.modal-button-container {
+	display: flex;
+	justify-content: flex-end;
+	gap: 10px;
+	margin-top: 20px;
+}

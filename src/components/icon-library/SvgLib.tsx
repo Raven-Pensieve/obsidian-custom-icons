@@ -3,19 +3,16 @@ import useSettingsStore from "@src/hooks/useSettingsStore";
 import { LL } from "@src/i18n/i18n";
 import React, { useMemo, useState } from "react";
 import { IconCard } from "../icon-card/IconCard";
+import { AddSvgModal } from "./AddSvgModal";
 
 export const SvgLib: React.FC = () => {
 	const store = useSettingsStore();
 	const settings = usePluginSettings(store);
+	const { app } = store;
 
 	// Local State
 	const [searchQuery, setSearchQuery] = useState("");
 	const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-	const [isAddMode, setIsAddMode] = useState(false);
-
-	// Add Form State
-	const [newIconId, setNewIconId] = useState("");
-	const [newIconContent, setNewIconContent] = useState("");
 
 	// Filter and Sort Icons
 	const filteredIcons = useMemo(() => {
@@ -43,25 +40,24 @@ export const SvgLib: React.FC = () => {
 	}, [settings.customIconLib.svg, searchQuery, sortOrder]);
 
 	// Handlers
-	const handleAddIcon = async () => {
-		if (!newIconId.trim() || !newIconContent.trim()) {
-			return;
-		}
+	const handleOpenAddModal = () => {
+		const modal = new AddSvgModal(app, async (icons) => {
+			const currentSvgIcons = settings.customIconLib.svg;
+			const newIcons = icons.filter(
+				(icon) =>
+					!currentSvgIcons.some(
+						(existing) => existing.id === icon.id,
+					),
+			);
 
-		const currentSvgIcons = settings.customIconLib.svg;
-		if (currentSvgIcons.some((icon) => icon.id === newIconId)) {
-			return;
-		}
+			if (newIcons.length === 0) {
+				return;
+			}
 
-		const newSvgIcons = [
-			...currentSvgIcons,
-			{ id: newIconId, content: newIconContent },
-		];
-		await store.updateSettingByPath("customIconLib.svg", newSvgIcons);
-
-		setNewIconId("");
-		setNewIconContent("");
-		setIsAddMode(false);
+			const newSvgIcons = [...currentSvgIcons, ...newIcons];
+			await store.updateSettingByPath("customIconLib.svg", newSvgIcons);
+		});
+		modal.open();
 	};
 
 	const handleDeleteIcon = async (iconId: string) => {
@@ -96,37 +92,10 @@ export const SvgLib: React.FC = () => {
 					<option value="desc">Z-A</option>
 				</select>
 
-				<button onClick={() => setIsAddMode(!isAddMode)}>
-					{isAddMode
-						? LL.view.CustomIconLib.cancel()
-						: LL.view.CustomIconLib.add()}
+				<button onClick={handleOpenAddModal}>
+					{LL.view.CustomIconLib.add()}
 				</button>
 			</div>
-
-			{/* Add Form */}
-			{isAddMode && (
-				<div className="ci-lib__add-form">
-					<input
-						className="ci-lib__add-form__input"
-						type="text"
-						placeholder={LL.view.CustomIconLib.svg.addForm.idPlaceholder()}
-						value={newIconId}
-						onChange={(e) => setNewIconId(e.target.value)}
-					/>
-					<textarea
-						className="ci-lib__add-form__textarea"
-						placeholder={LL.view.CustomIconLib.svg.addForm.contentPlaceholder()}
-						rows={5}
-						value={newIconContent}
-						onChange={(e) => setNewIconContent(e.target.value)}
-					/>
-					<div className="ci-lib__add-form__buttons">
-						<button className="mod-cta" onClick={handleAddIcon}>
-							{LL.view.CustomIconLib.add()}
-						</button>
-					</div>
-				</div>
-			)}
 
 			{/* Icon Grid */}
 			<div className="ci-lib__grid">
