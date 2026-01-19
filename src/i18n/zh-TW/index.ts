@@ -28,19 +28,30 @@ const zh_TW = {
 			},
 		},
 	},
+	common: {
+		save: "儲存",
+		add: "添加",
+		edit: "編輯",
+		delete: "刪除",
+		cancel: "取消",
+	},
 	view: {
 		CustomIconLib: {
 			name: "自訂圖示庫",
 			command: "打開自訂圖示庫",
-			add: "添加",
-			delete: "刪除",
-			cancel: "取消",
 			searchPlaceholder: "搜索圖示...",
 			svg: {
 				tabName: "SVG",
-				addForm: {
+				copyAction: "複製 SVG 代碼",
+				modal: {
+					pasteMode: "粘貼源碼",
+					uploadMode: "上傳檔案",
 					idPlaceholder: "圖示ID (例如: my-icon)",
 					contentPlaceholder: "SVG 內容 (<svg>...</svg>)",
+					selectFiles: "選擇 SVG 檔案",
+					selectFilesDesc:
+						"可以選擇多個 SVG 檔案進行批量添加，將使用檔案名作為圖示 ID。",
+					selectedFiles: "已選擇 {count:number} 個檔案",
 				},
 			},
 		},

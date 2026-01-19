@@ -28,19 +28,30 @@ const en = {
 			},
 		},
 	},
+	common: {
+		save: "Save",
+		add: "Add",
+		edit: "Edit",
+		delete: "Delete",
+		cancel: "Cancel",
+	},
 	view: {
 		CustomIconLib: {
 			name: "Custom icon library",
 			command: "Open custom icon library",
-			add: "Add",
-			delete: "Delete",
-			cancel: "Cancel",
 			searchPlaceholder: "Search icon...",
 			svg: {
 				tabName: "SVG",
-				addForm: {
+				copyAction: "Copy svg code",
+				modal: {
+					pasteMode: "Paste Code",
+					uploadMode: "Upload Files",
 					idPlaceholder: "Icon ID (e.g: my-icon)",
 					contentPlaceholder: "SVG content (<svg>...</svg>)",
+					selectFiles: "Select svg files",
+					selectFilesDesc:
+						"You can select multiple svg files to batch add icons. File names will be used as icon IDs.",
+					selectedFiles: "{count:number} file(s) selected",
 				},
 			},
 		},

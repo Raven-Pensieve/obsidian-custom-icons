@@ -1,8 +1,13 @@
 import usePluginSettings from "@src/hooks/usePluginSettings";
 import useSettingsStore from "@src/hooks/useSettingsStore";
 import { LL } from "@src/i18n/i18n";
-import React, { useMemo, useState } from "react";
+import { CirclePlus, Code } from "lucide-react";
+import { Notice, setIcon } from "obsidian";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { IconCard } from "../icon-card/IconCard";
+import { ConfirmDialog } from "../modal/ConfirmDialog";
+import { AddSvg } from "./AddSvg";
+import { EditSvg } from "./EditSvg";
 
 export const SvgLib: React.FC = () => {
 	const store = useSettingsStore();
@@ -11,11 +16,7 @@ export const SvgLib: React.FC = () => {
 	// Local State
 	const [searchQuery, setSearchQuery] = useState("");
 	const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-	const [isAddMode, setIsAddMode] = useState(false);
-
-	// Add Form State
-	const [newIconId, setNewIconId] = useState("");
-	const [newIconContent, setNewIconContent] = useState("");
+	const sortButtonRef = useRef<HTMLButtonElement>(null);
 
 	// Filter and Sort Icons
 	const filteredIcons = useMemo(() => {
@@ -42,34 +43,148 @@ export const SvgLib: React.FC = () => {
 		return result;
 	}, [settings.customIconLib.svg, searchQuery, sortOrder]);
 
+	// Update sort button icon when sortOrder changes
+	useEffect(() => {
+		if (sortButtonRef.current) {
+			sortButtonRef.current.empty();
+			const iconName =
+				sortOrder === "asc" ? "arrow-up-az" : "arrow-up-za";
+			setIcon(sortButtonRef.current, iconName);
+		}
+	}, [sortOrder]);
+
 	// Handlers
-	const handleAddIcon = async () => {
-		if (!newIconId.trim() || !newIconContent.trim()) {
-			return;
-		}
-
-		const currentSvgIcons = settings.customIconLib.svg;
-		if (currentSvgIcons.some((icon) => icon.id === newIconId)) {
-			return;
-		}
-
-		const newSvgIcons = [
-			...currentSvgIcons,
-			{ id: newIconId, content: newIconContent },
-		];
-		await store.updateSettingByPath("customIconLib.svg", newSvgIcons);
-
-		setNewIconId("");
-		setNewIconContent("");
-		setIsAddMode(false);
+	const handleToggleSort = () => {
+		setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
 	};
 
-	const handleDeleteIcon = async (iconId: string) => {
+	const handleSubmit = async (
+		icons: Array<{ id: string; content: string }>,
+	) => {
 		const currentSvgIcons = settings.customIconLib.svg;
-		const newSvgIcons = currentSvgIcons.filter(
-			(icon) => icon.id !== iconId,
+		const newIcons = icons.filter(
+			(icon) =>
+				!currentSvgIcons.some((existing) => existing.id === icon.id),
 		);
+
+		if (newIcons.length === 0) {
+			return;
+		}
+
+		const newSvgIcons = [...currentSvgIcons, ...newIcons];
 		await store.updateSettingByPath("customIconLib.svg", newSvgIcons);
+	};
+
+	const handleOpenAddModal = () => {
+		let submitFn: (() => Promise<void>) | null = null;
+
+		new ConfirmDialog(store.plugin, {
+			title: LL.common.add() + " " + LL.view.CustomIconLib.svg.tabName(),
+			confirmLL: LL.common.add(),
+			children: (
+				<AddSvg
+					onSubmit={handleSubmit}
+					onReady={(submit) => {
+						submitFn = submit;
+					}}
+				/>
+			),
+			onConfirm: async () => {
+				if (submitFn) {
+					await submitFn();
+				}
+			},
+		}).open();
+	};
+
+	const handleDeleteIcon = (iconId: string) => {
+		new ConfirmDialog(store.plugin, {
+			title: `${LL.common.delete()} "${iconId}"?`,
+			confirmLL: LL.common.delete(),
+			onConfirm: async () => {
+				const currentSvgIcons = settings.customIconLib.svg;
+				const newSvgIcons = currentSvgIcons.filter(
+					(icon) => icon.id !== iconId,
+				);
+				await store.updateSettingByPath(
+					"customIconLib.svg",
+					newSvgIcons,
+				);
+			},
+		}).open();
+	};
+
+	const handleEditIcon = async (
+		iconId: string,
+		newIconId: string,
+		newIconContent: string,
+	) => {
+		const currentSvgIcons = settings.customIconLib.svg;
+		const iconIndex = currentSvgIcons.findIndex(
+			(icon) => icon.id === iconId,
+		);
+
+		if (iconIndex === -1) {
+			return;
+		}
+
+		const newSvgIcons = [...currentSvgIcons];
+		newSvgIcons[iconIndex] = {
+			id: newIconId,
+			content: newIconContent,
+		};
+
+		await store.updateSettingByPath("customIconLib.svg", newSvgIcons);
+	};
+
+	const handleOpenEditModal = async (iconId: string) => {
+		const icon = settings.customIconLib.svg.find(
+			(icon) => icon.id === iconId,
+		);
+		if (!icon) {
+			return;
+		}
+
+		let submitFn: (() => Promise<void>) | null = null;
+
+		new ConfirmDialog(store.plugin, {
+			title: LL.common.edit() + " " + LL.view.CustomIconLib.svg.tabName(),
+			confirmLL: LL.common.save(),
+			children: (
+				<EditSvg
+					iconId={icon.id}
+					iconContent={icon.content}
+					onSubmit={(newIconId, newIconContent) =>
+						handleEditIcon(iconId, newIconId, newIconContent)
+					}
+					onReady={(submit) => {
+						submitFn = submit;
+					}}
+				/>
+			),
+			onConfirm: async () => {
+				if (submitFn) {
+					await submitFn();
+				}
+			},
+		}).open();
+	};
+
+	const handleCopySvgCode = async (iconId: string) => {
+		const icon = settings.customIconLib.svg.find(
+			(icon) => icon.id === iconId,
+		);
+		if (!icon) {
+			return;
+		}
+
+		try {
+			await navigator.clipboard.writeText(icon.content);
+			new Notice(`Copied SVG code: ${iconId}`);
+		} catch (err) {
+			console.error("Failed to copy SVG code:", err);
+			new Notice("Failed to copy SVG code");
+		}
 	};
 
 	return (
@@ -85,48 +200,16 @@ export const SvgLib: React.FC = () => {
 					/>
 				</div>
 
-				<select
-					value={sortOrder}
-					onChange={(e) =>
-						setSortOrder(e.target.value as "asc" | "desc")
-					}
-					className="dropdown"
-				>
-					<option value="asc">A-Z</option>
-					<option value="desc">Z-A</option>
-				</select>
+				<button
+					ref={sortButtonRef}
+					onClick={handleToggleSort}
+					aria-label={sortOrder === "asc" ? "A-Z" : "Z-A"}
+				/>
 
-				<button onClick={() => setIsAddMode(!isAddMode)}>
-					{isAddMode
-						? LL.view.CustomIconLib.cancel()
-						: LL.view.CustomIconLib.add()}
+				<button onClick={handleOpenAddModal}>
+					<CirclePlus className="svg-icon" />
 				</button>
 			</div>
-
-			{/* Add Form */}
-			{isAddMode && (
-				<div className="ci-lib__add-form">
-					<input
-						className="ci-lib__add-form__input"
-						type="text"
-						placeholder={LL.view.CustomIconLib.svg.addForm.idPlaceholder()}
-						value={newIconId}
-						onChange={(e) => setNewIconId(e.target.value)}
-					/>
-					<textarea
-						className="ci-lib__add-form__textarea"
-						placeholder={LL.view.CustomIconLib.svg.addForm.contentPlaceholder()}
-						rows={5}
-						value={newIconContent}
-						onChange={(e) => setNewIconContent(e.target.value)}
-					/>
-					<div className="ci-lib__add-form__buttons">
-						<button className="mod-cta" onClick={handleAddIcon}>
-							{LL.view.CustomIconLib.add()}
-						</button>
-					</div>
-				</div>
-			)}
 
 			{/* Icon Grid */}
 			<div className="ci-lib__grid">
@@ -135,6 +218,14 @@ export const SvgLib: React.FC = () => {
 						key={icon.id}
 						id={icon.id}
 						onDelete={handleDeleteIcon}
+						onEdit={handleOpenEditModal}
+						customActions={[
+							{
+								icon: <Code className="svg-icon" />,
+								title: LL.view.CustomIconLib.svg.copyAction(),
+								onClick: handleCopySvgCode,
+							},
+						]}
 					/>
 				))}
 			</div>

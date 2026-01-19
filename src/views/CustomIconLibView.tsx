@@ -12,7 +12,10 @@ export const VIEW_TYPE_CUSTOM_ICON_LIB = "custom-icon-lib-view";
 export class CustomIconLibView extends ItemView {
 	private root: Root;
 
-	constructor(leaf: WorkspaceLeaf, protected plugin: CIPlugin) {
+	constructor(
+		leaf: WorkspaceLeaf,
+		protected plugin: CIPlugin,
+	) {
 		super(leaf);
 	}
 
@@ -45,7 +48,7 @@ export class CustomIconLibView extends ItemView {
 				>
 					<Tab items={this.tabItems} />
 				</SettingsStoreContext.Provider>
-			</StrictMode>
+			</StrictMode>,
 		);
 	}
 

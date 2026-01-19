@@ -30,7 +30,7 @@
 	padding: 4px;
 }
 
-.ci-lib__add-form {
+.ci-lib__form {
 	display: flex;
 	flex-direction: column;
 	gap: var(--size-4-2);
@@ -41,13 +41,13 @@
 	margin-bottom: var(--size-4-3);
 }
 
-.ci-lib__add-form__textarea {
+.ci-lib__form__textarea {
 	resize: vertical;
 	width: 100%;
 	font-family: monospace;
 }
 
-.ci-lib__add-form__buttons {
+.ci-lib__form__buttons {
 	display: flex;
 	justify-content: flex-end;
 	gap: "8px";
