@@ -26,8 +26,8 @@
 	width: 100%;
 
 	svg {
-		width: 32px;
-		height: 32px;
+		width: 2rem;
+		height: 2rem;
 		color: var(--text-normal);
 	}
 }
@@ -41,32 +41,71 @@
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	margin-top: var(--size-4-2);
+	background: transparent;
+	border: none;
+	padding: var(--size-4-1) var(--size-4-2);
+	border-radius: var(--radius-s);
+	cursor: pointer;
+	transition: all 0.2s ease;
+
+	&:hover {
+		background-color: var(--background-modifier-hover);
+		color: var(--text-normal);
+	}
+
+	&:active {
+		background-color: var(--background-modifier-active-hover);
+	}
 }
 
-.ci-lib-icon__card-delete {
+/* 操作按钮组容器 */
+.ci-lib-icon__card-actions {
 	position: absolute;
 	top: 4px;
 	right: 4px;
-	width: 20px;
-	height: 20px;
+	display: flex;
+	gap: 4px;
+	flex-direction: row;
+	opacity: 0;
+	transition: opacity 0.2s ease;
+}
+
+.ci-lib-icon__card:hover .ci-lib-icon__card-actions {
+	opacity: 1;
+}
+
+/* 通用操作按钮样式 */
+.ci-lib-icon__card-action {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background: transparent;
-	border: none;
-	color: var(--text-faint);
-	opacity: 0;
-	transition: all 0.2s ease;
-	border-radius: var(--radius-s);
 	cursor: pointer;
-	box-shadow: none !important;
+
+	svg {
+		width: 14px;
+		height: 14px;
+	}
 
 	&:hover {
-		background-color: var(--background-modifier-error);
+		background-color: var(--interactive-accent);
 		color: var(--text-on-accent);
 	}
 }
 
-.ci-lib-icon__card:hover .ci-lib-icon__card-delete {
-	opacity: 1;
+/* 编辑按钮特定样式 */
+.ci-lib-icon__card-edit:hover {
+	background-color: var(--color-blue);
+	border-color: var(--color-blue);
+}
+
+/* 删除按钮特定样式 */
+.ci-lib-icon__card-delete:hover {
+	background-color: var(--background-modifier-error);
+	border-color: var(--background-modifier-error);
+}
+
+/* 自定义按钮保持默认的 accent 颜色 */
+.ci-lib-icon__card-custom:hover {
+	background-color: var(--interactive-accent);
+	border-color: var(--interactive-accent);
 }

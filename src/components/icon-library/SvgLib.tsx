@@ -6,6 +6,7 @@ import { setIcon } from "obsidian";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { IconCard } from "../icon-card/IconCard";
 import { AddSvgModal } from "./AddSvgModal";
+import { EditSvgModal } from "./EditSvgModal";
 
 export const SvgLib: React.FC = () => {
 	const store = useSettingsStore();
@@ -76,7 +77,7 @@ export const SvgLib: React.FC = () => {
 
 	const handleOpenAddModal = () => {
 		new AddSvgModal(store.plugin, {
-			title: LL.view.CustomIconLib.svg.addModal.title(),
+			title: LL.common.add() + " " + LL.view.CustomIconLib.svg.tabName(),
 			onSubmit: handleSubmit,
 		}).open();
 	};
@@ -87,6 +88,46 @@ export const SvgLib: React.FC = () => {
 			(icon) => icon.id !== iconId,
 		);
 		await store.updateSettingByPath("customIconLib.svg", newSvgIcons);
+	};
+
+	const handleEditIcon = async (
+		iconId: string,
+		newIconId: string,
+		newIconContent: string,
+	) => {
+		const currentSvgIcons = settings.customIconLib.svg;
+		const iconIndex = currentSvgIcons.findIndex(
+			(icon) => icon.id === iconId,
+		);
+
+		if (iconIndex === -1) {
+			return;
+		}
+
+		const newSvgIcons = [...currentSvgIcons];
+		newSvgIcons[iconIndex] = {
+			id: newIconId,
+			content: newIconContent,
+		};
+
+		await store.updateSettingByPath("customIconLib.svg", newSvgIcons);
+	};
+
+	const handleOpenEditModal = async (iconId: string) => {
+		const icon = settings.customIconLib.svg.find(
+			(icon) => icon.id === iconId,
+		);
+		if (!icon) {
+			return;
+		}
+
+		new EditSvgModal(store.plugin, {
+			title: LL.common.edit() + " " + LL.view.CustomIconLib.svg.tabName(),
+			iconId: icon.id,
+			iconContent: icon.content,
+			onSubmit: (newIconId, newIconContent) =>
+				handleEditIcon(iconId, newIconId, newIconContent),
+		}).open();
 	};
 
 	return (
@@ -120,6 +161,7 @@ export const SvgLib: React.FC = () => {
 						key={icon.id}
 						id={icon.id}
 						onDelete={handleDeleteIcon}
+						onEdit={handleOpenEditModal}
 					/>
 				))}
 			</div>

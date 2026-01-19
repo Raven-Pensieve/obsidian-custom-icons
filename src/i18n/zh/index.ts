@@ -28,18 +28,21 @@ const zh = {
 			},
 		},
 	},
+	common: {
+		save: "保存",
+		add: "添加",
+		edit: "编辑",
+		delete: "删除",
+		cancel: "取消",
+	},
 	view: {
 		CustomIconLib: {
 			name: "自定义图标库",
 			command: "打开自定义图标库",
-			add: "添加",
-			delete: "删除",
-			cancel: "取消",
 			searchPlaceholder: "搜索图标...",
 			svg: {
 				tabName: "SVG",
-				addModal: {
-					title: "添加 SVG 图标",
+				modal: {
 					pasteMode: "粘贴源码",
 					uploadMode: "上传文件",
 					idPlaceholder: "图标ID (例如: my-icon)",

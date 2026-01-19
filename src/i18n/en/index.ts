@@ -28,18 +28,21 @@ const en = {
 			},
 		},
 	},
+	common: {
+		save: "Save",
+		add: "Add",
+		edit: "Edit",
+		delete: "Delete",
+		cancel: "Cancel",
+	},
 	view: {
 		CustomIconLib: {
 			name: "Custom icon library",
 			command: "Open custom icon library",
-			add: "Add",
-			delete: "Delete",
-			cancel: "Cancel",
 			searchPlaceholder: "Search icon...",
 			svg: {
 				tabName: "SVG",
-				addModal: {
-					title: "Add svg Icon",
+				modal: {
 					pasteMode: "Paste Code",
 					uploadMode: "Upload Files",
 					idPlaceholder: "Icon ID (e.g: my-icon)",

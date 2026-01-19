@@ -87,6 +87,28 @@ type RootTranslation = {
 			}
 		}
 	}
+	common: {
+		/**
+		 * 保​存
+		 */
+		save: string
+		/**
+		 * 添​加
+		 */
+		add: string
+		/**
+		 * 编​辑
+		 */
+		edit: string
+		/**
+		 * 删​除
+		 */
+		'delete': string
+		/**
+		 * 取​消
+		 */
+		cancel: string
+	}
 	view: {
 		CustomIconLib: {
 			/**
@@ -98,18 +120,6 @@ type RootTranslation = {
 			 */
 			command: string
 			/**
-			 * 添​加
-			 */
-			add: string
-			/**
-			 * 删​除
-			 */
-			'delete': string
-			/**
-			 * 取​消
-			 */
-			cancel: string
-			/**
 			 * 搜​索​图​标​.​.​.
 			 */
 			searchPlaceholder: string
@@ -118,11 +128,7 @@ type RootTranslation = {
 				 * S​V​G
 				 */
 				tabName: string
-				addModal: {
-					/**
-					 * 添​加​ ​S​V​G​ ​图​标
-					 */
-					title: string
+				modal: {
 					/**
 					 * 粘​贴​源​码
 					 */
@@ -231,6 +237,28 @@ export type TranslationFunctions = {
 			}
 		}
 	}
+	common: {
+		/**
+		 * 保存
+		 */
+		save: () => LocalizedString
+		/**
+		 * 添加
+		 */
+		add: () => LocalizedString
+		/**
+		 * 编辑
+		 */
+		edit: () => LocalizedString
+		/**
+		 * 删除
+		 */
+		'delete': () => LocalizedString
+		/**
+		 * 取消
+		 */
+		cancel: () => LocalizedString
+	}
 	view: {
 		CustomIconLib: {
 			/**
@@ -242,18 +270,6 @@ export type TranslationFunctions = {
 			 */
 			command: () => LocalizedString
 			/**
-			 * 添加
-			 */
-			add: () => LocalizedString
-			/**
-			 * 删除
-			 */
-			'delete': () => LocalizedString
-			/**
-			 * 取消
-			 */
-			cancel: () => LocalizedString
-			/**
 			 * 搜索图标...
 			 */
 			searchPlaceholder: () => LocalizedString
@@ -262,11 +278,7 @@ export type TranslationFunctions = {
 				 * SVG
 				 */
 				tabName: () => LocalizedString
-				addModal: {
-					/**
-					 * 添加 SVG 图标
-					 */
-					title: () => LocalizedString
+				modal: {
 					/**
 					 * 粘贴源码
 					 */

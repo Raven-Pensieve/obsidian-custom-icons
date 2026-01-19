@@ -59,17 +59,17 @@ const AddSvgModalView: React.FC<AddSvgModalViewProps> = ({
 	};
 
 	const pasteTab = (
-		<div className="ci-lib__add-form">
+		<div className="ci-lib__form">
 			<input
-				className="ci-lib__add-form__input"
+				className="ci-lib__form__input"
 				type="text"
-				placeholder={LL.view.CustomIconLib.svg.addModal.idPlaceholder()}
+				placeholder={LL.view.CustomIconLib.svg.modal.idPlaceholder()}
 				value={iconId}
 				onChange={(e) => setIconId(e.target.value)}
 			/>
 			<textarea
-				className="ci-lib__add-form__textarea"
-				placeholder={LL.view.CustomIconLib.svg.addModal.contentPlaceholder()}
+				className="ci-lib__form__textarea"
+				placeholder={LL.view.CustomIconLib.svg.modal.contentPlaceholder()}
 				rows={10}
 				value={iconContent}
 				onChange={(e) => setIconContent(e.target.value)}
@@ -78,9 +78,9 @@ const AddSvgModalView: React.FC<AddSvgModalViewProps> = ({
 	);
 
 	const uploadTab = (
-		<div className="ci-lib__add-form">
+		<div className="ci-lib__form">
 			<input
-				className="ci-lib__add-form__input ci-lib-svg-upload-input"
+				className="ci-lib__form__input ci-lib-svg-upload-input"
 				type="file"
 				accept=".svg"
 				multiple
@@ -92,12 +92,12 @@ const AddSvgModalView: React.FC<AddSvgModalViewProps> = ({
 	const tabItems: TabItem[] = [
 		{
 			id: "paste",
-			title: LL.view.CustomIconLib.svg.addModal.pasteMode(),
+			title: LL.view.CustomIconLib.svg.modal.pasteMode(),
 			content: pasteTab,
 		},
 		{
 			id: "upload",
-			title: LL.view.CustomIconLib.svg.addModal.uploadMode(),
+			title: LL.view.CustomIconLib.svg.modal.uploadMode(),
 			content: uploadTab,
 		},
 	];
@@ -111,11 +111,9 @@ const AddSvgModalView: React.FC<AddSvgModalViewProps> = ({
 			/>
 			<div className="ci-modal-button-container">
 				<button className="mod-cta" onClick={handleSubmit}>
-					{LL.view.CustomIconLib.add()}
+					{LL.common.add()}
 				</button>
-				<button onClick={onClose}>
-					{LL.view.CustomIconLib.cancel()}
-				</button>
+				<button onClick={onClose}>{LL.common.cancel()}</button>
 			</div>
 		</>
 	);
