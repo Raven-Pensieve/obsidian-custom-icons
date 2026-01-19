@@ -1,3 +1,20 @@
+# [1.1.0](https://github.com/RavenHogWarts/obsidian-custom-icons/compare/1.0.0...1.1.0) (2026-01-19)
+
+
+### ✨ Features
+
+* 添加自定义图标库 (#53) ([727de78](https://github.com/RavenHogWarts/obsidian-custom-icons/commit/727de78096f21bb478a63c3e598f1f1bfb70dd3a)), closes [#53](https://github.com/RavenHogWarts/obsidian-custom-icons/issues/53)
+* 优化自定义图标库样式与功能 (#59) ([0610c55](https://github.com/RavenHogWarts/obsidian-custom-icons/commit/0610c554987aa911d6f3fd282b15aae944cd99bd)), closes [#59](https://github.com/RavenHogWarts/obsidian-custom-icons/issues/59)
+
+
+### 🔨 Chore
+
+* 调整样式导入与代码格式化 (#58) ([c97dbf1](https://github.com/RavenHogWarts/obsidian-custom-icons/commit/c97dbf1190fb88a10b17a63a963a5714af0cb224)), closes [#58](https://github.com/RavenHogWarts/obsidian-custom-icons/issues/58)
+* 注释未使用的资助平台 (#57) ([15f3b86](https://github.com/RavenHogWarts/obsidian-custom-icons/commit/15f3b86da6d0c2e33ec105d6d7fb2bd05709f7c1)), closes [#57](https://github.com/RavenHogWarts/obsidian-custom-icons/issues/57)
+* lock 和升级部分依赖版本 (#54) ([009156f](https://github.com/RavenHogWarts/obsidian-custom-icons/commit/009156fc4735052e390e49a875ae757b9005ad1a)), closes [#54](https://github.com/RavenHogWarts/obsidian-custom-icons/issues/54)
+
+
+
 # [1.0.0](https://github.com/RavenHogWarts/obsidian-custom-icons/compare/1.0.0-beta.4...1.0.0) (2026-01-15)
 
 
