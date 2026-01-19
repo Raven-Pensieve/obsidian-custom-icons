@@ -58,7 +58,7 @@ export const IconCard: React.FC<IconCardProps> = ({
 							e.stopPropagation();
 							onEdit(id);
 						}}
-						title="Edit icon"
+						aria-label={LL.common.edit()}
 					>
 						<Pencil className="svg-icon" />
 					</button>
@@ -72,7 +72,7 @@ export const IconCard: React.FC<IconCardProps> = ({
 							e.stopPropagation();
 							action.onClick(id);
 						}}
-						title={action.title}
+						aria-label={action.title}
 					>
 						{action.icon}
 					</button>
@@ -85,7 +85,7 @@ export const IconCard: React.FC<IconCardProps> = ({
 							e.stopPropagation();
 							onDelete(id);
 						}}
-						title={LL.common.delete()}
+						aria-label={LL.common.delete()}
 					>
 						<Trash2 className="svg-icon" />
 					</button>

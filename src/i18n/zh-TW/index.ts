@@ -42,6 +42,7 @@ const zh_TW = {
 			searchPlaceholder: "搜索圖示...",
 			svg: {
 				tabName: "SVG",
+				copyAction: "複製 SVG 代碼",
 				modal: {
 					pasteMode: "粘貼源碼",
 					uploadMode: "上傳檔案",

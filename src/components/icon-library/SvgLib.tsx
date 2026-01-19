@@ -1,8 +1,8 @@
 import usePluginSettings from "@src/hooks/usePluginSettings";
 import useSettingsStore from "@src/hooks/useSettingsStore";
 import { LL } from "@src/i18n/i18n";
-import { CirclePlus } from "lucide-react";
-import { setIcon } from "obsidian";
+import { CirclePlus, Code } from "lucide-react";
+import { Notice, setIcon } from "obsidian";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { IconCard } from "../icon-card/IconCard";
 import { ConfirmDialog } from "../modal/ConfirmDialog";
@@ -170,6 +170,23 @@ export const SvgLib: React.FC = () => {
 		}).open();
 	};
 
+	const handleCopySvgCode = async (iconId: string) => {
+		const icon = settings.customIconLib.svg.find(
+			(icon) => icon.id === iconId,
+		);
+		if (!icon) {
+			return;
+		}
+
+		try {
+			await navigator.clipboard.writeText(icon.content);
+			new Notice(`Copied SVG code: ${iconId}`);
+		} catch (err) {
+			console.error("Failed to copy SVG code:", err);
+			new Notice("Failed to copy SVG code");
+		}
+	};
+
 	return (
 		<div className="ci-lib-container">
 			{/* Navigation Bar */}
@@ -202,6 +219,13 @@ export const SvgLib: React.FC = () => {
 						id={icon.id}
 						onDelete={handleDeleteIcon}
 						onEdit={handleOpenEditModal}
+						customActions={[
+							{
+								icon: <Code className="svg-icon" />,
+								title: LL.view.CustomIconLib.svg.copyAction(),
+								onClick: handleCopySvgCode,
+							},
+						]}
 					/>
 				))}
 			</div>

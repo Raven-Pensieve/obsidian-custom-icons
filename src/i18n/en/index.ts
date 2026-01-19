@@ -42,6 +42,7 @@ const en = {
 			searchPlaceholder: "Search icon...",
 			svg: {
 				tabName: "SVG",
+				copyAction: "Copy svg code",
 				modal: {
 					pasteMode: "Paste Code",
 					uploadMode: "Upload Files",

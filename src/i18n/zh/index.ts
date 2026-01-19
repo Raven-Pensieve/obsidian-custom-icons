@@ -42,6 +42,7 @@ const zh = {
 			searchPlaceholder: "搜索图标...",
 			svg: {
 				tabName: "SVG",
+				copyAction: "复制 SVG 代码",
 				modal: {
 					pasteMode: "粘贴源码",
 					uploadMode: "上传文件",

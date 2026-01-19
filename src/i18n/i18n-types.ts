@@ -128,6 +128,10 @@ type RootTranslation = {
 				 * S​V​G
 				 */
 				tabName: string
+				/**
+				 * 复​制​ ​S​V​G​ ​代​码
+				 */
+				copyAction: string
 				modal: {
 					/**
 					 * 粘​贴​源​码
@@ -278,6 +282,10 @@ export type TranslationFunctions = {
 				 * SVG
 				 */
 				tabName: () => LocalizedString
+				/**
+				 * 复制 SVG 代码
+				 */
+				copyAction: () => LocalizedString
 				modal: {
 					/**
 					 * 粘贴源码
