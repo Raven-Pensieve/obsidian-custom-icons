@@ -1,23 +1,13 @@
 import { LL } from "@src/i18n/i18n";
-import CIPlugin from "@src/main";
-import { useState } from "react";
-import { BaseModal } from "../modal/BaseModal";
+import { useEffect, useState } from "react";
 import { Tab, TabItem } from "../tab/Tab";
 
-interface AddSvgModalProps {
-	title: string;
+interface AddSvgProps {
 	onSubmit: (icons: Array<{ id: string; content: string }>) => Promise<void>;
+	onReady?: (submit: () => Promise<void>, canSubmit: () => boolean) => void;
 }
 
-interface AddSvgModalViewProps extends AddSvgModalProps {
-	plugin: CIPlugin;
-	onClose: () => void;
-}
-
-const AddSvgModalView: React.FC<AddSvgModalViewProps> = ({
-	onSubmit,
-	onClose,
-}) => {
+export const AddSvg: React.FC<AddSvgProps> = ({ onSubmit, onReady }) => {
 	const [activeTab, setActiveTab] = useState<"paste" | "upload">("paste");
 	const [iconId, setIconId] = useState("");
 	const [iconContent, setIconContent] = useState("");
@@ -27,6 +17,14 @@ const AddSvgModalView: React.FC<AddSvgModalViewProps> = ({
 		const files = e.target.files;
 		if (files) {
 			setSelectedFiles(Array.from(files));
+		}
+	};
+
+	const canSubmit = () => {
+		if (activeTab === "paste") {
+			return iconId.trim() !== "" && iconContent.trim() !== "";
+		} else {
+			return selectedFiles.length > 0;
 		}
 	};
 
@@ -57,6 +55,12 @@ const AddSvgModalView: React.FC<AddSvgModalViewProps> = ({
 			await onSubmit(icons);
 		}
 	};
+
+	useEffect(() => {
+		if (onReady) {
+			onReady(handleSubmit, canSubmit);
+		}
+	}, []);
 
 	const pasteTab = (
 		<div className="ci-lib__form">
@@ -102,30 +106,13 @@ const AddSvgModalView: React.FC<AddSvgModalViewProps> = ({
 		},
 	];
 
-	return (
-		<>
+		return (
 			<Tab
 				items={tabItems}
 				defaultValue="paste"
-				onChange={(value) => setActiveTab(value as "paste" | "upload")}
+				onChange={(value) =>
+					setActiveTab(value as "paste" | "upload")
+				}
 			/>
-			<div className="ci-modal-button-container">
-				<button className="mod-cta" onClick={handleSubmit}>
-					{LL.common.add()}
-				</button>
-				<button onClick={onClose}>{LL.common.cancel()}</button>
-			</div>
-		</>
-	);
+		);
 };
-
-export class AddSvgModal extends BaseModal<AddSvgModalViewProps> {
-	constructor(plugin: CIPlugin, props: AddSvgModalProps) {
-		const viewProps = {
-			...props,
-			plugin,
-		};
-
-		super(plugin, AddSvgModalView, viewProps, "");
-	}
-}

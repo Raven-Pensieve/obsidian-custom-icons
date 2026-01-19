@@ -5,13 +5,13 @@ import { CirclePlus } from "lucide-react";
 import { setIcon } from "obsidian";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { IconCard } from "../icon-card/IconCard";
-import { AddSvgModal } from "./AddSvgModal";
-import { EditSvgModal } from "./EditSvgModal";
+import { ConfirmDialog } from "../modal/ConfirmDialog";
+import { AddSvg } from "./AddSvg";
+import { EditSvg } from "./EditSvg";
 
 export const SvgLib: React.FC = () => {
 	const store = useSettingsStore();
 	const settings = usePluginSettings(store);
-	const { app } = store;
 
 	// Local State
 	const [searchQuery, setSearchQuery] = useState("");
@@ -76,18 +76,42 @@ export const SvgLib: React.FC = () => {
 	};
 
 	const handleOpenAddModal = () => {
-		new AddSvgModal(store.plugin, {
+		let submitFn: (() => Promise<void>) | null = null;
+
+		new ConfirmDialog(store.plugin, {
 			title: LL.common.add() + " " + LL.view.CustomIconLib.svg.tabName(),
-			onSubmit: handleSubmit,
+			confirmLL: LL.common.add(),
+			children: (
+				<AddSvg
+					onSubmit={handleSubmit}
+					onReady={(submit) => {
+						submitFn = submit;
+					}}
+				/>
+			),
+			onConfirm: async () => {
+				if (submitFn) {
+					await submitFn();
+				}
+			},
 		}).open();
 	};
 
-	const handleDeleteIcon = async (iconId: string) => {
-		const currentSvgIcons = settings.customIconLib.svg;
-		const newSvgIcons = currentSvgIcons.filter(
-			(icon) => icon.id !== iconId,
-		);
-		await store.updateSettingByPath("customIconLib.svg", newSvgIcons);
+	const handleDeleteIcon = (iconId: string) => {
+		new ConfirmDialog(store.plugin, {
+			title: `${LL.common.delete()} "${iconId}"?`,
+			confirmLL: LL.common.delete(),
+			onConfirm: async () => {
+				const currentSvgIcons = settings.customIconLib.svg;
+				const newSvgIcons = currentSvgIcons.filter(
+					(icon) => icon.id !== iconId,
+				);
+				await store.updateSettingByPath(
+					"customIconLib.svg",
+					newSvgIcons,
+				);
+			},
+		}).open();
 	};
 
 	const handleEditIcon = async (
@@ -121,12 +145,28 @@ export const SvgLib: React.FC = () => {
 			return;
 		}
 
-		new EditSvgModal(store.plugin, {
+		let submitFn: (() => Promise<void>) | null = null;
+
+		new ConfirmDialog(store.plugin, {
 			title: LL.common.edit() + " " + LL.view.CustomIconLib.svg.tabName(),
-			iconId: icon.id,
-			iconContent: icon.content,
-			onSubmit: (newIconId, newIconContent) =>
-				handleEditIcon(iconId, newIconId, newIconContent),
+			confirmLL: LL.common.save(),
+			children: (
+				<EditSvg
+					iconId={icon.id}
+					iconContent={icon.content}
+					onSubmit={(newIconId, newIconContent) =>
+						handleEditIcon(iconId, newIconId, newIconContent)
+					}
+					onReady={(submit) => {
+						submitFn = submit;
+					}}
+				/>
+			),
+			onConfirm: async () => {
+				if (submitFn) {
+					await submitFn();
+				}
+			},
 		}).open();
 	};
 

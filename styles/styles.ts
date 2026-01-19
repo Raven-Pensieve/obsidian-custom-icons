@@ -1,2 +1,2 @@
-import "./BaseModal.css";
+import "./ConfirmDialog.css";
 import "./IconLib.css";

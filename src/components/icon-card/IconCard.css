@@ -6,6 +6,7 @@
 	border: 1px solid var(--background-modifier-border);
 	border-radius: var(--radius-m);
 	padding: var(--size-4-3);
+	padding-top: calc(var(--size-4-3) + 1.5rem); /* 为操作按钮预留空间 */
 	background-color: var(--background-secondary);
 	transition: all 0.2s ease;
 	position: relative;
@@ -24,6 +25,7 @@
 	align-items: center;
 	justify-content: center;
 	width: 100%;
+	max-height: 60%; /* 限制图标区域最大高度，避免与按钮重叠 */
 
 	svg {
 		width: 2rem;
@@ -68,6 +70,10 @@
 	flex-direction: row;
 	opacity: 0;
 	transition: opacity 0.2s ease;
+	z-index: 1; /* 确保在最上层 */
+	background: var(--background-secondary-alt); /* 添加半透明背景 */
+	padding: 2px;
+	border-radius: var(--radius-s);
 }
 
 .ci-lib-icon__card:hover .ci-lib-icon__card-actions {
@@ -80,6 +86,8 @@
 	align-items: center;
 	justify-content: center;
 	cursor: pointer;
+	padding: 4px; /* 增加点击区域 */
+	border-radius: var(--radius-s);
 
 	svg {
 		width: 14px;
