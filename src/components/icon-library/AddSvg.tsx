@@ -60,7 +60,7 @@ export const AddSvg: React.FC<AddSvgProps> = ({ onSubmit, onReady }) => {
 		if (onReady) {
 			onReady(handleSubmit, canSubmit);
 		}
-	}, []);
+	}, [iconId, iconContent, selectedFiles, activeTab]);
 
 	const pasteTab = (
 		<div className="ci-lib__form">
@@ -106,13 +106,11 @@ export const AddSvg: React.FC<AddSvgProps> = ({ onSubmit, onReady }) => {
 		},
 	];
 
-		return (
-			<Tab
-				items={tabItems}
-				defaultValue="paste"
-				onChange={(value) =>
-					setActiveTab(value as "paste" | "upload")
-				}
-			/>
-		);
+	return (
+		<Tab
+			items={tabItems}
+			defaultValue="paste"
+			onChange={(value) => setActiveTab(value as "paste" | "upload")}
+		/>
+	);
 };
