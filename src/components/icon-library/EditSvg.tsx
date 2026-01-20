@@ -32,7 +32,7 @@ export const EditSvg: React.FC<EditSvgProps> = ({
 		if (onReady) {
 			onReady(handleSubmit, canSubmit);
 		}
-	}, []);
+	}, [iconId, iconContent]);
 
 	return (
 		<div className="ci-lib__form">
