@@ -1,3 +1,12 @@
+## [1.1.1](https://github.com/RavenHogWarts/obsidian-custom-icons/compare/1.1.0...1.1.1) (2026-01-20)
+
+
+### 🐛 Bug Fixes
+
+* 修复表单提交行为 ([2847ea0](https://github.com/RavenHogWarts/obsidian-custom-icons/commit/2847ea0ddbb10e3e51e1725a995d00f3a0184830))
+
+
+
 # [1.1.0](https://github.com/RavenHogWarts/obsidian-custom-icons/compare/1.0.0...1.1.0) (2026-01-19)
 
 
