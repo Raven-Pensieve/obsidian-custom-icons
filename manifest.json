@@ -5,8 +5,9 @@
 	"minAppVersion": "1.11.0",
 	"description": "Enhance your workspace with customizable icons for documents and folders.",
 	"author": "RavenHogWarts",
-	"authorUrl": "https://github.com/RavenHogWarts",
+	"authorUrl": "https://github.com/Raven-Pensieve",
 	"fundingUrl": {
+		"ko-fi": "https://ko-fi.com/ravenhogwarts",
 		"afdian": "https://afdian.com/a/ravenhogwarts"
 	},
 	"isDesktopOnly": false
