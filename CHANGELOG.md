@@ -1,3 +1,12 @@
+# [2.0.0](https://github.com/Raven-Pensieve/obsidian-custom-icons/compare/1.1.1...2.0.0) (2026-01-25)
+
+
+### 🔨 Chore
+
+* 转移仓库所有权给 Raven-Pensieve ([05f7315](https://github.com/Raven-Pensieve/obsidian-custom-icons/commit/05f7315a695a4a61d6c2b6c01e08cfd82dd23232))
+
+
+
 ## [1.1.1](https://github.com/RavenHogWarts/obsidian-custom-icons/compare/1.1.0...1.1.1) (2026-01-20)
 
 

@@ -7,7 +7,6 @@ on:
 
 permissions:
     contents: write
-    discussions: write
 
 env:
     PLUGIN_ID: custom-sidebar-icons # 插件ID
@@ -54,7 +53,6 @@ jobs:
                   draft: false
                   prerelease: ${{ contains(github.ref, 'beta') }}
                   generate_release_notes: true
-                  discussion_category_name: "Announcements"
                   body: |
                       ${{ contains(github.ref, 'beta') && '🚧 This is a beta release' || '🎉 This is a stable release' }}
 
