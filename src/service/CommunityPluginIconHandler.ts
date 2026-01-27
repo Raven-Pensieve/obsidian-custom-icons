@@ -25,6 +25,7 @@ export default class CommunityPluginIconHandler extends AbstractIconHandler<ICom
 
 		// 等待布局准备好
 		this.app.workspace.onLayoutReady(() => {
+			this.addContainerClassName();
 			this.applyIconsToExistingPlugins();
 			this.setupMutationObserver();
 		});
@@ -36,12 +37,39 @@ export default class CommunityPluginIconHandler extends AbstractIconHandler<ICom
 			this.mutationObserver = null;
 		}
 
+		// 移除容器类名
+		this.removeContainerClassName();
+
 		// 移除所有自定义图标
 		this.removeCustomIcons();
 	}
 
 	isEnabled(): boolean {
 		return this.settings?.enable ?? false;
+	}
+
+	/**
+	 * 为容器添加自定义类名
+	 */
+	private addContainerClassName(): void {
+		const container = document.querySelector(
+			'.vertical-tab-header-group-items[data-section="community-plugins"]',
+		);
+		if (container) {
+			container.classList.add("custom-icon-community-plugins");
+		}
+	}
+
+	/**
+	 * 移除容器的自定义类名
+	 */
+	private removeContainerClassName(): void {
+		const container = document.querySelector(
+			'.vertical-tab-header-group-items[data-section="community-plugins"]',
+		);
+		if (container) {
+			container.classList.remove("custom-icon-community-plugins");
+		}
 	}
 
 	/**
@@ -52,7 +80,7 @@ export default class CommunityPluginIconHandler extends AbstractIconHandler<ICom
 			this.app.setting.communityPluginTabContainer;
 
 		const pluginNavItems = communityPluginTabContainer.querySelectorAll(
-			".vertical-tab-nav-item[data-setting-id]"
+			".vertical-tab-nav-item[data-setting-id]",
 		) as NodeListOf<HTMLElement>;
 
 		pluginNavItems.forEach((navItemEl) => {
@@ -76,17 +104,17 @@ export default class CommunityPluginIconHandler extends AbstractIconHandler<ICom
 
 	private addIconToPluginNavItem(
 		navItemEl: HTMLElement,
-		communityPlugin: ICommunityPluginIcon
+		communityPlugin: ICommunityPluginIcon,
 	) {
 		// 检查是否存在原生图标（没有 custom-icon 类的）
 		const nativeIcon = navItemEl.querySelector(
-			".vertical-tab-nav-item-icon:not(.custom-icon)"
+			".vertical-tab-nav-item-icon:not(.custom-icon)",
 		);
 		if (nativeIcon) return; // 如果是原生图标，不做修改
 
 		// 查找或创建自定义图标容器
 		let iconContainer = navItemEl.querySelector(
-			".vertical-tab-nav-item-icon.custom-icon"
+			".vertical-tab-nav-item-icon.custom-icon",
 		) as HTMLElement;
 
 		if (!iconContainer) {
@@ -168,7 +196,7 @@ export default class CommunityPluginIconHandler extends AbstractIconHandler<ICom
 			this.app.setting.communityPluginTabContainer;
 
 		const customIcons = communityPluginTabContainer.querySelectorAll(
-			".vertical-tab-nav-item-icon.custom-icon"
+			".vertical-tab-nav-item-icon.custom-icon",
 		);
 
 		customIcons.forEach((icon) => icon.remove());
