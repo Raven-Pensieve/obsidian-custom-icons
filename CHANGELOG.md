@@ -1,3 +1,22 @@
+## [2.0.1](https://github.com/Raven-Pensieve/obsidian-custom-icons/compare/2.0.0...2.0.1) (2026-01-27)
+
+
+### ✨ Features
+
+* 为社区插件图标添加容器类并修复样式 (#64) ([b0b3f12](https://github.com/Raven-Pensieve/obsidian-custom-icons/commit/b0b3f125e8dc765fe37914b97c2af1499267dcb6)), closes [#64](https://github.com/Raven-Pensieve/obsidian-custom-icons/issues/64)
+
+
+### 🐛 Bug Fixes
+
+* **settings:** 防止原型污染并改进属性检测 (#65) ([287605a](https://github.com/Raven-Pensieve/obsidian-custom-icons/commit/287605ae28f47714c31108d4a7430c2ba08a2f57)), closes [#65](https://github.com/Raven-Pensieve/obsidian-custom-icons/issues/65)
+
+
+### 🔧 CI
+
+* **pnpm:** 在 CI 中切换到 pnpm 并缓存 store (#66) ([936df61](https://github.com/Raven-Pensieve/obsidian-custom-icons/commit/936df61113c1d81f904539406c0aebdca35ec89f)), closes [#66](https://github.com/Raven-Pensieve/obsidian-custom-icons/issues/66)
+
+
+
 # [2.0.0](https://github.com/Raven-Pensieve/obsidian-custom-icons/compare/1.1.1...2.0.0) (2026-01-25)
 
 
