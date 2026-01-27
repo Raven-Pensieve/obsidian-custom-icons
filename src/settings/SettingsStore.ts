@@ -17,6 +17,18 @@ export default class SettingsStore {
 		this.#plugin = plugin;
 	}
 
+	/**
+	 * 判断路径段是否为危险属性键，防止原型污染
+	 */
+	#isDangerousKey(part: string): boolean {
+		return (
+			part === "__proto__" ||
+			part === "constructor" ||
+			part === "prototype" ||
+			part === ""
+		);
+	}
+
 	get settings() {
 		return this.#plugin.settings;
 	}
@@ -126,13 +138,9 @@ export default class SettingsStore {
 
 		// 防止原型污染：验证路径中不包含危险属性
 		for (const part of pathParts) {
-			if (
-				part === "__proto__" ||
-				part === "constructor" ||
-				part === "prototype"
-			) {
+			if (this.#isDangerousKey(part)) {
 				throw new Error(
-					`Invalid setting path: ${path} - contains dangerous property`,
+					`Invalid setting path: ${path} - contains dangerous or empty property segment`,
 				);
 			}
 		}
@@ -157,6 +165,11 @@ export default class SettingsStore {
 		}
 
 		// 设置最终值
+		if (this.#isDangerousKey(finalPart)) {
+			throw new Error(
+				`Invalid setting path: ${path} - contains dangerous or empty final property segment`,
+			);
+		}
 		const finalPart = pathParts[pathParts.length - 1];
 		if (typeof current === "object" && current !== null) {
 			(current as Record<string, unknown>)[finalPart] = value;
@@ -179,13 +192,9 @@ export default class SettingsStore {
 
 		// 防止原型污染：验证路径中不包含危险属性
 		for (const part of pathParts) {
-			if (
-				part === "__proto__" ||
-				part === "constructor" ||
-				part === "prototype"
-			) {
+			if (this.#isDangerousKey(part)) {
 				throw new Error(
-					`Invalid setting path: ${path} - contains dangerous property`,
+					`Invalid setting path: ${path} - contains dangerous or empty property segment`,
 				);
 			}
 		}
@@ -207,12 +216,17 @@ export default class SettingsStore {
 			}
 		}
 
+		if (this.#isDangerousKey(finalPart)) {
+			throw new Error(
+				`Invalid setting path: ${path} - contains dangerous or empty final property segment`,
+			);
+		}
 		// 删除最终属性
 		const finalPart = pathParts[pathParts.length - 1];
 		if (
 			typeof current === "object" &&
 			current !== null &&
-			Object.prototype.hasOwnProperty.call(current, finalPart)
+			Object.prototype.hasOwnProperty.call(current as object, finalPart)
 		) {
 			delete (current as Record<string, unknown>)[finalPart];
 			// 使用 updateSettings 方法更新设置
