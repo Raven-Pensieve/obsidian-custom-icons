@@ -29,6 +29,11 @@
 	"overrides": {
 		"@conventional-changelog/git-client": "^2.0.0"
 	},
+	"pnpm": {
+		"overrides": {
+			"@conventional-changelog/git-client": "^2.0.0"
+		}
+	},
 	"devDependencies": {
 		"@types/jest": "^30.0.0",
 		"@types/node": "^25.0.2",
