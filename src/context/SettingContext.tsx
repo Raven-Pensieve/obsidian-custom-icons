@@ -10,7 +10,7 @@ export const SettingContext = createContext<Setting | undefined>(undefined);
  * Context for the container element where Settings are rendered
  */
 export const SettingContainerContext = createContext<HTMLElement | undefined>(
-	undefined
+	undefined,
 );
 
 /**

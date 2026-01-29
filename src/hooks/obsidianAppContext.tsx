@@ -7,7 +7,7 @@ export const useObsidianApp = (): App => {
 	const app = useContext(ObsidianAppContext);
 	if (!app) {
 		throw new Error(
-			"useObsidianApp must be used within a ObsidianAppContext"
+			"useObsidianApp must be used within a ObsidianAppContext",
 		);
 	}
 	return app;

@@ -22,7 +22,7 @@ export default class IconManager {
 	registerHandler<T>(handler: IIconHandler<T>): void {
 		if (this.handlers.has(handler.id)) {
 			console.warn(
-				`Icon handler with id "${handler.id}" is already registered.`
+				`Icon handler with id "${handler.id}" is already registered.`,
 			);
 			return;
 		}
@@ -83,7 +83,7 @@ export default class IconManager {
 				} catch (error) {
 					console.error(
 						`Error applying icon handler "${handler.id}":`,
-						error
+						error,
 					);
 				}
 			} else {
@@ -93,7 +93,7 @@ export default class IconManager {
 				} catch (error) {
 					console.error(
 						`Error cleaning up disabled icon handler "${handler.id}":`,
-						error
+						error,
 					);
 				}
 			}
@@ -112,7 +112,7 @@ export default class IconManager {
 			} catch (error) {
 				console.error(
 					`Error applying icon handler "${handlerId}":`,
-					error
+					error,
 				);
 			}
 		}
@@ -128,7 +128,7 @@ export default class IconManager {
 			} catch (error) {
 				console.error(
 					`Error cleaning up icon handler "${handler.id}":`,
-					error
+					error,
 				);
 			}
 		});

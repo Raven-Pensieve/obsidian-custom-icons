@@ -25,7 +25,7 @@ export class PluginSettingTab extends ObPluginSettingTab {
 				>
 					<Settings />
 				</SettingsStoreContext.Provider>
-			</StrictMode>
+			</StrictMode>,
 		);
 	}
 

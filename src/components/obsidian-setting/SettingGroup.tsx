@@ -61,7 +61,7 @@ export const SettingGroup: FC<SettingGroupProps> = ({
 	const settingGroupData = useMemo(() => {
 		if (!parentContainer) {
 			throw new Error(
-				"SettingGroup must have a containerEl (either from context or props)"
+				"SettingGroup must have a containerEl (either from context or props)",
 			);
 		}
 
@@ -98,7 +98,7 @@ export const SettingGroup: FC<SettingGroupProps> = ({
 
 		// Find the setting-items container inside it
 		const itemsContainer = settingGroupEl.querySelector(
-			".setting-items"
+			".setting-items",
 		) as HTMLElement;
 
 		if (!itemsContainer) {

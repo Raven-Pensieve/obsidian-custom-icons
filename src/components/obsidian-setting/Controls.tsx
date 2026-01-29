@@ -463,7 +463,7 @@ export const ProgressBar: FC<ProgressBarProps> = ({
 
 	const progressBar = useMemo(
 		() => new ProgressBarComponent(slotEl),
-		[slotEl]
+		[slotEl],
 	);
 
 	useEffect(() => {
@@ -501,7 +501,7 @@ export const MomentFormat: FC<MomentFormatProps> = ({
 
 	const momentFormat = useMemo(
 		() => new MomentFormatComponent(slotEl),
-		[slotEl]
+		[slotEl],
 	);
 
 	useEffect(() => {

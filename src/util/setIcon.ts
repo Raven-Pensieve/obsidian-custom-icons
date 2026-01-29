@@ -1,7 +1,7 @@
 import { IconType } from "@src/types/types";
 import { setIcon as obsidianSetIcon } from "obsidian";
 import * as React from "react";
-import { Root, createRoot } from "react-dom/client";
+import { createRoot, Root } from "react-dom/client";
 import { renderToStaticMarkup } from "react-dom/server";
 import { getLucideIcon } from "./getLucideIcons";
 
@@ -26,7 +26,7 @@ export default function (
 	el: HTMLElement,
 	iconType: IconType,
 	icon: string,
-	options?: { append?: boolean }
+	options?: { append?: boolean },
 ): HTMLElement | void {
 	// 检查图标是否已经是目标图标，如果是则跳过渲染（仅对非 append 模式）
 	if (!options?.append) {
@@ -53,7 +53,7 @@ export default function (
 							size: 16,
 							strokeWidth: 2,
 							className: "lucide-icon",
-						})
+						}),
 					);
 
 					// 创建一个临时容器来解析 HTML
@@ -83,7 +83,7 @@ export default function (
 							size: 16,
 							strokeWidth: 2,
 							className: "svg-icon",
-						})
+						}),
 					);
 
 					// 更新图标状态

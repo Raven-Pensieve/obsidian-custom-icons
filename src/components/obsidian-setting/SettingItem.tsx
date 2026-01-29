@@ -102,7 +102,7 @@ export const SettingItem: FC<SettingItemProps> = ({
 
 	if (!containerEl) {
 		throw new Error(
-			"SettingItem must have a containerEl (either from context or props)"
+			"SettingItem must have a containerEl (either from context or props)",
 		);
 	}
 
@@ -173,7 +173,7 @@ export const SettingItem: FC<SettingItemProps> = ({
 			control: { setting, slotEl: setting.controlEl },
 			main: { setting, slotEl: setting.settingEl },
 		}),
-		[setting]
+		[setting],
 	);
 
 	return (

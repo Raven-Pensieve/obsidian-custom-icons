@@ -20,14 +20,14 @@ const getRandomElements = <T>(arr: T[], count: number): T[] => {
  * @returns 随机图标名称，如果没有可用图标则返回 undefined
  */
 export const getRandomIcon = (
-	exclude?: string | string[]
+	exclude?: string | string[],
 ): string | undefined => {
 	const icons = getLucideIconNames();
 	let pool = icons;
 
 	if (exclude) {
 		const excludeSet = new Set(
-			Array.isArray(exclude) ? exclude : [exclude]
+			Array.isArray(exclude) ? exclude : [exclude],
 		);
 		pool = icons.filter((icon) => !excludeSet.has(icon));
 	}
@@ -45,14 +45,14 @@ export const getRandomIcon = (
  */
 export const getUniqueRandomIcons = (
 	count: number,
-	exclude?: string | string[]
+	exclude?: string | string[],
 ): string[] => {
 	const icons = getLucideIconNames();
 	let pool = icons;
 
 	if (exclude) {
 		const excludeSet = new Set(
-			Array.isArray(exclude) ? exclude : [exclude]
+			Array.isArray(exclude) ? exclude : [exclude],
 		);
 		pool = icons.filter((icon) => !excludeSet.has(icon));
 	}

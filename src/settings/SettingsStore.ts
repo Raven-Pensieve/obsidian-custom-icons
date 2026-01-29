@@ -98,7 +98,7 @@ export default class SettingsStore {
 	}
 
 	async loadSettings() {
-		const saved = await this.#plugin.loadData();
+		const saved: unknown = await this.#plugin.loadData();
 		// 与默认配置深度对齐：只保留定义内字段并填充缺省
 		this.#plugin.settings = this.#mergeWithDefaults(
 			saved ?? {},

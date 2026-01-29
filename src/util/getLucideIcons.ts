@@ -88,7 +88,7 @@ export function iconNameToComponentName(iconName: string): string {
  * @returns 图标组件或 undefined
  */
 export function getLucideIcon(
-	iconName: string
+	iconName: string,
 ): React.ComponentType<any> | undefined {
 	if (!iconName) {
 		console.warn("getLucideIcon: iconName is empty");
