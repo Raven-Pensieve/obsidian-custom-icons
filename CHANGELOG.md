@@ -1,3 +1,18 @@
+## [2.0.2](https://github.com/Raven-Pensieve/obsidian-custom-icons/compare/2.0.1...2.0.2) (2026-01-29)
+
+
+### 🐛 Bug Fixes
+
+* 优化社区插件图标处理逻辑 (#68) ([63a133d](https://github.com/Raven-Pensieve/obsidian-custom-icons/commit/63a133da138bd4f7383c03b8a8ae347c8efe3a12)), closes [#68](https://github.com/Raven-Pensieve/obsidian-custom-icons/issues/68)
+
+
+### 🔨 Chore
+
+* 升级依赖并重组构建配置 (#69) ([68e44d4](https://github.com/Raven-Pensieve/obsidian-custom-icons/commit/68e44d429902daccded3b653dc8f28a8e4ac9c3d)), closes [#69](https://github.com/Raven-Pensieve/obsidian-custom-icons/issues/69)
+* **lint:** 重构 ESLint 配置并优化规则设置 (#70) ([5a81574](https://github.com/Raven-Pensieve/obsidian-custom-icons/commit/5a81574e1cf279becf1cbdb6d50f69bd5c10d6f2)), closes [#70](https://github.com/Raven-Pensieve/obsidian-custom-icons/issues/70)
+
+
+
 ## [2.0.1](https://github.com/Raven-Pensieve/obsidian-custom-icons/compare/2.0.0...2.0.1) (2026-01-27)
 
 
