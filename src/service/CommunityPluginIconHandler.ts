@@ -52,11 +52,13 @@ export default class CommunityPluginIconHandler extends AbstractIconHandler<ICom
 	 * 为容器添加自定义类名
 	 */
 	private addContainerClassName(): void {
-		const container = document.querySelector(
-			'.vertical-tab-header-group-items[data-section="community-plugins"]',
-		);
+		// @ts-ignore
+		const container = this.app.setting?.communityPluginTabContainer;
+
 		if (container) {
-			container.classList.add("custom-icon-community-plugins");
+			(container as HTMLElement).classList.add(
+				"custom-icon-community-plugins",
+			);
 		}
 	}
 
@@ -64,11 +66,12 @@ export default class CommunityPluginIconHandler extends AbstractIconHandler<ICom
 	 * 移除容器的自定义类名
 	 */
 	private removeContainerClassName(): void {
-		const container = document.querySelector(
-			'.vertical-tab-header-group-items[data-section="community-plugins"]',
-		);
+		// @ts-ignore
+		const container = this.app.setting?.communityPluginTabContainer;
 		if (container) {
-			container.classList.remove("custom-icon-community-plugins");
+			(container as HTMLElement).classList.remove(
+				"custom-icon-community-plugins",
+			);
 		}
 	}
 
@@ -76,8 +79,13 @@ export default class CommunityPluginIconHandler extends AbstractIconHandler<ICom
 	 * 为已存在的插件项添加图标
 	 */
 	private applyIconsToExistingPlugins(): void {
+		// @ts-ignore
 		const communityPluginTabContainer =
-			this.app.setting.communityPluginTabContainer;
+			this.app.setting?.communityPluginTabContainer;
+
+		if (!communityPluginTabContainer) {
+			return;
+		}
 
 		const pluginNavItems = communityPluginTabContainer.querySelectorAll(
 			".vertical-tab-nav-item[data-setting-id]",
@@ -159,8 +167,13 @@ export default class CommunityPluginIconHandler extends AbstractIconHandler<ICom
 			this.mutationObserver.disconnect();
 		}
 
+		// @ts-ignore
 		const communityPluginTabContainer =
-			this.app.setting.communityPluginTabContainer;
+			this.app.setting?.communityPluginTabContainer;
+
+		if (!communityPluginTabContainer) {
+			return;
+		}
 
 		this.mutationObserver = new MutationObserver((mutations) => {
 			// 在回调中再次检查是否启用，防止在禁用后仍然执行
