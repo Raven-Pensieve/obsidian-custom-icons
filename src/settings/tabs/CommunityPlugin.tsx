@@ -24,7 +24,7 @@ export const CommunityPlugin: FC = () => {
 			settingsStore.app.setting.communityPluginTabContainer;
 
 		const pluginNavItems = communityPluginTabContainer.querySelectorAll(
-			".vertical-tab-nav-item[data-setting-id]"
+			".vertical-tab-nav-item[data-setting-id]",
 		) as NodeListOf<HTMLElement>;
 
 		const plugins: Array<{
@@ -39,7 +39,7 @@ export const CommunityPlugin: FC = () => {
 
 			// 检查是否存在原生图标（没有 custom-icon 类的）
 			const nativeIcon = navItemEl.querySelector(
-				".vertical-tab-nav-item-icon:not(.custom-icon)"
+				".vertical-tab-nav-item-icon:not(.custom-icon)",
 			);
 			if (nativeIcon) return; // 如果是原生图标，跳过此插件
 
@@ -84,7 +84,7 @@ export const CommunityPlugin: FC = () => {
 								onChange={async (value) => {
 									await settingsStore.updateSettingByPath(
 										"communityPlugins.enable",
-										value
+										value,
 									);
 								}}
 							/>
@@ -104,7 +104,7 @@ export const CommunityPlugin: FC = () => {
 									if (randomIcon) {
 										await settingsStore.updateSettingByPath(
 											"communityPlugins.default.icon",
-											randomIcon
+											randomIcon,
 										);
 									}
 								}}
@@ -116,7 +116,7 @@ export const CommunityPlugin: FC = () => {
 									await settingsStore.updateSettingByPath(
 										"communityPlugins.default",
 										DEFAULT_SETTINGS.communityPlugins
-											.default
+											.default,
 									);
 								}}
 							/>
@@ -127,11 +127,11 @@ export const CommunityPlugin: FC = () => {
 								onChange={async (value, type) => {
 									await settingsStore.updateSettingByPath(
 										"communityPlugins.default.icon",
-										value
+										value,
 									);
 									await settingsStore.updateSettingByPath(
 										"communityPlugins.default.type",
-										type
+										type,
 									);
 								}}
 							/>
@@ -170,16 +170,16 @@ export const CommunityPlugin: FC = () => {
 										// Safest is to update id first then icon.
 										await settingsStore.updateSettingByPath(
 											`communityPlugins.data.${plugin.id}.id`,
-											plugin.id
+											plugin.id,
 										);
 										await settingsStore.updateSettingByPath(
 											`communityPlugins.data.${plugin.id}.icon`,
-											icon
+											icon,
 										);
 										await settingsStore.updateSettingByPath(
 											`communityPlugins.data.${plugin.id}.type`,
 											settings.communityPlugins.default
-												.type
+												.type,
 										);
 									}
 								}}
@@ -192,7 +192,7 @@ export const CommunityPlugin: FC = () => {
 									for (let i = 0; i < count; i++) {
 										const plugin = filteredPlugins[i];
 										await settingsStore.deleteSettingByPath(
-											`communityPlugins.data.${plugin.id}`
+											`communityPlugins.data.${plugin.id}`,
 										);
 									}
 								}}
@@ -235,16 +235,16 @@ export const CommunityPlugin: FC = () => {
 											if (randomIcon) {
 												await settingsStore.updateSettingByPath(
 													`communityPlugins.data.${plugin.id}.id`,
-													plugin.id
+													plugin.id,
 												);
 												await settingsStore.updateSettingByPath(
 													`communityPlugins.data.${plugin.id}.icon`,
-													randomIcon
+													randomIcon,
 												);
 												await settingsStore.updateSettingByPath(
 													`communityPlugins.data.${plugin.id}.type`,
 													settings.communityPlugins
-														.default.type
+														.default.type,
 												);
 											}
 										}}
@@ -254,7 +254,7 @@ export const CommunityPlugin: FC = () => {
 										tooltip={LL.settings.communityPlugin.pluginList.resetTooltip()}
 										onClick={async () => {
 											await settingsStore.deleteSettingByPath(
-												`communityPlugins.data.${plugin.id}`
+												`communityPlugins.data.${plugin.id}`,
 											);
 										}}
 									/>
@@ -273,15 +273,15 @@ export const CommunityPlugin: FC = () => {
 										onChange={async (value, type) => {
 											await settingsStore.updateSettingByPath(
 												`communityPlugins.data.${plugin.id}.id`,
-												plugin.id
+												plugin.id,
 											);
 											await settingsStore.updateSettingByPath(
 												`communityPlugins.data.${plugin.id}.icon`,
-												value
+												value,
 											);
 											await settingsStore.updateSettingByPath(
 												`communityPlugins.data.${plugin.id}.type`,
-												type
+												type,
 											);
 										}}
 									/>

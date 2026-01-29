@@ -43,7 +43,7 @@ export const IconPicker: React.FC<IconPickerProps> = ({
 				setSelectedIcon(icon);
 				setSelectedType(type);
 				onChange(icon, type);
-			}
+			},
 		);
 		modal.open();
 	};
@@ -81,7 +81,7 @@ class IconSelector extends FuzzySuggestModal<string> {
 		app: App,
 		iconItems: Record<IconType, string[]>,
 		initialType: IconType,
-		callback: (icon: string, type: IconType) => void
+		callback: (icon: string, type: IconType) => void,
 	) {
 		super(app);
 		this.iconItems = iconItems;
@@ -113,7 +113,7 @@ class IconSelector extends FuzzySuggestModal<string> {
 		) {
 			this.inputEl.parentElement.parentElement.insertBefore(
 				container,
-				this.inputEl.parentElement
+				this.inputEl.parentElement,
 			);
 		} else {
 			// Fallback if structure is different

@@ -30,7 +30,7 @@ export function useSettingSlot() {
 	const slot = useContext(SettingSlotContext);
 	if (!slot) {
 		throw new Error(
-			"useSettingSlot must be used within a Setting control component"
+			"useSettingSlot must be used within a Setting control component",
 		);
 	}
 	return slot;

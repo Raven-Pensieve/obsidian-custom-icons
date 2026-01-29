@@ -31,8 +31,8 @@ const ConfirmDialogView: React.FC<ConfirmDialogViewProps> = ({
 		<div className="ci-confirm-dialog">
 			<div className="ci-confirm-dialog__content">{children}</div>
 			<div className="ci-confirm-dialog__actions">
-				<button 
-					className="mod-cta" 
+				<button
+					className="mod-cta"
 					onClick={handleConfirm}
 					disabled={disableConfirm}
 				>

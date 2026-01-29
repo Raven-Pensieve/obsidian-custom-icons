@@ -3,11 +3,11 @@ import { IPluginSettings } from "@src/types/types";
 import { useSyncExternalStore } from "react";
 
 export default function usePluginSettings(
-	settingsStore: SettingsStore
+	settingsStore: SettingsStore,
 ): IPluginSettings {
 	const settings = useSyncExternalStore(
 		settingsStore.store.subscribe,
-		settingsStore.store.getSnapshot
+		settingsStore.store.getSnapshot,
 	);
 	return settings;
 }
