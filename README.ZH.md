@@ -4,11 +4,7 @@
 
 通过为文档和文件夹设置可自定义的图标，增强您的工作空间美观及易用性。
 
-[![GitHub stars](https://img.shields.io/github/stars/Raven-Pensieve/obsidian-custom-icons?style=flat&label=星标)](https://github.com/Raven-Pensieve/obsidian-custom-icons/stargazers)
-[![Total Downloads](https://img.shields.io/github/downloads/Raven-Pensieve/obsidian-custom-icons/total?style=flat&label=总下载量)](https://github.com/Raven-Pensieve/obsidian-custom-icons/releases)
-[![GitHub License](https://img.shields.io/github/license/Raven-Pensieve/obsidian-custom-icons?style=flat&label=许可证)](https://github.com/Raven-Pensieve/obsidian-custom-icons/blob/master/LICENSE)
-[![GitHub Issues](https://img.shields.io/github/issues/Raven-Pensieve/obsidian-custom-icons?style=flat&label=问题)](https://github.com/Raven-Pensieve/obsidian-custom-icons/issues)
-[![GitHub Last Commit](https://img.shields.io/github/last-commit/Raven-Pensieve/obsidian-custom-icons?style=flat&label=最后提交)](https://github.com/Raven-Pensieve/obsidian-custom-icons/commits/master)
+![GitHub Socialify](https://socialify.git.ci/Raven-Pensieve/obsidian-custom-icons/image?description=1&font=Rokkitt&forks=1&issues=1&language=1&name=1&owner=1&pattern=Floating+Cogs&pulls=1&stargazers=1&theme=Auto)
 
 ## v1.0 重要公告：重制版与破坏性更新
 
