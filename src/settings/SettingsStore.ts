@@ -1,5 +1,13 @@
 import CIPlugin from "@src/main";
-import { DEFAULT_SETTINGS, IPluginSettings } from "@src/types/types";
+import {
+	DEFAULT_SETTINGS,
+	ICommunityPluginIconOverride,
+	IPluginSettings,
+} from "@src/types/types";
+import {
+	normalizeCommunityPluginOverride,
+	normalizeIconColor,
+} from "@src/util/communityPluginIcon";
 
 export default class SettingsStore {
 	#plugin: CIPlugin;
@@ -97,19 +105,50 @@ export default class SettingsStore {
 		return saved as T;
 	}
 
+	#normalizeCommunityPluginSettings(
+		settings: IPluginSettings,
+	): IPluginSettings {
+		const normalizedSettings = JSON.parse(
+			JSON.stringify(settings),
+		) as IPluginSettings;
+		const defaultIcon = normalizedSettings.communityPlugins.default;
+		defaultIcon.color = normalizeIconColor(defaultIcon.color) ?? "";
+
+		const normalizedData: Record<string, ICommunityPluginIconOverride> =
+			{};
+
+		Object.entries(normalizedSettings.communityPlugins.data).forEach(
+			([pluginId, pluginIcon]) => {
+				const normalizedIcon = normalizeCommunityPluginOverride(
+					pluginId,
+					defaultIcon,
+					pluginIcon,
+				);
+
+				if (normalizedIcon) {
+					normalizedData[pluginId] = normalizedIcon;
+				}
+			},
+		);
+
+		normalizedSettings.communityPlugins.data = normalizedData;
+		return normalizedSettings;
+	}
+
 	async loadSettings() {
 		const saved: unknown = await this.#plugin.loadData();
 		// 与默认配置深度对齐：只保留定义内字段并填充缺省
-		this.#plugin.settings = this.#mergeWithDefaults(
-			saved ?? {},
-			DEFAULT_SETTINGS,
+		this.#plugin.settings = this.#normalizeCommunityPluginSettings(
+			this.#mergeWithDefaults(saved ?? {}, DEFAULT_SETTINGS),
 		);
 		await this.#plugin.saveSettings();
 		this.#notifyStoreSubscribers();
 	}
 
 	async updateSettings(settings: IPluginSettings) {
-		this.#plugin.settings = Object.assign({}, settings);
+		this.#plugin.settings = this.#normalizeCommunityPluginSettings(
+			Object.assign({}, settings),
+		);
 		await this.#plugin.saveSettings();
 		this.#notifyStoreSubscribers();
 	}

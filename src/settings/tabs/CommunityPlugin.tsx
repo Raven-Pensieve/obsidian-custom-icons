@@ -1,5 +1,6 @@
 import { IconPicker } from "@src/components/icon-picker/IconPicker";
 import {
+	Color,
 	ExtraButton,
 	Search,
 	SettingGroup,
@@ -10,6 +11,10 @@ import usePluginSettings from "@src/hooks/usePluginSettings";
 import useSettingsStore from "@src/hooks/useSettingsStore";
 import { LL } from "@src/i18n/i18n";
 import { DEFAULT_SETTINGS } from "@src/types/types";
+import {
+	normalizeIconColor,
+	resolveCommunityPluginIcon,
+} from "@src/util/communityPluginIcon";
 import { getRandomIcon, getUniqueRandomIcons } from "@src/util/randomIcon";
 import { FC, useMemo, useState } from "react";
 
@@ -17,6 +22,71 @@ export const CommunityPlugin: FC = () => {
 	const settingsStore = useSettingsStore();
 	const settings = usePluginSettings(settingsStore);
 	const [searchQuery, setSearchQuery] = useState("");
+	const defaultIcon = settings.communityPlugins.default;
+
+	const getEffectivePluginIcon = (pluginId: string) => {
+		return resolveCommunityPluginIcon(
+			pluginId,
+			defaultIcon,
+			settings.communityPlugins.data[pluginId],
+		);
+	};
+
+	const updatePluginColor = async (pluginId: string, rawColor: string) => {
+		const color = normalizeIconColor(rawColor);
+		const defaultColor = normalizeIconColor(defaultIcon.color);
+		const pluginIcon = settings.communityPlugins.data[pluginId];
+		const hasIconOverride =
+			pluginIcon?.icon !== undefined || pluginIcon?.type !== undefined;
+		const matchesDefaultIcon =
+			(pluginIcon?.icon ?? defaultIcon.icon) === defaultIcon.icon &&
+			(pluginIcon?.type ?? defaultIcon.type) === defaultIcon.type;
+		const inheritsDefaultColor =
+			color === undefined || color === defaultColor;
+
+		if (!pluginIcon) {
+			if (inheritsDefaultColor) return;
+
+			await settingsStore.updateSettingByPath(
+				`communityPlugins.data.${pluginId}`,
+				{
+					id: pluginId,
+					color,
+				},
+			);
+			return;
+		}
+
+		if (inheritsDefaultColor) {
+			if (!hasIconOverride || matchesDefaultIcon) {
+				await settingsStore.deleteSettingByPath(
+					`communityPlugins.data.${pluginId}`,
+				);
+				return;
+			}
+
+			await settingsStore.deleteSettingByPath(
+				`communityPlugins.data.${pluginId}.color`,
+			);
+			return;
+		}
+
+		if (!hasIconOverride || matchesDefaultIcon) {
+			await settingsStore.updateSettingByPath(
+				`communityPlugins.data.${pluginId}`,
+				{
+					id: pluginId,
+					color,
+				},
+			);
+			return;
+		}
+
+		await settingsStore.updateSettingByPath(
+			`communityPlugins.data.${pluginId}.color`,
+			color,
+		);
+	};
 
 	// 获取 communityPluginTabContainer 中的所有插件
 	const installedPlugins = useMemo(() => {
@@ -106,6 +176,10 @@ export const CommunityPlugin: FC = () => {
 											"communityPlugins.default.icon",
 											randomIcon,
 										);
+										await settingsStore.updateSettingByPath(
+											"communityPlugins.default.type",
+											"lucide",
+										);
 									}
 								}}
 							/>
@@ -122,8 +196,9 @@ export const CommunityPlugin: FC = () => {
 							/>
 							<IconPicker
 								app={settingsStore.app}
-								value={settings.communityPlugins.default.icon}
-								type={settings.communityPlugins.default.type}
+								value={defaultIcon.icon}
+								type={defaultIcon.type}
+								color={defaultIcon.color}
 								onChange={async (value, type) => {
 									await settingsStore.updateSettingByPath(
 										"communityPlugins.default.icon",
@@ -132,6 +207,15 @@ export const CommunityPlugin: FC = () => {
 									await settingsStore.updateSettingByPath(
 										"communityPlugins.default.type",
 										type,
+									);
+								}}
+							/>
+							<Color
+								value={defaultIcon.color}
+								onChange={async (value) => {
+									await settingsStore.updateSettingByPath(
+										"communityPlugins.default.color",
+										normalizeIconColor(value) ?? "",
 									);
 								}}
 							/>
@@ -178,8 +262,7 @@ export const CommunityPlugin: FC = () => {
 										);
 										await settingsStore.updateSettingByPath(
 											`communityPlugins.data.${plugin.id}.type`,
-											settings.communityPlugins.default
-												.type,
+											"lucide",
 										);
 									}
 								}}
@@ -210,6 +293,9 @@ export const CommunityPlugin: FC = () => {
 				{filteredPlugins.map((plugin, index) => {
 					const pluginIcon =
 						settings.communityPlugins.data[plugin.id];
+					const effectivePluginIcon = getEffectivePluginIcon(
+						plugin.id,
+					);
 
 					return (
 						<SettingItem
@@ -223,11 +309,7 @@ export const CommunityPlugin: FC = () => {
 										tooltip={LL.settings.communityPlugin.pluginList.dicesTooltip()}
 										onClick={async () => {
 											const currentIcon =
-												settings.communityPlugins.data[
-													plugin.id
-												]?.icon ||
-												settings.communityPlugins
-													.default.icon;
+												effectivePluginIcon.icon;
 
 											const randomIcon =
 												getRandomIcon(currentIcon);
@@ -243,8 +325,7 @@ export const CommunityPlugin: FC = () => {
 												);
 												await settingsStore.updateSettingByPath(
 													`communityPlugins.data.${plugin.id}.type`,
-													settings.communityPlugins
-														.default.type,
+													"lucide",
 												);
 											}
 										}}
@@ -260,16 +341,9 @@ export const CommunityPlugin: FC = () => {
 									/>
 									<IconPicker
 										app={settingsStore.app}
-										value={
-											pluginIcon?.icon ||
-											settings.communityPlugins.default
-												.icon
-										}
-										type={
-											pluginIcon?.type ||
-											settings.communityPlugins.default
-												.type
-										}
+										value={effectivePluginIcon.icon}
+										type={effectivePluginIcon.type}
+										color={effectivePluginIcon.color}
 										onChange={async (value, type) => {
 											await settingsStore.updateSettingByPath(
 												`communityPlugins.data.${plugin.id}.id`,
@@ -282,6 +356,15 @@ export const CommunityPlugin: FC = () => {
 											await settingsStore.updateSettingByPath(
 												`communityPlugins.data.${plugin.id}.type`,
 												type,
+											);
+										}}
+									/>
+									<Color
+										value={effectivePluginIcon.color}
+										onChange={async (value) => {
+											await updatePluginColor(
+												plugin.id,
+												value,
 											);
 										}}
 									/>

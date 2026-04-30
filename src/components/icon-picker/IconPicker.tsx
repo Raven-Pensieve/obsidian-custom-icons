@@ -11,6 +11,7 @@ interface IconPickerProps {
 	app: App;
 	value: string;
 	type: IconType;
+	color?: string;
 	onChange: (value: string, type: IconType) => void;
 }
 
@@ -18,6 +19,7 @@ export const IconPicker: React.FC<IconPickerProps> = ({
 	app,
 	value,
 	type,
+	color,
 	onChange,
 }) => {
 	const settingsStore = useSettingsStore();
@@ -39,6 +41,7 @@ export const IconPicker: React.FC<IconPickerProps> = ({
 			app,
 			iconItems,
 			selectedType,
+			color,
 			(icon, type) => {
 				setSelectedIcon(icon);
 				setSelectedType(type);
@@ -50,9 +53,11 @@ export const IconPicker: React.FC<IconPickerProps> = ({
 
 	React.useEffect(() => {
 		if (buttonRef.current) {
-			setIcon(buttonRef.current, selectedType, selectedIcon);
+			setIcon(buttonRef.current, selectedType, selectedIcon, {
+				color,
+			});
 		}
-	}, [selectedIcon, selectedType]);
+	}, [color, selectedIcon, selectedType]);
 
 	// 监听外部 value 和 type 变化，同步更新内部状态
 	React.useEffect(() => {
@@ -76,16 +81,19 @@ class IconSelector extends FuzzySuggestModal<string> {
 	private callback: (icon: string, type: IconType) => void;
 	private iconItems: Record<IconType, string[]>;
 	private currentType: IconType;
+	private previewColor?: string;
 
 	constructor(
 		app: App,
 		iconItems: Record<IconType, string[]>,
 		initialType: IconType,
+		previewColor: string | undefined,
 		callback: (icon: string, type: IconType) => void,
 	) {
 		super(app);
 		this.iconItems = iconItems;
 		this.currentType = initialType;
+		this.previewColor = previewColor;
 		this.callback = callback;
 		this.setInstructions([
 			{ command: "↑↓", purpose: "Navigate" },
@@ -157,7 +165,10 @@ class IconSelector extends FuzzySuggestModal<string> {
 		el.addClass("CI__icon-suggestion");
 
 		// 将图标作为子元素追加
-		setIcon(el, this.currentType, item.item, { append: true });
+		setIcon(el, this.currentType, item.item, {
+			append: true,
+			color: this.previewColor,
+		});
 
 		// 创建文本容器
 		el.createSpan({ text: item.item });
