@@ -41,7 +41,7 @@ const zh = {
 			command: "打开自定义图标库",
 			searchPlaceholder: "搜索图标...",
 			svg: {
-				tabName: "SVG",
+				tabName: "SVG（实验性）",
 				copyAction: "复制 SVG 代码",
 				modal: {
 					pasteMode: "粘贴源码",

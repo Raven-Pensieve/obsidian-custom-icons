@@ -10,8 +10,26 @@ const rootMap = new WeakMap<HTMLElement, Root>();
 // 存储元素当前的图标信息，用于避免不必要的重新渲染
 const iconStateMap = new WeakMap<
 	HTMLElement,
-	{ type: IconType; icon: string }
+	{ type: IconType; icon: string; color?: string }
 >();
+
+function normalizeColor(color?: string): string | undefined {
+	const trimmed = color?.trim();
+	return trimmed ? trimmed : undefined;
+}
+
+function applyIconColor(
+	el: HTMLElement | SVGElement,
+	color?: string,
+): void {
+	const resolvedColor = normalizeColor(color);
+	if (resolvedColor) {
+		el.style.color = resolvedColor;
+		return;
+	}
+
+	el.style.removeProperty("color");
+}
 
 /**
  * 在指定元素中渲染图标
@@ -20,21 +38,25 @@ const iconStateMap = new WeakMap<
  * @param icon - 图标名称
  * @param options - 配置选项
  * @param options.append - 如果为 true，将图标作为子元素追加；否则替换元素内容
+ * @param options.color - 图标颜色，留空时继承默认颜色
  * @returns 渲染图标的容器元素（仅当 append 为 true 时）
  */
 export default function (
 	el: HTMLElement,
 	iconType: IconType,
 	icon: string,
-	options?: { append?: boolean },
+	options?: { append?: boolean; color?: string },
 ): HTMLElement | void {
+	const resolvedColor = normalizeColor(options?.color);
+
 	// 检查图标是否已经是目标图标，如果是则跳过渲染（仅对非 append 模式）
 	if (!options?.append) {
 		const currentState = iconStateMap.get(el);
 		if (
 			currentState &&
 			currentState.type === iconType &&
-			currentState.icon === icon
+			currentState.icon === icon &&
+			currentState.color === resolvedColor
 		) {
 			return; // 图标没有变化，跳过渲染
 		}
@@ -52,6 +74,7 @@ export default function (
 						React.createElement(IconComponent, {
 							size: 16,
 							strokeWidth: 2,
+							color: resolvedColor,
 							className: "lucide-icon",
 						}),
 					);
@@ -63,6 +86,7 @@ export default function (
 					// 获取 SVG 元素并直接插入到目标元素中
 					const svgElement = tempContainer.firstChild as SVGElement;
 					if (svgElement) {
+						applyIconColor(svgElement, resolvedColor);
 						el.appendChild(svgElement);
 						return svgElement as unknown as HTMLElement;
 					}
@@ -74,6 +98,7 @@ export default function (
 						rootMap.delete(el);
 					}
 					el.empty();
+					applyIconColor(el, resolvedColor);
 
 					const root = createRoot(el);
 					rootMap.set(el, root);
@@ -82,12 +107,17 @@ export default function (
 						React.createElement(IconComponent, {
 							size: 16,
 							strokeWidth: 2,
+							color: resolvedColor,
 							className: "svg-icon",
 						}),
 					);
 
 					// 更新图标状态
-					iconStateMap.set(el, { type: iconType, icon });
+					iconStateMap.set(el, {
+						type: iconType,
+						icon,
+						color: resolvedColor,
+					});
 				}
 			} catch (error) {
 				console.error(`Error rendering Lucide icon "${icon}":`, error);
@@ -121,6 +151,7 @@ export default function (
 					svgElement.setAttribute("height", "16");
 				}
 				svgElement.classList.add("svg-icon");
+				applyIconColor(svgElement, resolvedColor);
 
 				el.appendChild(svgElement);
 				return svgElement as unknown as HTMLElement;
@@ -137,7 +168,11 @@ export default function (
 			if (el.children.length === 0) {
 				obsidianSetIcon(el, `CI-${icon}`);
 			}
-			iconStateMap.set(el, { type: iconType, icon });
+			iconStateMap.set(el, {
+				type: iconType,
+				icon,
+				color: resolvedColor,
+			});
 
 			const svgElement = el.querySelector("svg");
 			if (svgElement) {
@@ -148,6 +183,7 @@ export default function (
 					svgElement.setAttribute("height", "16");
 				}
 				svgElement.classList.add("svg-icon");
+				applyIconColor(svgElement, resolvedColor);
 			}
 		}
 	}

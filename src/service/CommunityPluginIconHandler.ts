@@ -1,11 +1,15 @@
-import { ICommunityPluginIcon } from "@src/types/types";
+import {
+	ICommunityPluginIcon,
+	ICommunityPluginIconOverride,
+} from "@src/types/types";
 import { AbstractIconHandler } from "@src/util/IconHandler";
+import { resolveCommunityPluginIcon } from "@src/util/communityPluginIcon";
 import setIcon from "@src/util/setIcon";
 
 interface ICommunityPluginConfig {
 	enable: boolean;
 	default: ICommunityPluginIcon;
-	data: Record<string, ICommunityPluginIcon>;
+	data: Record<string, ICommunityPluginIconOverride>;
 }
 
 /**
@@ -103,9 +107,11 @@ export default class CommunityPluginIconHandler extends AbstractIconHandler<ICom
 		const pluginId = navItemEl.getAttribute("data-setting-id");
 		if (!pluginId) return;
 
-		// 优先使用插件特定的图标配置，否则使用默认配置
-		const iconConfig =
-			this.settings.data[pluginId] || this.settings.default;
+		const iconConfig = resolveCommunityPluginIcon(
+			pluginId,
+			this.settings.default,
+			this.settings.data[pluginId],
+		);
 
 		this.addIconToPluginNavItem(navItemEl, iconConfig);
 	}
@@ -141,21 +147,29 @@ export default class CommunityPluginIconHandler extends AbstractIconHandler<ICom
 			// 检查图标是否需要更新（通过数据属性）
 			const currentType = iconContainer.getAttribute("data-icon-type");
 			const currentIcon = iconContainer.getAttribute("data-icon-name");
+			const currentColor = iconContainer.getAttribute("data-icon-color");
 
 			if (
 				currentType === communityPlugin.type &&
-				currentIcon === communityPlugin.icon
+				currentIcon === communityPlugin.icon &&
+				currentColor === (communityPlugin.color || "")
 			) {
 				return; // 图标没有变化，跳过更新
 			}
 		}
 
 		// 更新图标（无论是新创建的还是已存在但需要更新的）
-		setIcon(iconContainer, communityPlugin.type, communityPlugin.icon);
+		setIcon(iconContainer, communityPlugin.type, communityPlugin.icon, {
+			color: communityPlugin.color,
+		});
 
 		// 保存图标信息到数据属性
 		iconContainer.setAttribute("data-icon-type", communityPlugin.type);
 		iconContainer.setAttribute("data-icon-name", communityPlugin.icon);
+		iconContainer.setAttribute(
+			"data-icon-color",
+			communityPlugin.color || "",
+		);
 	}
 
 	/**

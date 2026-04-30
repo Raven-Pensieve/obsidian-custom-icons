@@ -41,7 +41,7 @@ const zh_TW = {
 			command: "打開自訂圖示庫",
 			searchPlaceholder: "搜索圖示...",
 			svg: {
-				tabName: "SVG",
+				tabName: "SVG（實驗性）",
 				copyAction: "複製 SVG 代碼",
 				modal: {
 					pasteMode: "粘貼源碼",

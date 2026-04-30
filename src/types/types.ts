@@ -2,7 +2,7 @@ export interface IPluginSettings {
 	communityPlugins: {
 		enable: boolean;
 		default: ICommunityPluginIcon;
-		data: Record<string, ICommunityPluginIcon>;
+		data: Record<string, ICommunityPluginIconOverride>;
 	};
 	// 扩展示例：侧边栏视图图标
 	// sidebarViews: {
@@ -20,12 +20,19 @@ export interface IPluginSettings {
 
 // Reference
 export interface ICommunityPluginIcon extends IIcon {}
+export interface ICommunityPluginIconOverride {
+	id: string;
+	icon?: string;
+	type?: IconType;
+	color?: string;
+}
 
 // Definition
 interface IIcon {
 	id: string;
 	icon: string;
 	type: IconType;
+	color?: string;
 }
 
 export type IconType = "lucide" | "svg";
@@ -44,7 +51,7 @@ export interface ICustomSVGIcon {
 export const DEFAULT_SETTINGS: IPluginSettings = {
 	communityPlugins: {
 		enable: false,
-		default: { id: "", icon: "puzzle", type: "lucide" },
+		default: { id: "", icon: "puzzle", type: "lucide", color: "" },
 		data: {},
 	},
 	customIconLib: {

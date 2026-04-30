@@ -12,7 +12,7 @@ import {
 	TextComponent,
 	ToggleComponent,
 } from "obsidian";
-import { FC, ReactNode, useEffect, useMemo } from "react";
+import { FC, ReactNode, useEffect, useMemo, useRef } from "react";
 import { createPortal } from "react-dom";
 
 // ============================================================================
@@ -378,6 +378,7 @@ export interface ColorProps {
 
 export const Color: FC<ColorProps> = ({ value, disabled, onChange }) => {
 	const { slotEl } = useSettingSlot();
+	const programmaticSetRef = useRef(false);
 
 	const color = useMemo(() => new ColorComponent(slotEl), [slotEl]);
 
@@ -388,13 +389,21 @@ export const Color: FC<ColorProps> = ({ value, disabled, onChange }) => {
 	// 分离 onChange 事件处理
 	useEffect(() => {
 		if (onChange) {
-			color.onChange(onChange);
+			color.onChange((v) => {
+				if (!programmaticSetRef.current) {
+					onChange(v);
+				}
+			});
 		}
 	}, [color, onChange]);
 
 	// 合并其他属性设置
 	useEffect(() => {
-		if (value !== undefined) color.setValue(value);
+		if (value !== undefined) {
+			programmaticSetRef.current = true;
+			color.setValue(value);
+			programmaticSetRef.current = false;
+		}
 		if (disabled !== undefined) color.setDisabled(disabled);
 	}, [color, value, disabled]);
 

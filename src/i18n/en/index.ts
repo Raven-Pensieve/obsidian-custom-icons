@@ -41,8 +41,8 @@ const en = {
 			command: "Open custom icon library",
 			searchPlaceholder: "Search icon...",
 			svg: {
-				tabName: "SVG",
-				copyAction: "Copy svg code",
+				tabName: "SVG (Experimental)",
+				copyAction: "Copy SVG code",
 				modal: {
 					pasteMode: "Paste Code",
 					uploadMode: "Upload Files",
