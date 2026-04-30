@@ -125,7 +125,7 @@ type RootTranslation = {
 			searchPlaceholder: string
 			svg: {
 				/**
-				 * S​V​G
+				 * S​V​G​（​实​验​性​）
 				 */
 				tabName: string
 				/**
@@ -279,7 +279,7 @@ export type TranslationFunctions = {
 			searchPlaceholder: () => LocalizedString
 			svg: {
 				/**
-				 * SVG
+				 * SVG（实验性）
 				 */
 				tabName: () => LocalizedString
 				/**
