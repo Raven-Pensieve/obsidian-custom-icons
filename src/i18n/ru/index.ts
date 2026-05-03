@@ -22,7 +22,7 @@ const ru = {
 			},
 			pluginList: {
 				name: "Список плагинов",
-				desc: "Добавьте пользовательские иконки для плагинов сообщества без иконок (Исправление для Obsidian v1.11.0)",
+				desc: "Добавьте иконки для плагинов сообщества, у которых их нет (Исправление для Obsidian v1.11.0)",
 				resetTooltip: "Сброс к иконке по умолчанию",
 				dicesTooltip: "Случайная иконка",
 			},
@@ -41,17 +41,17 @@ const ru = {
 			command: "Открыть пользовательскую библиотеку иконок",
 			searchPlaceholder: "Поиск иконки...",
 			svg: {
-				tabName: "SVG (Экспериментально)",
+				tabName: "SVG (экспериментально)",
 				copyAction: "Копировать SVG код",
 				modal: {
 					pasteMode: "Вставить код",
 					uploadMode: "Загрузить файлы",
 					idPlaceholder: "Идентификатор иконки (например: my-icon)",
 					contentPlaceholder: "Содержание SVG (<svg>...</svg>)",
-					selectFiles: "Выбрать svg файлы",
+					selectFiles: "Выбрать SVG файлы",
 					selectFilesDesc:
 						"Вы можете выбрать несколько SVG файлов для пакетного добавления иконок. Имена файлов будут использоваться в качестве идентификаторов иконок.",
-					selectedFiles: "{count:number} файл(ов) выбрано",
+					selectedFiles: "Выбрано файлов: {count:number}",
 				},
 			},
 		},
