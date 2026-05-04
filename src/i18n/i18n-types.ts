@@ -3,13 +3,13 @@
 import type { BaseTranslation as BaseTranslationType, LocalizedString, RequiredParams } from 'typesafe-i18n'
 
 export type BaseTranslation = BaseTranslationType
-export type BaseLocale = 'zh'
+export type BaseLocale = 'en'
 
 export type Locales =
 	| 'en'
+	| 'ru'
 	| 'zh'
 	| 'zh-TW'
-    | 'ru'
 
 export type Translation = RootTranslation
 
@@ -19,70 +19,70 @@ type RootTranslation = {
 	settings: {
 		communityPlugin: {
 			/**
-			 * 第​三​方​插​件
+			 * C​o​m​m​u​n​i​t​y​ ​p​l​u​g​i​n​s
 			 */
 			name: string
 			enable: {
 				/**
-				 * 启​用​功​能
+				 * E​n​a​b​l​e​ ​f​e​a​t​u​r​e
 				 */
 				name: string
 				/**
-				 * 为​没​有​图​标​的​第​三​方​插​件​设​置​添​加​图​标
+				 * A​d​d​ ​i​c​o​n​s​ ​f​o​r​ ​c​o​m​m​u​n​i​t​y​ ​p​l​u​g​i​n​s​ ​w​i​t​h​o​u​t​ ​i​c​o​n​s
 				 */
 				desc: string
 			}
 			'default': {
 				/**
-				 * 默​认​图​标
+				 * D​e​f​a​u​l​t​ ​i​c​o​n
 				 */
 				name: string
 				/**
-				 * 为​没​有​图​标​的​第​三​方​插​件​设​置​添​加​默​认​图​标
+				 * S​e​t​ ​a​ ​d​e​f​a​u​l​t​ ​i​c​o​n​ ​f​o​r​ ​c​o​m​m​u​n​i​t​y​ ​p​l​u​g​i​n​s​ ​w​i​t​h​o​u​t​ ​i​c​o​n​s
 				 */
 				desc: string
 				/**
-				 * 重​置
+				 * R​e​s​e​t
 				 */
 				resetTooltip: string
 				/**
-				 * 随​机
+				 * R​a​n​d​o​m
 				 */
 				dicesTooltip: string
 			}
 			search: {
 				/**
-				 * 输​入​插​件​名​称​.​.​.
+				 * E​n​t​e​r​ ​p​l​u​g​i​n​ ​n​a​m​e​ ​o​r​ ​I​D​.​.​.
 				 */
 				placeholder: string
 				/**
-				 * 未​找​到​匹​配​的​插​件
+				 * N​o​ ​m​a​t​c​h​i​n​g​ ​p​l​u​g​i​n​s​ ​f​o​u​n​d
 				 */
 				noneFound: string
 				/**
-				 * 重​置​所​有​为​默​认​图​标
+				 * R​e​s​e​t​ ​a​l​l​ ​t​o​ ​d​e​f​a​u​l​t​ ​i​c​o​n
 				 */
 				resetTooltip: string
 				/**
-				 * 随​机​所​有​图​标
+				 * R​a​n​d​o​m​ ​a​l​l​ ​i​c​o​n​s
 				 */
 				dicesTooltip: string
 			}
 			pluginList: {
 				/**
-				 * 插​件​列​表
+				 * P​l​u​g​i​n​ ​l​i​s​t
 				 */
 				name: string
 				/**
-				 * 为​没​有​图​标​的​第​三​方​插​件​添​加​自​定​义​图​标​（​修​复​ ​O​b​s​i​d​i​a​n​ ​v​1​.​1​1​.​0​）
+				 * A​d​d​ ​c​u​s​t​o​m​ ​i​c​o​n​s​ ​f​o​r​ ​c​o​m​m​u​n​i​t​y​ ​p​l​u​g​i​n​s​ ​w​i​t​h​o​u​t​ ​i​c​o​n​s​ ​(​f​i​x​ ​f​o​r​ ​O​b​s​i​d​i​a​n​ ​v​1​.​1​1​.​0​)
 				 */
 				desc: string
 				/**
-				 * 重​置​为​默​认​图​标
+				 * R​e​s​e​t​ ​t​o​ ​d​e​f​a​u​l​t​ ​i​c​o​n
 				 */
 				resetTooltip: string
 				/**
-				 * 随​机​图​标
+				 * R​a​n​d​o​m​ ​i​c​o​n
 				 */
 				dicesTooltip: string
 			}
@@ -90,76 +90,76 @@ type RootTranslation = {
 	}
 	common: {
 		/**
-		 * 保​存
+		 * S​a​v​e
 		 */
 		save: string
 		/**
-		 * 添​加
+		 * A​d​d
 		 */
 		add: string
 		/**
-		 * 编​辑
+		 * E​d​i​t
 		 */
 		edit: string
 		/**
-		 * 删​除
+		 * D​e​l​e​t​e
 		 */
 		'delete': string
 		/**
-		 * 取​消
+		 * C​a​n​c​e​l
 		 */
 		cancel: string
 	}
 	view: {
 		CustomIconLib: {
 			/**
-			 * 自​定​义​图​标​库
+			 * C​u​s​t​o​m​ ​i​c​o​n​ ​l​i​b​r​a​r​y
 			 */
 			name: string
 			/**
-			 * 打​开​自​定​义​图​标​库
+			 * O​p​e​n​ ​c​u​s​t​o​m​ ​i​c​o​n​ ​l​i​b​r​a​r​y
 			 */
 			command: string
 			/**
-			 * 搜​索​图​标​.​.​.
+			 * S​e​a​r​c​h​ ​i​c​o​n​.​.​.
 			 */
 			searchPlaceholder: string
 			svg: {
 				/**
-				 * S​V​G​（​实​验​性​）
+				 * S​V​G​ ​(​E​x​p​e​r​i​m​e​n​t​a​l​)
 				 */
 				tabName: string
 				/**
-				 * 复​制​ ​S​V​G​ ​代​码
+				 * C​o​p​y​ ​S​V​G​ ​c​o​d​e
 				 */
 				copyAction: string
 				modal: {
 					/**
-					 * 粘​贴​源​码
+					 * P​a​s​t​e​ ​C​o​d​e
 					 */
 					pasteMode: string
 					/**
-					 * 上​传​文​件
+					 * U​p​l​o​a​d​ ​F​i​l​e​s
 					 */
 					uploadMode: string
 					/**
-					 * 图​标​I​D​ ​(​例​如​:​ ​m​y​-​i​c​o​n​)
+					 * I​c​o​n​ ​I​D​ ​(​e​.​g​:​ ​m​y​-​i​c​o​n​)
 					 */
 					idPlaceholder: string
 					/**
-					 * S​V​G​ ​内​容​ ​(​<​s​v​g​>​.​.​.​<​/​s​v​g​>​)
+					 * S​V​G​ ​c​o​n​t​e​n​t​ ​(​<​s​v​g​>​.​.​.​<​/​s​v​g​>​)
 					 */
 					contentPlaceholder: string
 					/**
-					 * 选​择​ ​S​V​G​ ​文​件
+					 * S​e​l​e​c​t​ ​s​v​g​ ​f​i​l​e​s
 					 */
 					selectFiles: string
 					/**
-					 * 可​以​选​择​多​个​ ​S​V​G​ ​文​件​进​行​批​量​添​加​，​将​使​用​文​件​名​作​为​图​标​ ​I​D​。
+					 * Y​o​u​ ​c​a​n​ ​s​e​l​e​c​t​ ​m​u​l​t​i​p​l​e​ ​s​v​g​ ​f​i​l​e​s​ ​t​o​ ​b​a​t​c​h​ ​a​d​d​ ​i​c​o​n​s​.​ ​F​i​l​e​ ​n​a​m​e​s​ ​w​i​l​l​ ​b​e​ ​u​s​e​d​ ​a​s​ ​i​c​o​n​ ​I​D​s​.
 					 */
 					selectFilesDesc: string
 					/**
-					 * 已​选​择​ ​{​c​o​u​n​t​}​ ​个​文​件
+					 * {​c​o​u​n​t​}​ ​f​i​l​e​(​s​)​ ​s​e​l​e​c​t​e​d
 					 * @param {number} count
 					 */
 					selectedFiles: RequiredParams<'count'>
@@ -173,70 +173,70 @@ export type TranslationFunctions = {
 	settings: {
 		communityPlugin: {
 			/**
-			 * 第三方插件
+			 * Community plugins
 			 */
 			name: () => LocalizedString
 			enable: {
 				/**
-				 * 启用功能
+				 * Enable feature
 				 */
 				name: () => LocalizedString
 				/**
-				 * 为没有图标的第三方插件设置添加图标
+				 * Add icons for community plugins without icons
 				 */
 				desc: () => LocalizedString
 			}
 			'default': {
 				/**
-				 * 默认图标
+				 * Default icon
 				 */
 				name: () => LocalizedString
 				/**
-				 * 为没有图标的第三方插件设置添加默认图标
+				 * Set a default icon for community plugins without icons
 				 */
 				desc: () => LocalizedString
 				/**
-				 * 重置
+				 * Reset
 				 */
 				resetTooltip: () => LocalizedString
 				/**
-				 * 随机
+				 * Random
 				 */
 				dicesTooltip: () => LocalizedString
 			}
 			search: {
 				/**
-				 * 输入插件名称...
+				 * Enter plugin name or ID...
 				 */
 				placeholder: () => LocalizedString
 				/**
-				 * 未找到匹配的插件
+				 * No matching plugins found
 				 */
 				noneFound: () => LocalizedString
 				/**
-				 * 重置所有为默认图标
+				 * Reset all to default icon
 				 */
 				resetTooltip: () => LocalizedString
 				/**
-				 * 随机所有图标
+				 * Random all icons
 				 */
 				dicesTooltip: () => LocalizedString
 			}
 			pluginList: {
 				/**
-				 * 插件列表
+				 * Plugin list
 				 */
 				name: () => LocalizedString
 				/**
-				 * 为没有图标的第三方插件添加自定义图标（修复 Obsidian v1.11.0）
+				 * Add custom icons for community plugins without icons (fix for Obsidian v1.11.0)
 				 */
 				desc: () => LocalizedString
 				/**
-				 * 重置为默认图标
+				 * Reset to default icon
 				 */
 				resetTooltip: () => LocalizedString
 				/**
-				 * 随机图标
+				 * Random icon
 				 */
 				dicesTooltip: () => LocalizedString
 			}
@@ -244,76 +244,76 @@ export type TranslationFunctions = {
 	}
 	common: {
 		/**
-		 * 保存
+		 * Save
 		 */
 		save: () => LocalizedString
 		/**
-		 * 添加
+		 * Add
 		 */
 		add: () => LocalizedString
 		/**
-		 * 编辑
+		 * Edit
 		 */
 		edit: () => LocalizedString
 		/**
-		 * 删除
+		 * Delete
 		 */
 		'delete': () => LocalizedString
 		/**
-		 * 取消
+		 * Cancel
 		 */
 		cancel: () => LocalizedString
 	}
 	view: {
 		CustomIconLib: {
 			/**
-			 * 自定义图标库
+			 * Custom icon library
 			 */
 			name: () => LocalizedString
 			/**
-			 * 打开自定义图标库
+			 * Open custom icon library
 			 */
 			command: () => LocalizedString
 			/**
-			 * 搜索图标...
+			 * Search icon...
 			 */
 			searchPlaceholder: () => LocalizedString
 			svg: {
 				/**
-				 * SVG（实验性）
+				 * SVG (Experimental)
 				 */
 				tabName: () => LocalizedString
 				/**
-				 * 复制 SVG 代码
+				 * Copy SVG code
 				 */
 				copyAction: () => LocalizedString
 				modal: {
 					/**
-					 * 粘贴源码
+					 * Paste Code
 					 */
 					pasteMode: () => LocalizedString
 					/**
-					 * 上传文件
+					 * Upload Files
 					 */
 					uploadMode: () => LocalizedString
 					/**
-					 * 图标ID (例如: my-icon)
+					 * Icon ID (e.g: my-icon)
 					 */
 					idPlaceholder: () => LocalizedString
 					/**
-					 * SVG 内容 (<svg>...</svg>)
+					 * SVG content (<svg>...</svg>)
 					 */
 					contentPlaceholder: () => LocalizedString
 					/**
-					 * 选择 SVG 文件
+					 * Select svg files
 					 */
 					selectFiles: () => LocalizedString
 					/**
-					 * 可以选择多个 SVG 文件进行批量添加，将使用文件名作为图标 ID。
+					 * You can select multiple svg files to batch add icons. File names will be used as icon IDs.
 					 */
 					selectFilesDesc: () => LocalizedString
 					/**
-					 * 已选择 {count} 个文件
+					 * {count} file(s) selected
 					 */
 					selectedFiles: (arg: { count: number }) => LocalizedString
 				}
