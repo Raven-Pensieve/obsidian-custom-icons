@@ -1,0 +1,61 @@
+import type { BaseTranslation } from "../i18n-types";
+
+const ru = {
+	settings: {
+		communityPlugin: {
+			name: "Плагины сообщества",
+			enable: {
+				name: "Включить",
+				desc: "Добавьте иконки для плагинов сообщества без иконок",
+			},
+			default: {
+				name: "Иконка по умолчанию",
+				desc: "Установите иконку по умолчанию для плагинов сообщества без иконок",
+				resetTooltip: "Сбросить",
+				dicesTooltip: "Случайная",
+			},
+			search: {
+				placeholder: "Введите название плагина или идентификатор...",
+				noneFound: "Подходящих плагинов не найдено",
+				resetTooltip: "Сбросить все к иконке по умолчанию",
+				dicesTooltip: "Выбрать все иконки случайно",
+			},
+			pluginList: {
+				name: "Список плагинов",
+				desc: "Добавьте иконки для плагинов сообщества, у которых их нет (Исправление для Obsidian v1.11.0)",
+				resetTooltip: "Сброс к иконке по умолчанию",
+				dicesTooltip: "Случайная иконка",
+			},
+		},
+	},
+	common: {
+		save: "Сохранить",
+		add: "Добавить",
+		edit: "Изменить",
+		delete: "Удалить",
+		cancel: "Отменить",
+	},
+	view: {
+		CustomIconLib: {
+			name: "Пользовательская библиотека иконок",
+			command: "Открыть пользовательскую библиотеку иконок",
+			searchPlaceholder: "Поиск иконки...",
+			svg: {
+				tabName: "SVG (экспериментально)",
+				copyAction: "Копировать SVG код",
+				modal: {
+					pasteMode: "Вставить код",
+					uploadMode: "Загрузить файлы",
+					idPlaceholder: "Идентификатор иконки (например: my-icon)",
+					contentPlaceholder: "Содержание SVG (<svg>...</svg>)",
+					selectFiles: "Выбрать SVG файлы",
+					selectFilesDesc:
+						"Вы можете выбрать несколько SVG файлов для пакетного добавления иконок. Имена файлов будут использоваться в качестве идентификаторов иконок.",
+					selectedFiles: "Выбрано файлов: {count:number}",
+				},
+			},
+		},
+	},
+} satisfies BaseTranslation;
+
+export default ru;
