@@ -1,12 +1,9 @@
 import { IconType } from "@src/types/types";
 import { setIcon as obsidianSetIcon } from "obsidian";
 import * as React from "react";
-import { createRoot, Root } from "react-dom/client";
 import { renderToStaticMarkup } from "react-dom/server";
 import { getLucideIcon } from "./getLucideIcons";
 
-// 存储已创建的 React root，用于清理
-const rootMap = new WeakMap<HTMLElement, Root>();
 // 存储元素当前的图标信息，用于避免不必要的重新渲染
 const iconStateMap = new WeakMap<
 	HTMLElement,
@@ -18,10 +15,7 @@ function normalizeColor(color?: string): string | undefined {
 	return trimmed ? trimmed : undefined;
 }
 
-function applyIconColor(
-	el: HTMLElement | SVGElement,
-	color?: string,
-): void {
+function applyIconColor(el: HTMLElement | SVGElement, color?: string): void {
 	const resolvedColor = normalizeColor(color);
 	if (resolvedColor) {
 		el.style.color = resolvedColor;
@@ -29,6 +23,37 @@ function applyIconColor(
 	}
 
 	el.style.removeProperty("color");
+}
+
+function createDetachedDiv(ownerDocument: Document): HTMLDivElement {
+	return ownerDocument.createElement("div");
+}
+
+function createLucideSvg(
+	ownerDocument: Document,
+	IconComponent: React.ComponentType<{
+		size?: number;
+		strokeWidth?: number;
+		color?: string;
+		className?: string;
+	}>,
+	resolvedColor?: string,
+	className = "svg-icon",
+): SVGElement | null {
+	const svgString = renderToStaticMarkup(
+		React.createElement(IconComponent, {
+			size: 16,
+			strokeWidth: 2,
+			color: resolvedColor,
+			className,
+		}),
+	);
+
+	const tempContainer = createDetachedDiv(ownerDocument);
+	tempContainer.innerHTML = svgString;
+	const svgElement = tempContainer.firstElementChild;
+
+	return svgElement instanceof SVGElement ? svgElement : null;
 }
 
 /**
@@ -69,48 +94,30 @@ export default function (
 		if (IconComponent) {
 			try {
 				if (options?.append) {
-					// 使用 renderToStaticMarkup 将 React 组件渲染为静态 HTML 字符串
-					const svgString = renderToStaticMarkup(
-						React.createElement(IconComponent, {
-							size: 16,
-							strokeWidth: 2,
-							color: resolvedColor,
-							className: "lucide-icon",
-						}),
+					const svgElement = createLucideSvg(
+						el.ownerDocument,
+						IconComponent,
+						resolvedColor,
+						"lucide-icon",
 					);
-
-					// 创建一个临时容器来解析 HTML
-					const tempContainer = document.createElement("div");
-					tempContainer.innerHTML = svgString;
-
-					// 获取 SVG 元素并直接插入到目标元素中
-					const svgElement = tempContainer.firstChild as SVGElement;
 					if (svgElement) {
 						applyIconColor(svgElement, resolvedColor);
 						el.appendChild(svgElement);
 						return svgElement as unknown as HTMLElement;
 					}
 				} else {
-					// 替换元素内容（原有逻辑，使用 React root）
-					const existingRoot = rootMap.get(el);
-					if (existingRoot) {
-						existingRoot.unmount();
-						rootMap.delete(el);
-					}
 					el.empty();
 					applyIconColor(el, resolvedColor);
 
-					const root = createRoot(el);
-					rootMap.set(el, root);
-
-					root.render(
-						React.createElement(IconComponent, {
-							size: 16,
-							strokeWidth: 2,
-							color: resolvedColor,
-							className: "svg-icon",
-						}),
+					const svgElement = createLucideSvg(
+						el.ownerDocument,
+						IconComponent,
+						resolvedColor,
 					);
+					if (svgElement) {
+						applyIconColor(svgElement, resolvedColor);
+						el.appendChild(svgElement);
+					}
 
 					// 更新图标状态
 					iconStateMap.set(el, {
@@ -122,12 +129,6 @@ export default function (
 			} catch (error) {
 				console.error(`Error rendering Lucide icon "${icon}":`, error);
 				if (!options?.append) {
-					const root = rootMap.get(el);
-					if (root) {
-						root.unmount();
-						rootMap.delete(el);
-					}
-					// 清理图标状态
 					iconStateMap.delete(el);
 				}
 			}
@@ -136,7 +137,7 @@ export default function (
 		}
 	} else if (iconType === "svg") {
 		if (options?.append) {
-			const tempContainer = document.createElement("div");
+			const tempContainer = createDetachedDiv(el.ownerDocument);
 			obsidianSetIcon(tempContainer, icon);
 			if (tempContainer.children.length === 0) {
 				obsidianSetIcon(tempContainer, `CI-${icon}`);
@@ -157,12 +158,6 @@ export default function (
 				return svgElement as unknown as HTMLElement;
 			}
 		} else {
-			const existingRoot = rootMap.get(el);
-			if (existingRoot) {
-				existingRoot.unmount();
-				rootMap.delete(el);
-			}
-
 			el.empty();
 			obsidianSetIcon(el, icon);
 			if (el.children.length === 0) {
@@ -190,11 +185,6 @@ export default function (
 }
 
 export function cleanupIcon(el: HTMLElement) {
-	const existingRoot = rootMap.get(el);
-	if (existingRoot) {
-		existingRoot.unmount();
-		rootMap.delete(el);
-	}
 	iconStateMap.delete(el);
 	el.empty();
 }
