@@ -198,7 +198,7 @@ export default class CommunityPluginIconHandler extends AbstractIconHandler<ICom
 			mutations.forEach((mutation) => {
 				mutation.addedNodes.forEach((node) => {
 					if (
-						node instanceof HTMLElement &&
+						node.instanceOf(HTMLElement) &&
 						node.classList.contains("vertical-tab-nav-item") &&
 						node.hasAttribute("data-setting-id")
 					) {
