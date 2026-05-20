@@ -1,3 +1,9 @@
+## [2.0.5](https://github.com/Raven-Pensieve/obsidian-custom-icons/compare/2.0.4...2.0.5) (2026-05-20)
+
+
+### 🐛 Bug Fixes
+
+* 修复自动审查错误 (#81) ([5f679e2](https://github.com/Raven-Pensieve/obsidian-custom-icons/commit/5f679e26fa3311a9e77114f7c300ecae47f7aecc)), closes [#81](https://github.com/Raven-Pensieve/obsidian-custom-icons/issues/81)
 ## [2.0.2](https://github.com/Raven-Pensieve/obsidian-custom-icons/compare/2.0.1...2.0.2) (2026-01-29)
 
 
