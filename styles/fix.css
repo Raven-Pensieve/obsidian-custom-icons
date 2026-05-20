@@ -1,3 +1,4 @@
-.custom-icon-community-plugins .vertical-tab-nav-item-icon {
-	display: flex !important;
+.vertical-tab-header-group-items[data-section="community-plugins"].custom-icon-community-plugins
+	.vertical-tab-nav-item-icon {
+	display: flex;
 }
