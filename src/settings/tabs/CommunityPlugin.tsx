@@ -374,13 +374,12 @@ export const CommunityPlugin: FC = () => {
 								type={defaultIcon.type}
 								color={defaultIcon.color}
 								onChange={async (value, type) => {
+									// 与旁边的骰子同一姿态：一次写整个 default。
+									// 分开写 icon / type 各是一遍 saveSettings + applyAll，
+									// 中间那一拍还是「新 icon 配旧 type」的错配状态
 									await settingsStore.updateSettingByPath(
-										"communityPlugins.default.icon",
-										value,
-									);
-									await settingsStore.updateSettingByPath(
-										"communityPlugins.default.type",
-										type,
+										"communityPlugins.default",
+										{ ...defaultIcon, icon: value, type },
 									);
 								}}
 							/>
@@ -483,18 +482,17 @@ export const CommunityPlugin: FC = () => {
 										type={effectivePluginIcon.type}
 										color={effectivePluginIcon.color}
 										onChange={async (value, type) => {
-											await settingsStore.updateSettingByPath(
-												`communityPlugins.data.${plugin.id}.id`,
-												plugin.id,
-											);
-											await settingsStore.updateSettingByPath(
-												`communityPlugins.data.${plugin.id}.icon`,
-												value,
-											);
-											await settingsStore.updateSettingByPath(
-												`communityPlugins.data.${plugin.id}.type`,
+											// 与旁边的骰子同一姿态：整 map 一次落盘。
+											// 逐字段连写三遍（每遍都是 saveSettings +
+											// applyAll）之外，插件 id 含 `.` 还会被
+											// 按 "." 分割的路径写坏
+											await writeOverride(plugin.id, {
+												...settings.communityPlugins
+													.data[plugin.id],
+												id: plugin.id,
+												icon: value,
 												type,
-											);
+											});
 										}}
 									/>
 									<Color
