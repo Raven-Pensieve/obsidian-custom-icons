@@ -14,7 +14,8 @@ import { LL } from "@src/i18n/i18n";
 import { BookmarkKind, IBookmarkIconOverride } from "@src/types/types";
 import { BOOKMARK_KINDS } from "@src/util/bookmarkIcon";
 import { normalizeIconColor } from "@src/util/communityPluginIcon";
-import { FC, useState } from "react";
+import type { App } from "obsidian";
+import { FC, useMemo, useState } from "react";
 
 /** 书签内部插件最小形态（仅用于设置页把 ctime 键回显为标题 / 类型） */
 interface BmItemLike {
@@ -32,6 +33,37 @@ interface AppInternalPluginsLike {
 		getEnabledPluginById?: (id: string) => BmInstanceLike | null;
 	};
 }
+
+/**
+ * 把 ctime 键回显为「标题（类型）」。
+ *
+ * 返回 `null` 表示**书签核心插件没启用**，此时索引根本建不起来——必须与
+ * 「索引建好了但这一项查不到（书签真的被删了）」区分开。过去两者都落到
+ * 「已失效（书签不存在）」，于是插件一禁用，每一行都在撒谎。
+ */
+const buildTitleIndex = (app: App): Record<string, string> | null => {
+	const instance = (app as unknown as AppInternalPluginsLike)
+		.internalPlugins?.getEnabledPluginById?.("bookmarks");
+	if (!instance) {
+		return null;
+	}
+	const idx: Record<string, string> = {};
+	const list = instance.getBookmarks?.() ?? [];
+	const walk = (items: BmItemLike[]) => {
+		items.forEach((item) => {
+			if (item.ctime !== undefined) {
+				const title =
+					instance.getItemTitle?.(item) ?? item.title ?? "";
+				idx[String(item.ctime)] = item.type
+					? `${title} (${item.type})`
+					: title;
+			}
+			if (item.items?.length) walk(item.items);
+		});
+	};
+	walk(list);
+	return idx;
+};
 
 export const Bookmarks: FC = () => {
 	const settingsStore = useSettingsStore();
@@ -55,38 +87,6 @@ export const Bookmarks: FC = () => {
 			`bookmarks.${mapKey}`,
 			nextMap,
 		);
-	};
-
-	/**
-	 * 把 ctime 键回显为「标题（类型）」。
-	 *
-	 * 返回 `null` 表示**书签核心插件没启用**，此时索引根本建不起来——必须与
-	 * 「索引建好了但这一项查不到（书签真的被删了）」区分开。过去两者都落到
-	 * 「已失效（书签不存在）」，于是插件一禁用，每一行都在撒谎。
-	 */
-	const buildTitleIndex = (): Record<string, string> | null => {
-		const instance = (
-			settingsStore.app as unknown as AppInternalPluginsLike
-		).internalPlugins?.getEnabledPluginById?.("bookmarks");
-		if (!instance) {
-			return null;
-		}
-		const idx: Record<string, string> = {};
-		const list = instance.getBookmarks?.() ?? [];
-		const walk = (items: BmItemLike[]) => {
-			items.forEach((item) => {
-				if (item.ctime !== undefined) {
-					const title =
-						instance.getItemTitle?.(item) ?? item.title ?? "";
-					idx[String(item.ctime)] = item.type
-						? `${title} (${item.type})`
-						: title;
-				}
-				if (item.items?.length) walk(item.items);
-			});
-		};
-		walk(list);
-		return idx;
 	};
 
 	const kindLabel = (kind: BookmarkKind): string =>
@@ -189,7 +189,16 @@ export const Bookmarks: FC = () => {
 		);
 	};
 
-	const titleIndex = buildTitleIndex();
+	/*
+	 * 标题索引只在覆盖表变化时重建，不在每次渲染里重建：全树遍历书签不便宜，
+	 * 而筛选框每击一次键就是一次渲染、每个候选行都要查一次索引。
+	 * 外部改书签（重命名/删除）后标题要等下一次设置写入才刷新——与文件浏览器
+	 * tally「挂载时统计一次」是同一类取舍：这几分钟里的偏差不影响改配置。
+	 */
+	const titleIndex = useMemo(
+		() => buildTitleIndex(settingsStore.app),
+		[settingsStore, bm.items],
+	);
 
 	/**
 	 * 单项覆盖的显示名：核心插件可用时是「标题（类型）」，否则只有内部键。
