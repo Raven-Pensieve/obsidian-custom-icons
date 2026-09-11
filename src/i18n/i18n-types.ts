@@ -240,10 +240,6 @@ type RootTranslation = {
 				 */
 				desc: string
 				/**
-				 * 支​持​批​量​（​如​ ​.​x​d​b​ ​.​j​s​）​.​.​.
-				 */
-				placeholder: string
-				/**
 				 * 添​加​扩​展​名
 				 */
 				addTooltip: string
@@ -277,21 +273,6 @@ type RootTranslation = {
 				 * @param {number} count
 				 */
 				added: RequiredParams<'count'>
-				/**
-				 * 已​添​加​ ​{​a​d​d​e​d​}​ ​个​，​跳​过​ ​{​s​k​i​p​p​e​d​}​ ​个​（​已​存​在​）
-				 * @param {number} added
-				 * @param {number} skipped
-				 */
-				addedSkipped: RequiredParams<'added' | 'skipped'>
-				/**
-				 * 这​些​扩​展​名​都​已​配​置​过​了
-				 */
-				allDuplicate: string
-				/**
-				 * 无​法​识​别​为​扩​展​名​：​{​t​o​k​e​n​s​}
-				 * @param {string} tokens
-				 */
-				invalidInput: RequiredParams<'tokens'>
 				/**
 				 * 切​换​排​序​（​当​前​：​{​m​o​d​e​}​）
 				 * @param {string} mode
@@ -341,6 +322,134 @@ type RootTranslation = {
 				 * @param {number} count
 				 */
 				cleared: RequiredParams<'count'>
+				/**
+				 * 复​合​后​缀
+				 */
+				candidatesCompound: string
+				/**
+				 * 复​合
+				 */
+				compoundBadge: string
+				addDialog: {
+					/**
+					 * 添​加​扩​展​名​规​则
+					 */
+					title: string
+					/**
+					 * 输​入​或​粘​贴​扩​展​名​，​空​格​或​逗​号​分​隔​，​可​一​次​添​加​多​个​；​支​持​复​合​后​缀​（​如​ ​e​x​c​a​l​i​d​r​a​w​.​m​d​，​优​先​于​ ​m​d​）​。
+					 */
+					hint: string
+					/**
+					 * 如​ ​p​n​g​ ​j​p​g​ ​e​x​c​a​l​i​d​r​a​w​.​m​d
+					 */
+					placeholder: string
+					/**
+					 * 已​配​置​，​提​交​时​将​更​新
+					 */
+					chipExists: string
+					/**
+					 * 无​法​识​别​为​扩​展​名
+					 */
+					chipInvalid: string
+					/**
+					 * 请​先​输​入​或​选​择​至​少​一​个​扩​展​名
+					 */
+					errorEmpty: string
+					/**
+					 * 请​先​移​除​无​法​识​别​的​项​：​{​t​o​k​e​n​s​}
+					 * @param {string} tokens
+					 */
+					errorInvalid: RequiredParams<'tokens'>
+					/**
+					 * 留​空​则​不​分​组​；​填​已​有​分​组​名​则​并​入​该​组​。
+					 */
+					groupHint: string
+					/**
+					 * 图​标
+					 */
+					iconLabel: string
+					/**
+					 * 颜​色
+					 */
+					colorLabel: string
+					/**
+					 * 清​除​颜​色
+					 */
+					colorReset: string
+					/**
+					 * 已​更​新​ ​{​c​o​u​n​t​}​ ​个​扩​展​名
+					 * @param {number} count
+					 */
+					resultUpdated: RequiredParams<'count'>
+					/**
+					 * 已​添​加​ ​{​a​d​d​e​d​}​ ​个​，​更​新​ ​{​u​p​d​a​t​e​d​}​ ​个​扩​展​名
+					 * @param {number} added
+					 * @param {number} updated
+					 */
+					resultMixed: RequiredParams<'added' | 'updated'>
+				}
+				select: {
+					/**
+					 * 选​择​扩​展​名​（​批​量​操​作​）
+					 */
+					toggleTooltip: string
+					/**
+					 * 退​出​选​择
+					 */
+					exitTooltip: string
+					/**
+					 * 已​选​ ​{​c​o​u​n​t​}​ ​个
+					 * @param {number} count
+					 */
+					selectedCount: RequiredParams<'count'>
+					/**
+					 * 勾​选​要​批​量​操​作​的​扩​展​名
+					 */
+					emptyHint: string
+					/**
+					 * 给​选​中​的​扩​展​名​统​一​设​置​图​标
+					 */
+					assignTooltip: string
+					/**
+					 * 给​选​中​的​每​个​扩​展​名​随​机​掷​一​个​图​标
+					 */
+					diceTooltip: string
+					/**
+					 * 清​空​选​中​项​的​图​标
+					 */
+					clearTooltip: string
+					/**
+					 * 删​除​选​中​的​规​则
+					 */
+					deleteTooltip: string
+					/**
+					 * 删​除​ ​{​c​o​u​n​t​}​ ​条​规​则​？
+					 * @param {number} count
+					 */
+					deleteTitle: RequiredParams<'count'>
+					/**
+					 * 这​些​扩​展​名​将​回​落​到​「​文​件​默​认​图​标​」​。
+					 */
+					deleteBody: string
+					/**
+					 * 删​除
+					 */
+					deleteConfirm: string
+					/**
+					 * 已​删​除​ ​{​c​o​u​n​t​}​ ​条​规​则
+					 * @param {number} count
+					 */
+					deleted: RequiredParams<'count'>
+					/**
+					 * 选​择​本​组​全​部​扩​展​名
+					 */
+					groupCheckLabel: string
+					/**
+					 * 选​择​ ​.​{​e​x​t​}
+					 * @param {string} ext
+					 */
+					rowCheckLabel: RequiredParams<'ext'>
+				}
 			}
 			extGroup: {
 				/**
@@ -490,50 +599,6 @@ type RootTranslation = {
 				 */
 				gone: RequiredParams<'group'>
 				/**
-				 * 从​预​设​创​建​分​组
-				 */
-				presetTooltip: string
-				/**
-				 * 从​预​设​创​建​分​组
-				 */
-				presetTitle: string
-				/**
-				 * 预​设​只​是​一​份​起​始​清​单​：​创​建​后​即​为​普​通​分​组​，​可​随​意​增​删​改​，​不​会​随​插​件​更​新​而​变​化​。
-				 */
-				presetHint: string
-				/**
-				 * 请​至​少​选​择​一​个​预​设
-				 */
-				presetEmpty: string
-				/**
-				 * 已​创​建​ ​{​g​r​o​u​p​s​}​ ​个​分​组​，​新​增​ ​{​a​d​d​e​d​}​ ​个​扩​展​名
-				 * @param {number} added
-				 * @param {number} groups
-				 */
-				presetCreated: RequiredParams<'added' | 'groups'>
-				/**
-				 * 并​入​已​有​规​则​ ​{​c​o​u​n​t​}​ ​个​（​图​标​保​持​不​变​）
-				 * @param {number} count
-				 */
-				presetAdopted: RequiredParams<'count'>
-				/**
-				 * 跳​过​ ​{​c​o​u​n​t​}​ ​个​（​已​属​于​其​它​分​组​）​：​{​e​x​t​s​}
-				 * @param {number} count
-				 * @param {string} exts
-				 */
-				presetSkipped: RequiredParams<'count' | 'exts'>
-				/**
-				 * 「​{​g​r​o​u​p​}​」​已​存​在​，​将​并​入​该​分​组
-				 * @param {string} group
-				 */
-				presetExisting: RequiredParams<'group'>
-				/**
-				 * 共​ ​{​t​o​t​a​l​}​ ​个​扩​展​名​，​将​新​增​ ​{​c​o​u​n​t​}​ ​个
-				 * @param {number} count
-				 * @param {number} total
-				 */
-				presetCount: RequiredParams<'count' | 'total'>
-				/**
 				 * {​c​o​u​n​t​}​ ​个​未​配​图​标
 				 * @param {number} count
 				 */
@@ -568,32 +633,6 @@ type RootTranslation = {
 				 * @param {number} count
 				 */
 				diceGroupNote: RequiredParams<'count'>
-			}
-			presets: {
-				/**
-				 * 图​片
-				 */
-				image: string
-				/**
-				 * 视​频
-				 */
-				video: string
-				/**
-				 * 音​频
-				 */
-				audio: string
-				/**
-				 * 文​档
-				 */
-				document: string
-				/**
-				 * 压​缩​包
-				 */
-				archive: string
-				/**
-				 * 代​码
-				 */
-				code: string
 			}
 			overrides: {
 				/**
@@ -2080,10 +2119,6 @@ export type TranslationFunctions = {
 				 */
 				desc: () => LocalizedString
 				/**
-				 * 支持批量（如 .xdb .js）...
-				 */
-				placeholder: () => LocalizedString
-				/**
 				 * 添加扩展名
 				 */
 				addTooltip: () => LocalizedString
@@ -2115,18 +2150,6 @@ export type TranslationFunctions = {
 				 * 已添加 {count} 个扩展名
 				 */
 				added: (arg: { count: number }) => LocalizedString
-				/**
-				 * 已添加 {added} 个，跳过 {skipped} 个（已存在）
-				 */
-				addedSkipped: (arg: { added: number, skipped: number }) => LocalizedString
-				/**
-				 * 这些扩展名都已配置过了
-				 */
-				allDuplicate: () => LocalizedString
-				/**
-				 * 无法识别为扩展名：{tokens}
-				 */
-				invalidInput: (arg: { tokens: string }) => LocalizedString
 				/**
 				 * 切换排序（当前：{mode}）
 				 */
@@ -2171,6 +2194,126 @@ export type TranslationFunctions = {
 				 * 已清空 {count} 条规则的图标
 				 */
 				cleared: (arg: { count: number }) => LocalizedString
+				/**
+				 * 复合后缀
+				 */
+				candidatesCompound: () => LocalizedString
+				/**
+				 * 复合
+				 */
+				compoundBadge: () => LocalizedString
+				addDialog: {
+					/**
+					 * 添加扩展名规则
+					 */
+					title: () => LocalizedString
+					/**
+					 * 输入或粘贴扩展名，空格或逗号分隔，可一次添加多个；支持复合后缀（如 excalidraw.md，优先于 md）。
+					 */
+					hint: () => LocalizedString
+					/**
+					 * 如 png jpg excalidraw.md
+					 */
+					placeholder: () => LocalizedString
+					/**
+					 * 已配置，提交时将更新
+					 */
+					chipExists: () => LocalizedString
+					/**
+					 * 无法识别为扩展名
+					 */
+					chipInvalid: () => LocalizedString
+					/**
+					 * 请先输入或选择至少一个扩展名
+					 */
+					errorEmpty: () => LocalizedString
+					/**
+					 * 请先移除无法识别的项：{tokens}
+					 */
+					errorInvalid: (arg: { tokens: string }) => LocalizedString
+					/**
+					 * 留空则不分组；填已有分组名则并入该组。
+					 */
+					groupHint: () => LocalizedString
+					/**
+					 * 图标
+					 */
+					iconLabel: () => LocalizedString
+					/**
+					 * 颜色
+					 */
+					colorLabel: () => LocalizedString
+					/**
+					 * 清除颜色
+					 */
+					colorReset: () => LocalizedString
+					/**
+					 * 已更新 {count} 个扩展名
+					 */
+					resultUpdated: (arg: { count: number }) => LocalizedString
+					/**
+					 * 已添加 {added} 个，更新 {updated} 个扩展名
+					 */
+					resultMixed: (arg: { added: number, updated: number }) => LocalizedString
+				}
+				select: {
+					/**
+					 * 选择扩展名（批量操作）
+					 */
+					toggleTooltip: () => LocalizedString
+					/**
+					 * 退出选择
+					 */
+					exitTooltip: () => LocalizedString
+					/**
+					 * 已选 {count} 个
+					 */
+					selectedCount: (arg: { count: number }) => LocalizedString
+					/**
+					 * 勾选要批量操作的扩展名
+					 */
+					emptyHint: () => LocalizedString
+					/**
+					 * 给选中的扩展名统一设置图标
+					 */
+					assignTooltip: () => LocalizedString
+					/**
+					 * 给选中的每个扩展名随机掷一个图标
+					 */
+					diceTooltip: () => LocalizedString
+					/**
+					 * 清空选中项的图标
+					 */
+					clearTooltip: () => LocalizedString
+					/**
+					 * 删除选中的规则
+					 */
+					deleteTooltip: () => LocalizedString
+					/**
+					 * 删除 {count} 条规则？
+					 */
+					deleteTitle: (arg: { count: number }) => LocalizedString
+					/**
+					 * 这些扩展名将回落到「文件默认图标」。
+					 */
+					deleteBody: () => LocalizedString
+					/**
+					 * 删除
+					 */
+					deleteConfirm: () => LocalizedString
+					/**
+					 * 已删除 {count} 条规则
+					 */
+					deleted: (arg: { count: number }) => LocalizedString
+					/**
+					 * 选择本组全部扩展名
+					 */
+					groupCheckLabel: () => LocalizedString
+					/**
+					 * 选择 .{ext}
+					 */
+					rowCheckLabel: (arg: { ext: string }) => LocalizedString
+				}
 			}
 			extGroup: {
 				/**
@@ -2298,42 +2441,6 @@ export type TranslationFunctions = {
 				 */
 				gone: (arg: { group: string }) => LocalizedString
 				/**
-				 * 从预设创建分组
-				 */
-				presetTooltip: () => LocalizedString
-				/**
-				 * 从预设创建分组
-				 */
-				presetTitle: () => LocalizedString
-				/**
-				 * 预设只是一份起始清单：创建后即为普通分组，可随意增删改，不会随插件更新而变化。
-				 */
-				presetHint: () => LocalizedString
-				/**
-				 * 请至少选择一个预设
-				 */
-				presetEmpty: () => LocalizedString
-				/**
-				 * 已创建 {groups} 个分组，新增 {added} 个扩展名
-				 */
-				presetCreated: (arg: { added: number, groups: number }) => LocalizedString
-				/**
-				 * 并入已有规则 {count} 个（图标保持不变）
-				 */
-				presetAdopted: (arg: { count: number }) => LocalizedString
-				/**
-				 * 跳过 {count} 个（已属于其它分组）：{exts}
-				 */
-				presetSkipped: (arg: { count: number, exts: string }) => LocalizedString
-				/**
-				 * 「{group}」已存在，将并入该分组
-				 */
-				presetExisting: (arg: { group: string }) => LocalizedString
-				/**
-				 * 共 {total} 个扩展名，将新增 {count} 个
-				 */
-				presetCount: (arg: { count: number, total: number }) => LocalizedString
-				/**
 				 * {count} 个未配图标
 				 */
 				needIconCount: (arg: { count: number }) => LocalizedString
@@ -2365,32 +2472,6 @@ export type TranslationFunctions = {
 				 * 为整组 {count} 个扩展名掷同一个图标
 				 */
 				diceGroupNote: (arg: { count: number }) => LocalizedString
-			}
-			presets: {
-				/**
-				 * 图片
-				 */
-				image: () => LocalizedString
-				/**
-				 * 视频
-				 */
-				video: () => LocalizedString
-				/**
-				 * 音频
-				 */
-				audio: () => LocalizedString
-				/**
-				 * 文档
-				 */
-				document: () => LocalizedString
-				/**
-				 * 压缩包
-				 */
-				archive: () => LocalizedString
-				/**
-				 * 代码
-				 */
-				code: () => LocalizedString
 			}
 			overrides: {
 				/**
