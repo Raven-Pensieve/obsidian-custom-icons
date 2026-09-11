@@ -1,6 +1,9 @@
 import "@src/components/file-explorer/FileExplorer.css";
+import {
+	AddExtDialog,
+	AddExtPayload,
+} from "@src/components/file-explorer/AddExtDialog";
 import { MoveExtGroup } from "@src/components/file-explorer/MoveExtGroup";
-import { PresetPicker } from "@src/components/file-explorer/PresetPicker";
 import { RenameExtGroup } from "@src/components/file-explorer/RenameExtGroup";
 import { IconPicker } from "@src/components/icon-picker/IconPicker";
 import { ConfirmDialog } from "@src/components/modal/ConfirmDialog";
@@ -11,52 +14,79 @@ import {
 	RandomIconButton,
 	SettingGroup,
 	SettingItem,
-	Text,
 	Toggle,
 } from "@src/components/obsidian-setting";
 import usePluginSettings from "@src/hooks/usePluginSettings";
 import useSettingsStore from "@src/hooks/useSettingsStore";
 import { LL } from "@src/i18n/i18n";
-import { IFileExplorerIconOverride, IconType } from "@src/types/types";
+import { IFileExplorerIconOverride } from "@src/types/types";
 import { normalizeIconColor } from "@src/util/communityPluginIcon";
 import {
 	ExtensionMap,
 	assignGroup,
+	deleteExts,
 	deleteGroupWithRules,
 	dissolveGroup,
 	groupMembers,
 	listGroups,
 	renameGroup,
 	ruleGroup,
+	setExtsIcon,
 	setGroupColor,
 	setGroupIcon,
 	ungroupedKeys,
 	uniformIcon,
 } from "@src/util/extensionGroups";
 import {
-	parseExtensionInput,
+	splitExtCandidates,
 	tallyExtensions,
 } from "@src/util/fileExplorerIcon";
-import {
-	PresetId,
-	findPreset,
-	planPreset,
-} from "@src/util/fileExplorerPresets";
-import { normalizeGroupName } from "@src/util/groupName";
 import { encodeIconRef, iconRefOf } from "@src/util/iconRef";
 import { randomIconsFor } from "@src/util/randomIcon";
 import { MoreVertical } from "lucide-react";
 import { Menu, Notice } from "obsidian";
-import { FC, Fragment, useCallback, useMemo, useState } from "react";
-
-/** 候选芯片最多显示几个：够用来一键补齐常见类型，又不至于铺满一屏 */
-const CANDIDATE_LIMIT = 12;
+import {
+	FC,
+	Fragment,
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from "react";
 
 /** 分组收起时，组行上预览几个成员名；其余折成「+N」 */
 const MEMBER_PREVIEW_LIMIT = 10;
 
 /** 扩展名列表的排序方式 */
 type ExtSort = "count" | "name";
+
+/**
+ * 选择模式的复选框。三态用原生 `indeterminate`（半选），它只能经 DOM 属性设置，
+ * React 的 `checked` 表达不了。
+ */
+const SelectCheck: FC<{
+	state: boolean | "indeterminate";
+	onToggle: () => void;
+	label: string;
+}> = ({ state, onToggle, label }) => {
+	const ref = useRef<HTMLInputElement>(null);
+	useEffect(() => {
+		if (ref.current) {
+			ref.current.indeterminate = state === "indeterminate";
+		}
+	}, [state]);
+	return (
+		<input
+			ref={ref}
+			type="checkbox"
+			className="ci-fe__select-check"
+			aria-label={label}
+			checked={state === true}
+			onChange={onToggle}
+		/>
+	);
+};
 
 export const FileExplorer: FC = () => {
 	const settingsStore = useSettingsStore();
@@ -65,14 +95,20 @@ export const FileExplorer: FC = () => {
 	const extLL = LL.settings.fileExplorer.extensions;
 	const groupLL = LL.settings.fileExplorer.extGroup;
 
-	const [newExt, setNewExt] = useState("");
-	const [newExtIcon, setNewExtIcon] = useState("");
-	const [newExtType, setNewExtType] = useState<IconType>("lucide");
-	const [newExtGroup, setNewExtGroup] = useState("");
 	const [extFilter, setExtFilter] = useState("");
 	// 默认按文件数：库里有 200 个 png 和 1 个 xyz 时，前者才是用户来这里要配的东西
 	const [extSort, setExtSort] = useState<ExtSort>("count");
 	const [overrideFilter, setOverrideFilter] = useState("");
+
+	/**
+	 * 选择模式：行首复选框 + 头部操作条（统一设图标 / 移到分组 / 掷骰 / 清空 / 删除）。
+	 *
+	 * 选中集是**扩展名键的集合**，不随筛选 / 折叠变化而丢失——筛选只是圈定视野，
+	 * 不该顺手丢掉用户勾好的东西。退出选择模式时清空。不落盘：这是操作过程的
+	 * 中间态，不是配置。
+	 */
+	const [selectMode, setSelectMode] = useState(false);
+	const [selection, setSelection] = useState<Set<string>>(() => new Set());
 
 	/**
 	 * 分组的展开 / 收起，**只存用户显式改过的那些**。
@@ -268,91 +304,130 @@ export const FileExplorer: FC = () => {
 	);
 
 	/**
-	 * 库里有、但还没配规则的扩展名（按文件数降序取前若干）。
+	 * 库里有、但还没配规则的扩展名（常规与复合分排，按文件数降序取前若干）。
 	 *
 	 * 这是本页与其余六张同类列表的关键差别：扩展名是唯一没有天然候选源的自由输入，
-	 * 用户得先想起来「我库里都有什么类型」。把它列出来，输入框就从「凭记忆默写」
-	 * 变成「点一下」。
+	 * 用户得先想起来「我库里都有什么」。把它列出来，输入就从「凭记忆默写」变成
+	 * 「点一下」。复合排只放内置的 `excalidraw.md`（见 BUILTIN_COMPOUND_EXTS），
+	 * 不从 vault 解析其他复合键——日期命名会产生用户不需要的垃圾键；其余复合
+	 * 后缀仍可在添加弹窗手动输入，解析层照常生效。
 	 */
-	const candidates = useMemo(() => {
-		const list: Array<{ ext: string; count: number }> = [];
-		for (const [ext, count] of tally) {
-			if (!extMap[ext]) {
-				list.push({ ext, count });
-			}
-		}
-		return list
-			.sort((a, b) => b.count - a.count || a.ext.localeCompare(b.ext))
-			.slice(0, CANDIDATE_LIMIT);
-	}, [tally, extMap]);
+	const { regular: candidates, compound: compoundCandidates } = useMemo(
+		() => splitExtCandidates(tally, (ext) => Boolean(extMap[ext])),
+		[tally, extMap],
+	);
 
 	// ---------------------------------------------------------------- 添加规则
 
-	const addExtension = async () => {
-		// 批量：`.` 开头、逗号/空格分隔一次输入多个（如 `.xdb .js`），配同一图标
-		const { keys, invalid } = parseExtensionInput(newExt);
-		// 无法识别的片段单独说明：过去它们被静默丢掉，用户只看到「少加了一个」
-		if (invalid.length > 0) {
-			new Notice(extLL.invalidInput({ tokens: invalid.join(" ") }));
-		}
-		if (keys.length === 0) {
-			return;
-		}
-		const group = normalizeGroupName(newExtGroup);
-		// 一次性构造整 map 写入，避免逐条异步写入相互覆盖
-		const nextMap: ExtensionMap = { ...extMap };
-		const added: string[] = [];
-		const skipped: string[] = [];
-		for (const ext of keys) {
-			// 已配置的扩展名不覆盖（避免二次输入同名把已选图标清空）
-			if (nextMap[ext]) {
-				skipped.push(ext);
-				continue;
-			}
-			nextMap[ext] = {
-				id: ext,
-				icon: newExtIcon,
-				type: newExtType,
-				color: "",
-				...(group ? { group } : {}),
-			};
-			added.push(ext);
-		}
-		// 全是重复项：以前这里静默什么都不做，用户以为按钮坏了
-		if (added.length === 0) {
-			new Notice(extLL.allDuplicate());
-			return;
-		}
-		await writeExtensions(nextMap);
-		new Notice(
-			skipped.length > 0
-				? extLL.addedSkipped({
-						added: added.length,
-						skipped: skipped.length,
-					})
-				: extLL.added({ count: added.length }),
-		);
-		setNewExt("");
-		setNewExtIcon("");
-		setNewExtType("lucide");
-		setNewExtGroup("");
-	};
+	/**
+	 * 「添加扩展名规则」弹窗：token 芯片 + vault 候选 + 分组 + 图标颜色。
+	 *
+	 * 替代原先挤在一行的添加表单——批量（空格 / 逗号分隔）、复合后缀、选已有分组
+	 * 这三件事都从「隐藏知识」变成弹窗里摆着的东西。
+	 */
+	const openAddDialog = useCallback(
+		(sourceEl?: HTMLElement) => {
+			let submitFn: (() => Promise<boolean>) | null = null;
+			new ConfirmDialog(
+				settingsStore.plugin,
+				{
+					title: extLL.addDialog.title(),
+					confirmLL: LL.common.save(),
+					children: (
+						<AddExtDialog
+							plugin={settingsStore.plugin}
+							groups={groupNames}
+							candidates={candidates}
+							compoundCandidates={compoundCandidates}
+							isConfigured={(ext) => Boolean(liveExtMap()[ext])}
+							onSubmit={async (payload: AddExtPayload) => {
+								const next: ExtensionMap = { ...liveExtMap() };
+								let added = 0;
+								let updated = 0;
+								for (const ext of payload.exts) {
+									const existing = next[ext];
+									if (existing) {
+										// 已存在 = 更新：图标 / 颜色只在选了时覆盖、
+										// 分组只在填了时应用——不悄悄抹掉用户单独
+										// 配过的东西，也不把已归组的条目移出组
+										next[ext] = {
+											...existing,
+											...(payload.icon
+												? {
+														icon: payload.icon,
+														type: payload.type,
+													}
+												: {}),
+											...(payload.color
+												? { color: payload.color }
+												: {}),
+											...(payload.group
+												? { group: payload.group }
+												: {}),
+										};
+										updated++;
+									} else {
+										next[ext] = {
+											id: ext,
+											icon: payload.icon,
+											type: payload.type,
+											color: payload.color,
+											...(payload.group
+												? { group: payload.group }
+												: {}),
+										};
+										added++;
+									}
+								}
+								await settingsStore.updateSettingByPath(
+									"fileExplorer.extensions",
+									next,
+								);
+								if (added > 0 && updated > 0) {
+									new Notice(
+										extLL.addDialog.resultMixed({
+											added,
+											updated,
+										}),
+									);
+								} else if (added > 0) {
+									new Notice(extLL.added({ count: added }));
+								} else {
+									new Notice(
+										extLL.addDialog.resultUpdated({
+											count: updated,
+										}),
+									);
+								}
+							}}
+							onReady={(submit) => {
+								submitFn = submit;
+							}}
+						/>
+					),
+					onConfirm: async () => (submitFn ? await submitFn() : false),
+				},
+				{ sourceEl },
+			).open();
+		},
+		[
+			settingsStore,
+			extLL,
+			groupNames,
+			candidates,
+			compoundCandidates,
+			liveExtMap,
+		],
+	);
 
-	/** 点候选芯片：直接建一条空图标规则，并把输入框预填成它（顺手可以接着配图标） */
+	/** 点候选芯片：直接建一条空图标规则（要配图标/归组，接着在列表里操作或进弹窗选它） */
 	const addCandidate = async (ext: string) => {
 		if (extMap[ext]) {
 			return;
 		}
-		const group = normalizeGroupName(newExtGroup);
 		await writeExtensions({
 			...extMap,
-			[ext]: {
-				id: ext,
-				icon: newExtIcon,
-				type: newExtType,
-				color: "",
-				...(group ? { group } : {}),
-			},
+			[ext]: { id: ext, icon: "", type: "lucide", color: "" },
 		});
 		new Notice(extLL.added({ count: 1 }));
 	};
@@ -360,21 +435,24 @@ export const FileExplorer: FC = () => {
 	// ---------------------------------------------------------------- 批量动作
 
 	/**
-	 * 给筛选出的每一行掷一个图标，**一次落盘**。
+	 * 给一批扩展名各掷一个图标，**一次落盘**。
 	 *
 	 * 随机域取自**文件默认图标**（一批同来源）：不按各行自己的来源，否则「尽量互不
 	 * 相同」跨池子无意义，各池大小不同、重复策略也难向用户解释。
+	 *
+	 * 作用域由调用方给出（筛选结果或勾选项），一律以 `liveExtMap()` 为基准——
+	 * 操作发起时那张表才是真的。
 	 */
-	const randomizeFiltered = async () => {
-		if (filteredExts.length === 0) {
+	const randomizeExts = async (exts: string[]) => {
+		if (exts.length === 0) {
 			return;
 		}
 		const plugin = settingsStore.plugin;
-		const map = extMap;
+		const map = liveExtMap();
 		// 排除各行当前的图标：尽量不把某行掷回原样（排除后无人可选时 sampleMany
 		// 自会退回整池，是尽力而为不是硬约束）
 		const exclude = new Set<string>();
-		for (const ext of filteredExts) {
+		for (const ext of exts) {
 			const ref = iconRefOf(map[ext]?.icon ?? "", map[ext]?.type ?? "lucide");
 			if (ref) {
 				exclude.add(encodeIconRef(ref));
@@ -387,7 +465,7 @@ export const FileExplorer: FC = () => {
 		const picked = randomIconsFor(
 			plugin,
 			anchor,
-			filteredExts.length,
+			exts.length,
 			exclude,
 		);
 		// 池子空（理论上碰不到，Lucide 恒在）：什么都不写，而不是清空一片图标
@@ -395,7 +473,7 @@ export const FileExplorer: FC = () => {
 			return;
 		}
 		const next: ExtensionMap = { ...map };
-		filteredExts.forEach((ext, index) => {
+		exts.forEach((ext, index) => {
 			const ref = picked[index];
 			// sampleMany 在池子非空时恒返回 count 项，这个兜底只为不依赖那个不变式
 			if (!ref || !next[ext]) {
@@ -407,16 +485,15 @@ export const FileExplorer: FC = () => {
 	};
 
 	/**
-	 * 清空筛选出的这些规则的图标（**保留规则本身**）。
+	 * 清空一批规则的图标（**保留规则本身**）。
 	 *
 	 * 要确认：一次动 N 行、没有撤销。与「删除规则」是两件不同的事——清空后这些
 	 * 扩展名回落到「文件默认图标」，规则还在，用户随后重配不必重新输入扩展名。
 	 */
-	const clearFiltered = () => {
-		if (filteredExts.length === 0) {
+	const clearExts = (exts: string[]) => {
+		if (exts.length === 0) {
 			return;
 		}
-		const exts = filteredExts;
 		const count = exts.length;
 		new ConfirmDialog(settingsStore.plugin, {
 			title: extLL.clearTitle({ count }),
@@ -444,6 +521,87 @@ export const FileExplorer: FC = () => {
 			},
 		}).open();
 	};
+
+	/**
+	 * 删除一批规则。选择模式操作条上破坏性最强的动作，确认弹窗标红说清后果：
+	 * 这些扩展名回落 `fileDefault`。
+	 */
+	const deleteExtsWithConfirm = (exts: string[]) => {
+		if (exts.length === 0) {
+			return;
+		}
+		const count = exts.length;
+		new ConfirmDialog(settingsStore.plugin, {
+			title: extLL.select.deleteTitle({ count }),
+			confirmLL: extLL.select.deleteConfirm(),
+			children: (
+				<div className="ci-lib__form">
+					<span className="ci-lib__form-warning">
+						{extLL.select.deleteBody()}
+					</span>
+				</div>
+			),
+			onConfirm: async () => {
+				await settingsStore.updateSettingByPath(
+					"fileExplorer.extensions",
+					deleteExts(liveExtMap(), exts),
+				);
+				new Notice(extLL.select.deleted({ count }));
+				// 选中的规则都没了，选中集一并清掉
+				setSelection(new Set());
+			},
+		}).open();
+	};
+
+	// ---------------------------------------------------------------- 选择模式
+
+	const toggleSelected = (ext: string) => {
+		setSelection((prev) => {
+			const next = new Set(prev);
+			if (next.has(ext)) {
+				next.delete(ext);
+			} else {
+				next.add(ext);
+			}
+			return next;
+		});
+	};
+
+	/** 组行三态复选框：全选时点 = 清空本组，否则（含半选）= 补齐全组 */
+	const toggleGroupSelection = (
+		members: readonly string[],
+		state: boolean | "indeterminate",
+	) => {
+		setSelection((prev) => {
+			const next = new Set(prev);
+			if (state === true) {
+				for (const ext of members) {
+					next.delete(ext);
+				}
+			} else {
+				for (const ext of members) {
+					next.add(ext);
+				}
+			}
+			return next;
+		});
+	};
+
+	const exitSelectMode = () => {
+		setSelectMode(false);
+		setSelection(new Set());
+	};
+
+	/**
+	 * 选中键里**此刻仍存在**的那些（以落盘表为准）。
+	 *
+	 * 弹窗与菜单的回调是稍后才跑的，那时另一窗口可能已删掉某些勾选项——按键
+	 * 匹配天然跳过，与既有批量操作同一容错姿态。
+	 */
+	const liveSelection = useCallback((): string[] => {
+		const map = liveExtMap();
+		return [...selection].filter((ext) => Boolean(map[ext]));
+	}, [selection, liveExtMap]);
 
 	// ---------------------------------------------------------------- 分组动作
 
@@ -666,113 +824,6 @@ export const FileExplorer: FC = () => {
 		],
 	);
 
-	/**
-	 * 从预设创建分组。
-	 *
-	 * 预设只在这一刻被读一次，之后就是普通用户数据（见 fileExplorerPresets.ts）。
-	 * 已属于别的分组的扩展名会被跳过而不是抢过来，且在通知里说明——静默改动用户
-	 * 已配好的分组是这里最容易犯、也最难被发现的错。
-	 */
-	const openPresetDialog = useCallback(
-		(sourceEl?: HTMLElement) => {
-			let submitFn: (() => Promise<boolean>) | null = null;
-			const nameOf = (id: PresetId) =>
-				LL.settings.fileExplorer.presets[id]();
-			new ConfirmDialog(
-				settingsStore.plugin,
-				{
-					title: groupLL.presetTitle(),
-					confirmLL: LL.common.save(),
-					children: (
-						<PresetPicker
-							groups={groupNames}
-							nameOf={nameOf}
-							countOf={(id) => {
-								const preset = findPreset(id);
-								if (!preset) {
-									return 0;
-								}
-								return planPreset(
-									preset,
-									(ext) => Boolean(extMap[ext]),
-									(ext) => ruleGroup(extMap[ext]),
-									nameOf(id),
-								).added.length;
-							}}
-							onSubmit={async (ids) => {
-								const next: ExtensionMap = { ...liveExtMap() };
-								const skipped: string[] = [];
-								let added = 0;
-								let adopted = 0;
-								for (const id of ids) {
-									const preset = findPreset(id);
-									if (!preset) {
-										continue;
-									}
-									const group = nameOf(id);
-									const plan = planPreset(
-										preset,
-										(ext) => Boolean(next[ext]),
-										(ext) => ruleGroup(next[ext]),
-										group,
-									);
-									for (const ext of plan.added) {
-										next[ext] = {
-											id: ext,
-											icon: preset.icon,
-											type: "lucide",
-											color: "",
-											group,
-										};
-									}
-									// 已存在但未分组的：并入本组，**保留其现有图标**
-									for (const ext of plan.adopted) {
-										next[ext] = { ...next[ext], group };
-									}
-									added += plan.added.length;
-									adopted += plan.adopted.length;
-									skipped.push(...plan.skipped);
-								}
-								await settingsStore.updateSettingByPath(
-									"fileExplorer.extensions",
-									next,
-								);
-								// 三段分开说：新建了多少、并入了多少、跳过了哪些
-								new Notice(
-									groupLL.presetCreated({
-										groups: ids.length,
-										added,
-									}),
-								);
-								if (adopted > 0) {
-									new Notice(
-										groupLL.presetAdopted({
-											count: adopted,
-										}),
-									);
-								}
-								if (skipped.length > 0) {
-									new Notice(
-										groupLL.presetSkipped({
-											count: skipped.length,
-											exts: skipped.join(" "),
-										}),
-									);
-								}
-							}}
-							onReady={(submit) => {
-								submitFn = submit;
-							}}
-						/>
-					),
-					onConfirm: async () => (submitFn ? await submitFn() : false),
-				},
-				{ sourceEl },
-			).open();
-		},
-		[settingsStore, liveExtMap, groupNames, groupLL, extMap],
-	);
-
 	// ---------------------------------------------------------------- 行渲染
 
 	const renderOverrideRow = (
@@ -853,7 +904,21 @@ export const FileExplorer: FC = () => {
 				key={`extensions-${ext}`}
 				name={`.${ext}`}
 				desc={notes.join(" · ")}
-				className={group ? "ci-fe__ext-row--grouped" : undefined}
+				className={[
+					group ? "ci-fe__ext-row--grouped" : undefined,
+					selectMode ? "ci-fe__row--selecting" : undefined,
+				]
+					.filter(Boolean)
+					.join(" ")}
+				info={
+					selectMode ? (
+						<SelectCheck
+							state={selection.has(ext)}
+							onToggle={() => toggleSelected(ext)}
+							label={extLL.select.rowCheckLabel({ ext })}
+						/>
+					) : undefined
+				}
 				control={
 					<>
 						<ExtraButton
@@ -945,6 +1010,18 @@ export const FileExplorer: FC = () => {
 		if (!uniform) {
 			return null;
 		}
+		// 组行三态：全组成员都在选中集 = 勾，一个不在 = 半选，都不在 = 空。
+		// 半选时点一下是「补齐全组」而不是清空——补齐是比清空更常见的意图，
+		// 清空可以直接取消每行，也可以再点一次全选态
+		const selectedMembers = previewMembers.filter((ext) =>
+			selection.has(ext),
+		);
+		const groupCheckState: boolean | "indeterminate" =
+			selectedMembers.length === 0
+				? false
+				: selectedMembers.length === previewMembers.length
+					? true
+					: "indeterminate";
 		const notes = [
 			groupLL.summary({ exts: memberCount, files: fileCount }),
 			iconless > 0 ? groupLL.needIconCount({ count: iconless }) : "",
@@ -957,6 +1034,17 @@ export const FileExplorer: FC = () => {
 			<SettingItem
 				key={`group-${group}`}
 				name={group}
+				info={
+					selectMode ? (
+						<SelectCheck
+							state={groupCheckState}
+							onToggle={() =>
+								toggleGroupSelection(previewMembers, groupCheckState)
+							}
+							label={extLL.select.groupCheckLabel()}
+						/>
+					) : undefined
+				}
 				desc={
 					<>
 						<div>{notes.join(" · ")}</div>
@@ -989,11 +1077,14 @@ export const FileExplorer: FC = () => {
 						)}
 					</>
 				}
-				className={
+				className={[
 					expanded
 						? "ci-fe__group-row"
-						: "ci-fe__group-row ci-fe__group-row--collapsed"
-				}
+						: "ci-fe__group-row ci-fe__group-row--collapsed",
+					selectMode ? "ci-fe__row--selecting" : undefined,
+				]
+					.filter(Boolean)
+					.join(" ")}
 				control={
 					<>
 						<ExtraButton
@@ -1224,99 +1315,160 @@ export const FileExplorer: FC = () => {
 						: undefined
 				}
 				actions={
-					extCount > 0 ? (
-						<>
-							<ExtraButton
-								icon={
-									extSort === "count"
-										? "arrow-down-0-1"
-										: "arrow-down-a-z"
-								}
-								tooltip={extLL.sortTooltip({
-									mode:
-										extSort === "count"
-											? extLL.sortByCount()
-											: extLL.sortByName(),
-								})}
-								onClick={() => {
-									setExtSort((prev) =>
-										prev === "count" ? "name" : "count",
-									);
-								}}
-							/>
-							<ExtraButton
-								icon="dices"
-								tooltip={extLL.dicesTooltip()}
-								onClick={randomizeFiltered}
-							/>
-							<ExtraButton
-								icon="eraser"
-								tooltip={extLL.clearTooltip()}
-								onClick={clearFiltered}
-							/>
-							{/* 只有存在分组时才有意义；筛选期一律展开，此时按钮无用 */}
-							{visibleGroups.length > 0 && (
+					selectMode ? (
+						<div className="ci-fe__select-bar">
+							<span className="ci-fe__select-count">
+								{selection.size > 0
+									? extLL.select.selectedCount({
+											count: selection.size,
+										})
+									: extLL.select.emptyHint()}
+							</span>
+								{selection.size > 0 && (
+									<>
+										{/*
+										 * 统一指定图标：选择模式存在的第一理由。
+										 * 混合的选中项没有「当前图标」可显示，预览留空，
+										 * 点开即选、选完一次扇出到全部选中项
+										 */}
+										<IconPicker
+											value=""
+											type="lucide"
+											onChange={async (value, type) => {
+												const exts = liveSelection();
+												if (exts.length === 0) {
+													return;
+												}
+												await writeExtensions(
+													setExtsIcon(
+														liveExtMap(),
+														exts,
+														value,
+														type,
+													),
+												);
+											}}
+										/>
+										<ExtraButton
+											icon="folder-input"
+											tooltip={groupLL.groupTooltip()}
+											onClick={() => {
+												openMoveDialog(
+													liveSelection(),
+													"",
+												);
+											}}
+										/>
+										<ExtraButton
+											icon="dices"
+											tooltip={extLL.select.diceTooltip()}
+											onClick={() => {
+												void randomizeExts(
+													liveSelection(),
+												);
+											}}
+										/>
+										<ExtraButton
+											icon="eraser"
+											tooltip={extLL.select.clearTooltip()}
+											onClick={() => {
+												clearExts(liveSelection());
+											}}
+										/>
+										<ExtraButton
+											icon="trash-2"
+											tooltip={extLL.select.deleteTooltip()}
+											onClick={() => {
+												deleteExtsWithConfirm(
+													liveSelection(),
+												);
+											}}
+										/>
+									</>
+								)}
 								<ExtraButton
-									icon={
-										anyCollapsed
-											? "chevrons-up-down"
-											: "chevrons-down-up"
-									}
-									disabled={Boolean(filterQuery)}
-									tooltip={
-										filterQuery
-											? groupLL.expandLockedTooltip()
-											: anyCollapsed
-												? groupLL.expandAllTooltip()
-												: groupLL.collapseAllTooltip()
-									}
-									onClick={() => setAllExpanded(anyCollapsed)}
+									icon="x"
+									tooltip={extLL.select.exitTooltip()}
+									onClick={exitSelectMode}
 								/>
-							)}
-						</>
-					) : undefined
-				}
+								</div>
+						) : (
+							<>
+								{/* 列表动作只在有规则时有意义；添加 / 预设永远要在 */}
+								{extCount > 0 && (
+									<>
+										<ExtraButton
+											icon={
+												extSort === "count"
+													? "arrow-down-0-1"
+													: "arrow-down-a-z"
+											}
+											tooltip={extLL.sortTooltip({
+												mode:
+													extSort === "count"
+														? extLL.sortByCount()
+														: extLL.sortByName(),
+											})}
+											onClick={() => {
+												setExtSort((prev) =>
+													prev === "count" ? "name" : "count",
+												);
+											}}
+										/>
+										<ExtraButton
+											icon="dices"
+											tooltip={extLL.dicesTooltip()}
+											onClick={() => {
+												void randomizeExts(filteredExts);
+											}}
+										/>
+										<ExtraButton
+											icon="eraser"
+											tooltip={extLL.clearTooltip()}
+											onClick={() => {
+												clearExts(filteredExts);
+											}}
+										/>
+										{/* 只有存在分组时才有意义；筛选期一律展开，此时按钮无用 */}
+										{visibleGroups.length > 0 && (
+											<ExtraButton
+												icon={
+													anyCollapsed
+														? "chevrons-up-down"
+														: "chevrons-down-up"
+												}
+												disabled={Boolean(filterQuery)}
+												tooltip={
+													filterQuery
+														? groupLL.expandLockedTooltip()
+														: anyCollapsed
+															? groupLL.expandAllTooltip()
+															: groupLL.collapseAllTooltip()
+												}
+												onClick={() => setAllExpanded(anyCollapsed)}
+											/>
+										)}
+										<ExtraButton
+											icon="list-checks"
+											tooltip={extLL.select.toggleTooltip()}
+											onClick={() => {
+												setSelectMode(true);
+											}}
+										/>
+									</>
+								)}
+									<ExtraButton
+										icon="plus"
+										tooltip={extLL.addTooltip()}
+										onClick={() => openAddDialog()}
+									/>
+								</>
+							)
+						}
 			>
 				<SettingItem desc={extLL.desc()} />
 
-				{/* 添加行：扩展名 + 图标 + 可选分组 */}
-				<SettingItem
-					className="ci-fe__add-row"
-					control={
-						<>
-							<Text
-								value={newExt}
-								placeholder={extLL.placeholder()}
-								onChange={(value) => setNewExt(value)}
-							/>
-							<Text
-								value={newExtGroup}
-								placeholder={groupLL.placeholder()}
-								onChange={(value) => setNewExtGroup(value)}
-							/>
-							<IconPicker
-								value={newExtIcon}
-								type={newExtType}
-								onChange={(value, type) => {
-									setNewExtIcon(value);
-									setNewExtType(type);
-								}}
-							/>
-							<ExtraButton
-								icon="plus"
-								tooltip={extLL.addTooltip()}
-								onClick={addExtension}
-							/>
-							<ExtraButton
-								icon="folder-plus"
-								tooltip={groupLL.presetTooltip()}
-								onClick={() => openPresetDialog()}
-							/>
-						</>
-					}
-				/>
-
-				{/* 库里有、还没配规则的扩展名：点一下即添加 */}
+				{/* 库里有、还没配规则的扩展名：点一下即添加（复合后缀独立一排并带徽标） */}
 				{candidates.length > 0 && (
 					<SettingItem
 						name={extLL.candidates()}
@@ -1339,6 +1491,40 @@ export const FileExplorer: FC = () => {
 										<span className="ci-fe__chip-count">
 											{count}
 										</span>
+									</button>
+								))}
+							</div>
+						}
+					/>
+				)}
+				{compoundCandidates.length > 0 && (
+					<SettingItem
+						name={extLL.candidatesCompound()}
+						className="ci-fe__candidates"
+						control={
+							<div className="ci-fe__chips">
+								{compoundCandidates.map(({ ext, count }) => (
+									<button
+										key={ext}
+										className="ci-fe__chip ci-fe__chip--compound"
+										aria-label={extLL.candidateTooltip({
+											ext,
+											count,
+										})}
+										onClick={() => {
+											void addCandidate(ext);
+										}}
+									>
+										.{ext}
+										<span className="ci-fe__chip-badge">
+											{extLL.compoundBadge()}
+										</span>
+										{/* 内置候选库中没有同后缀文件时计 0，不显数 */}
+										{count > 0 && (
+											<span className="ci-fe__chip-count">
+												{count}
+											</span>
+										)}
 									</button>
 								))}
 							</div>

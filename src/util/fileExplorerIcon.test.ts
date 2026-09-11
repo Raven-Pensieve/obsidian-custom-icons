@@ -9,6 +9,7 @@ import {
 	parseExtensionInput,
 	resolveFileIcon,
 	resolveFolderIcon,
+	splitExtCandidates,
 	tallyExtensions,
 } from "./fileExplorerIcon";
 
@@ -266,6 +267,62 @@ describe("tallyExtensions", () => {
 
 	it("lowercases keys so they line up with the stored map", () => {
 		expect(tallyExtensions(["A.PNG"]).get("png")).toBe(1);
+	});
+});
+
+describe("splitExtCandidates", () => {
+	it("splits regular keys, excluding configured ones and compound keys", () => {
+		const tally = new Map([
+			["png", 84],
+			["md", 120],
+			["excalidraw.md", 9],
+			["canvas", 3],
+		]);
+		const result = splitExtCandidates(tally, (ext) => ext === "md");
+		expect(result.regular.map((c) => c.ext)).toEqual(["png", "canvas"]);
+		// 复合排来自内置清单而非 vault 解析；已有文件数照实带上
+		expect(result.compound).toEqual([{ ext: "excalidraw.md", count: 9 }]);
+	});
+
+	it("compound candidates are the built-in list only, never parsed from the vault", () => {
+		// 日期命名（09.07.md）、tar.gz 这类复合键用户不一定需要：不枚举，
+		// 只能手动输入；内置的 excalidraw.md 常驻，库中没有就计 0
+		const tally = new Map([
+			["09.07.md", 1],
+			["tar.gz", 5],
+			["png", 2],
+		]);
+		const result = splitExtCandidates(tally, () => false);
+		expect(result.compound).toEqual([{ ext: "excalidraw.md", count: 0 }]);
+		expect(result.regular.map((c) => c.ext)).toEqual(["png"]);
+	});
+
+	it("configured built-in compound suffix is not offered", () => {
+		const result = splitExtCandidates(
+			new Map(),
+			(ext) => ext === "excalidraw.md",
+		);
+		expect(result.compound).toEqual([]);
+	});
+
+	it("respects the regular limit, keeping the highest counts", () => {
+		const tally = new Map([
+			["a", 5],
+			["b", 4],
+			["c", 3],
+		]);
+		const result = splitExtCandidates(tally, () => false, 2);
+		expect(result.regular.map((c) => c.ext)).toEqual(["a", "b"]);
+	});
+
+	it("sorts by count desc, then by name", () => {
+		const tally = new Map([
+			["b", 4],
+			["a", 4],
+			["c", 9],
+		]);
+		const result = splitExtCandidates(tally, () => false);
+		expect(result.regular.map((c) => c.ext)).toEqual(["c", "a", "b"]);
 	});
 });
 
