@@ -2,12 +2,14 @@ import { IFileExplorerIconOverride } from "@src/types/types";
 import {
 	ExtensionMap,
 	assignGroup,
+	deleteExts,
 	deleteGroupWithRules,
 	dissolveGroup,
 	groupMembers,
 	listGroups,
 	renameGroup,
 	ruleGroup,
+	setExtsIcon,
 	setGroupColor,
 	setGroupIcon,
 	ungroupedKeys,
@@ -298,6 +300,70 @@ describe("uniformIcon", () => {
 		expect(uniformIcon(map, "图片")?.mixed).toBe(true);
 		const fixed = setGroupIcon(map, "图片", "camera", "lucide", "");
 		expect(uniformIcon(fixed, "图片")?.mixed).toBe(false);
+	});
+});
+
+describe("setExtsIcon", () => {
+	test("扇出到任意子集（可跨组），未列出的键不动", () => {
+		const next = setExtsIcon(makeMap(), ["png", "mp4"], "star", "lucide");
+		expect(next.png.icon).toBe("star");
+		expect(next.mp4.icon).toBe("star");
+		expect(next.jpg.icon).toBe("image");
+		expect(next.canvas.icon).toBe("layout");
+	});
+
+	test("省略 color 时保留各成员原有颜色", () => {
+		const map: ExtensionMap = {
+			png: rule("png", "图片", "image", "#f00"),
+			jpg: rule("jpg", "图片", "image", "#0f0"),
+		};
+		const next = setExtsIcon(map, ["png", "jpg"], "star", "lucide");
+		expect(next.png.color).toBe("#f00");
+		expect(next.jpg.color).toBe("#0f0");
+	});
+
+	test("显式传空串 = 清除颜色", () => {
+		const map: ExtensionMap = { png: rule("png", "图片", "image", "#f00") };
+		expect(setExtsIcon(map, ["png"], "star", "lucide", "").png.color).toBe("");
+	});
+
+	test("map 里不存在的键被跳过，不新建条目", () => {
+		const next = setExtsIcon(makeMap(), ["nope"], "star", "lucide");
+		expect(next.nope).toBeUndefined();
+		expect(Object.keys(next).sort()).toEqual(Object.keys(makeMap()).sort());
+	});
+
+	test("归属不变（只动图标，不动 group）", () => {
+		const next = setExtsIcon(makeMap(), ["png"], "star", "lucide");
+		expect(groupMembers(next, "图片").sort()).toEqual(["jpg", "png"]);
+	});
+
+	test("不改动入参", () => {
+		const map = makeMap();
+		setExtsIcon(map, ["png"], "star", "lucide");
+		expect(map).toEqual(makeMap());
+	});
+});
+
+describe("deleteExts", () => {
+	test("删除指定键，其余原样", () => {
+		const next = deleteExts(makeMap(), ["png", "canvas"]);
+		expect(next.png).toBeUndefined();
+		expect(next.canvas).toBeUndefined();
+		expect(Object.keys(next).sort()).toEqual(["jpg", "mp4"]);
+	});
+
+	test("不存在的键无害（另一窗口已删的容错）", () => {
+		const map = makeMap();
+		const next = deleteExts(map, ["nope"]);
+		expect(next).toEqual(map);
+		expect(next).not.toBe(map);
+	});
+
+	test("不改动入参", () => {
+		const map = makeMap();
+		deleteExts(map, ["png"]);
+		expect(map).toEqual(makeMap());
 	});
 });
 

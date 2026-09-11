@@ -1,45 +1,35 @@
 /*
- * 文件浏览器设置页专有样式：预设勾选列表、候选扩展名芯片、分组行与组内行。
+ * 文件浏览器设置页专有样式：候选扩展名芯片、添加弹窗的 token 输入、
+ * 选择模式与分组行 / 组内行。
  *
  * 表单容器、提示 / 警告 / 错误三种文字沿用 `IconLib.css` 里的 `.ci-lib__form*`
  * ——那几个类与图标库无关，是「弹窗里的一段表单」这个通用形状，
  * 复制一套 `.ci-fe__form*` 只会让两处的间距慢慢长歪。
  */
 
-/* ------------------------------ 预设勾选列表 ------------------------------ */
-
-.ci-fe__preset-list {
-	display: flex;
-	flex-direction: column;
-	gap: var(--size-4-1);
-}
-
-.ci-fe__preset {
-	display: flex;
-	align-items: center;
-	gap: var(--size-4-2);
-	padding: var(--size-4-1) var(--size-4-2);
-	border-radius: var(--radius-s);
-	cursor: pointer;
-}
-
-.ci-fe__preset:hover {
-	background-color: var(--background-modifier-hover);
-}
-
-.ci-fe__preset-name {
-	font-weight: var(--font-medium);
-}
-
 /* ------------------------------ 候选扩展名芯片 ---------------------------- */
 /*
  * 库里扫出来、尚未配置的扩展名：点一下即添加一条规则。
  *
  * 平铺成芯片而不是下拉：候选的价值在于「一眼看见库里都有什么」，藏进下拉就又
- * 回到了凭记忆默写。数量由 `CANDIDATE_LIMIT` 卡住，不会铺满一屏。
+ * 回到了凭记忆默写。数量由 `splitExtCandidates` 的上限卡住，不会铺满一屏。
  */
 
+/*
+ * 候选行的「标签 + 一排芯片」要左对齐成组，而不是 Obsidian 默认的「控件靠右」。
+ *
+ * Obsidian 的 `.setting-item-info` / `.setting-item-control` 默认**都是**
+ * `flex: 1 1 auto`：内容轻的行空闲空间两列对半分，单颗复合芯片会悬在行中央
+ * （`justify-content: flex-start` 只管容器内部，管不到容器从哪开始）。标签列
+ * 不参与伸缩，control 列吃掉全部剩余宽度，芯片才紧贴标签起排。
+ */
+.ci-fe__candidates .setting-item-info {
+	flex: 0 1 auto;
+}
+
 .ci-fe__candidates .setting-item-control {
+	flex: 1 1 0;
+	min-width: 0;
 	flex-wrap: wrap;
 	justify-content: flex-start;
 }
@@ -57,7 +47,7 @@
 .ci-fe__chip {
 	display: inline-flex;
 	align-items: center;
-	gap: var(--size-2-1);
+	gap: var(--size-2-2);
 	height: auto;
 	padding: 0 var(--size-4-1);
 	border: 1px dashed var(--interactive-accent);
@@ -81,26 +71,151 @@
 	font-family: var(--font-interface);
 }
 
-/* ------------------------------ 添加规则那一行 ---------------------------- */
+/* 复合后缀徽标：复合后缀的支持一直在，但得看得见才等于存在 */
+.ci-fe__chip-badge {
+	padding: 0 var(--size-2-1);
+	border: 1px solid var(--interactive-accent);
+	border-radius: var(--radius-s);
+	color: var(--interactive-accent);
+	font-size: var(--font-ui-smallest);
+	font-family: var(--font-interface);
+	line-height: 1.5;
+}
+
+/* ------------------------------ 添加弹窗的 token 输入 --------------------- */
 /*
- * 这一行往 `control` 槽里塞了 5 个控件（扩展名输入、分组输入、图标、添加、预设）。
- * Obsidian 原生的 `.setting-item-control` 是不换行的横向 flex，在窄侧栏里两个输入框
- * 会被挤到几乎没有可用宽度。
- *
- * 允许换行 + 给输入框一个可收缩的弹性基准：宽的时候一行放完，窄的时候输入框
- * 整行、按钮落到下一行，而不是所有东西一起变窄。
+ * 已敲定的扩展名是芯片，续打的内容是输入框，两者同住一个「框」：
+ * 粘贴多段（空格 / 逗号分隔）即时落芯片，批量不再是隐藏知识。
  */
 
-.ci-fe__add-row .setting-item-control {
+.ci-fe__tokens {
+	display: flex;
 	flex-wrap: wrap;
-	justify-content: flex-start;
+	align-items: center;
+	gap: var(--size-2-2);
+	padding: var(--size-4-1) var(--size-4-2);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-s);
+}
+
+.ci-fe__tokens input[type="text"] {
+	flex: 1 1 8ch;
+	min-width: 0;
+	height: auto;
+	padding: 0;
+	border: none;
+	background: transparent;
+	box-shadow: none;
+}
+
+.ci-fe__token {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--size-2-1);
+	padding: 0 var(--size-2-2);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-s);
+	background-color: var(--background-secondary);
+	color: var(--text-normal);
+	font-size: var(--font-ui-smaller);
+	font-family: var(--font-monospace);
+	line-height: 1.8;
+	white-space: nowrap;
+}
+
+/* 已配置：虚线描边 + title 说明「提交时将更新」 */
+.ci-fe__token--exists {
+	border-style: dashed;
+	border-color: var(--interactive-accent);
+}
+
+/* 非法 token：红色，提交被拦且点名，见弹窗内的错误行 */
+.ci-fe__token--invalid {
+	border-color: var(--text-error);
+	color: var(--text-error);
+}
+
+.ci-fe__token-remove {
+	height: auto;
+	padding: 0;
+	border: none;
+	background: none;
+	box-shadow: none;
+	color: var(--text-faint);
+	font-size: inherit;
+	line-height: 1;
+	cursor: pointer;
+}
+
+.ci-fe__token-remove:hover {
+	color: var(--text-error);
+}
+
+/* 图标 + 颜色并排一行；颜色是弹窗内的中间态，提交时才落盘 */
+.ci-fe__add-pickers {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--size-4-2);
+}
+
+.ci-fe__color-host {
+	display: inline-flex;
+}
+
+.ci-fe__color-reset {
+	height: auto;
+	padding: 0;
+	border: none;
+	background: none;
+	box-shadow: none;
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+.ci-fe__color-reset:hover {
+	color: var(--text-normal);
+}
+
+/* ------------------------------ 选择模式 ---------------------------------- */
+/*
+ * 复选框渲染在 `info` 槽里，但那个槽 portal 到 name/desc **之后**，顺流排会掉到
+ * 描述下方——绝对定位到行首左侧，用 padding 腾出位置。组内行自带缩进与左侧
+ * 竖线，复选框摆在缩进之后，不压线。
+ */
+
+.ci-fe__row--selecting {
+	position: relative;
+	padding-left: var(--size-4-6);
+}
+
+.ci-fe__row--selecting.ci-fe__ext-row--grouped {
+	padding-left: calc(var(--size-4-4) + var(--size-4-6));
+}
+
+.ci-fe__select-check {
+	position: absolute;
+	top: var(--size-4-3);
+	left: var(--size-4-2);
+}
+
+.ci-fe__row--selecting.ci-fe__ext-row--grouped .ci-fe__select-check {
+	left: var(--size-4-4);
+}
+
+/* 操作条：挂在 SettingGroup 头部右侧（原按钮区），计数 + 批量动作 */
+.ci-fe__select-bar {
+	display: inline-flex;
+	align-items: center;
 	gap: var(--size-4-1);
 }
 
-.ci-fe__add-row .setting-item-control input[type="text"] {
-	flex: 1 1 14ch;
-	/* 不给 min-width: 0 的话 flex 项不会收缩到内容宽度以下 */
-	min-width: 0;
+.ci-fe__select-count {
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+	white-space: nowrap;
 }
 
 /* ------------------------------ 分组行与组内行 ---------------------------- */
