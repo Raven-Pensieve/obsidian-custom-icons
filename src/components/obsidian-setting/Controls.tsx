@@ -403,6 +403,9 @@ export interface ColorProps {
 	onChange?: (value: string) => void | Promise<void>;
 }
 
+/** Color 提交去抖时长：拖动取色器时 input 事件连续触发，只在这个静默期后落盘 */
+const COLOR_COMMIT_DELAY_MS = 150;
+
 export const Color: FC<ColorProps> = ({
 	value,
 	disabled,
@@ -420,13 +423,48 @@ export const Color: FC<ColorProps> = ({
 
 	// 分离 onChange 事件处理
 	const handleChange = useStableCallback(onChange);
+
+	/*
+	 * 用户取色只写**最终值**，且卸载时把未落盘的最后一次选择补上。
+	 *
+	 * ColorComponent 的 onChange 绑定在原生 `<input type="color">` 的 input 事件上，
+	 * 拖动取色器期间连续触发；而每次 onChange 都是一整条写路径（深拷贝 → 写盘 →
+	 * 全量 applyAll，装大图标包时是上万次 addIcon），逐事件落盘等于把一次拖动
+	 * 放大成几十次全量重应用。取色器自己保持中间值，去抖期间视觉不回跳。
+	 */
+	const pendingRef = useRef<string | null>(null);
+	const timerRef = useRef<number | null>(null);
 	useEffect(() => {
+		const commit = (v: string) => {
+			void handleChange(v);
+		};
 		color.onChange((v) => {
 			// setValue 触发的回调不算用户操作，否则每次外部值变化都会写回一遍
-			if (!programmaticSetRef.current) {
-				void handleChange(v);
+			if (programmaticSetRef.current) {
+				return;
 			}
+			if (timerRef.current !== null) {
+				window.clearTimeout(timerRef.current);
+			}
+			pendingRef.current = v;
+			timerRef.current = window.setTimeout(() => {
+				pendingRef.current = null;
+				timerRef.current = null;
+				commit(v);
+			}, COLOR_COMMIT_DELAY_MS);
 		});
+		return () => {
+			// 快速关页/行消失时别丢掉刚挑的颜色
+			const pending = pendingRef.current;
+			if (timerRef.current !== null) {
+				window.clearTimeout(timerRef.current);
+				timerRef.current = null;
+			}
+			if (pending !== null) {
+				pendingRef.current = null;
+				commit(pending);
+			}
+		};
 	}, [color, handleChange]);
 
 	// 合并其他属性设置

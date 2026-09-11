@@ -178,6 +178,59 @@ export function tallyExtensions(
 }
 
 /**
+ * 内置的复合后缀候选清单。
+ *
+ * 复合后缀**不从 vault 解析枚举**：日期命名的文件（`2026.09.07.md` → 复合键
+ * `09.07.md`）会产生大量用户根本不需要的垃圾键，而值得单独配图标的复合后缀
+ * 就那么几个。只有被广泛使用的 `.excalidraw.md`（Excalidraw 插件的绘图文件）
+ * 常驻候选，其余复合后缀仍可在添加弹窗手动输入——解析层对它们照常生效，
+ * 只是不替用户决定哪些值得配。
+ */
+export const BUILTIN_COMPOUND_EXTS: readonly string[] = ["excalidraw.md"];
+
+/**
+ * 「库中还未配置」的候选扩展名，按**常规 / 复合**分排。
+ *
+ * 常规排从 vault 统计取「未配置且键不含 `.`」的前 N 项（按文件数降序）；
+ * 复合排来自 `BUILTIN_COMPOUND_EXTS`（未配置时列出，库中文件数照实带上，
+ * 没有就是 0）。界面上复合排带「复合」徽标：复合后缀的支持（解析、输入、
+ * 配置）一直都在，但它得**看得见**才等于存在。
+ */
+export interface ExtCandidates {
+	/** 常规扩展名（键不含 `.`），按文件数降序 */
+	regular: Array<{ ext: string; count: number }>;
+	/** 内置复合后缀（`BUILTIN_COMPOUND_EXTS` 中尚未配置的） */
+	compound: Array<{ ext: string; count: number }>;
+}
+
+export function splitExtCandidates(
+	tally: ReadonlyMap<string, number>,
+	isConfigured: (ext: string) => boolean,
+	regularLimit = 12,
+): ExtCandidates {
+	const result: ExtCandidates = { regular: [], compound: [] };
+	for (const [ext, count] of tally) {
+		// 含 `.` 的键属于复合后缀：不进常规排，也不解析成候选（见 BUILTIN_COMPOUND_EXTS）
+		if (isConfigured(ext) || ext.includes(".")) {
+			continue;
+		}
+		result.regular.push({ ext, count });
+	}
+	result.regular
+		.sort(
+			(a: { ext: string; count: number }, b: { ext: string; count: number }) =>
+				b.count - a.count || a.ext.localeCompare(b.ext),
+		)
+		.splice(regularLimit);
+	for (const ext of BUILTIN_COMPOUND_EXTS) {
+		if (!isConfigured(ext)) {
+			result.compound.push({ ext, count: tally.get(ext) ?? 0 });
+		}
+	}
+	return result;
+}
+
+/**
  * 这一级「配了图标，且那个图标现在画得出来」。
  *
  * 加上 `canRender` 这一问是**回退语义的全部实现**：图标包被停用 / 卸载、

@@ -191,6 +191,58 @@ export function setGroupIcon(
 }
 
 /**
+ * 把一个图标**扇出到任意扩展名子集**，不改动入参。选择模式的兑现点。
+ *
+ * 与 `setGroupIcon` 同一套约定，只是作用域从「一个组的成员」推广为「调用方传入
+ * 的任意键列表」——组只是子集的一种来源，筛选结果、勾选项同样是子集。调用方
+ * 随后**一次整 map 写入**。
+ *
+ * `color` 省略时**保留各成员原有颜色**（`undefined` = 未改动）；传 `""` 才是显式清除。
+ * 键不存在时跳过（另一窗口删了、菜单开着时被清空），不新建条目。
+ */
+export function setExtsIcon(
+	map: ExtensionMap,
+	exts: readonly string[],
+	icon: string,
+	type: IconType,
+	color?: string,
+): ExtensionMap {
+	const targets = new Set(exts);
+	const next: ExtensionMap = {};
+	for (const [ext, rule] of Object.entries(map)) {
+		next[ext] = targets.has(ext)
+			? {
+					...rule,
+					icon,
+					type,
+					...(color === undefined ? {} : { color }),
+				}
+			: rule;
+	}
+	return next;
+}
+
+/**
+ * 删除一组扩展名规则，不改动入参。
+ *
+ * `deleteGroupWithRules` 的子集版：选择模式删「勾中的那些」，作用域同样由调用方
+ * 给出。这些扩展名回落到 `fileDefault`，调用方负责先确认。
+ */
+export function deleteExts(
+	map: ExtensionMap,
+	exts: readonly string[],
+): ExtensionMap {
+	const drop = new Set(exts);
+	const next: ExtensionMap = {};
+	for (const [ext, rule] of Object.entries(map)) {
+		if (!drop.has(ext)) {
+			next[ext] = rule;
+		}
+	}
+	return next;
+}
+
+/**
  * 只把颜色扇出到整组，**各成员图标不动**。
  *
  * 单独一个函数而不是 `setGroupIcon(map, g, uniform.icon, ...)`：组内图标不一致时
