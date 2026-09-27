@@ -12,7 +12,7 @@ import {
 	ReactNode,
 	useEffect,
 	useId,
-	useMemo,
+	useLayoutEffect,
 	useRef,
 	useState,
 } from "react";
@@ -120,8 +120,26 @@ export const SettingGroup: FC<SettingGroupProps> = ({
 	const [settingItemsContainer, setSettingItemsContainer] =
 		useState<HTMLElement | null>(null);
 
-	// Create the SettingGroup and extract the correct container for children
-	const settingGroupData = useMemo(() => {
+	/*
+	 * 分组的创建放在 effect 生命周期而非渲染期（useMemo）：渲染期创建在
+	 * React 18 StrictMode（dev 构建）下不可重入——双渲染泄漏一个带标题的
+	 * 空壳分组，模拟卸载又把正式分组摘掉（生产构建 StrictMode 为 no-op，
+	 * 仅 dev 可见）。结构步骤多（heading / className / 标记 / items 容器），
+	 * 不套 useImperativeComponent。
+	 *
+	 * SettingGroup creates a structure like:
+	 * <div class="setting-group">
+	 *   <div class="setting-item setting-item-heading">...</div>
+	 *   <div class="setting-items"></div>
+	 * </div>
+	 */
+	const [settingGroupData, setSettingGroupData] = useState<{
+		group: ObsidianSettingGroup;
+		settingGroupEl: HTMLElement;
+		itemsContainer: HTMLElement;
+	} | null>(null);
+
+	useLayoutEffect(() => {
 		if (!parentContainer) {
 			throw new Error(
 				"SettingGroup must have a containerEl (either from context or props)",
@@ -138,13 +156,6 @@ export const SettingGroup: FC<SettingGroupProps> = ({
 		if (className) {
 			group.addClass(className);
 		}
-
-		// Important: SettingGroup creates a structure like:
-		// <div class="setting-group">
-		//   <div class="setting-item setting-item-heading">...</div>
-		//   <div class="setting-items"></div>
-		// </div>
-		// We need to find the .setting-items container
 
 		// 使用唯一 ID 标记这个 setting-group 以便精确查询
 		const settingGroupEl = parentContainer.lastElementChild as HTMLElement;
@@ -164,13 +175,19 @@ export const SettingGroup: FC<SettingGroupProps> = ({
 			(settingGroupEl.querySelector(".setting-items") as HTMLElement) ??
 			settingGroupEl.createDiv("setting-items");
 
-		return { group, settingGroupEl, itemsContainer };
+		setSettingGroupData({ group, settingGroupEl, itemsContainer });
+		setSettingItemsContainer(itemsContainer);
+
+		// Cleanup: remove the entire setting-group
+		return () => {
+			settingGroupEl.remove();
+		};
 	}, [parentContainer, className, title, groupId]);
 
 	/*
 	 * 筛选框与操作按钮的槽位：**懒建一次，之后不再动**。
 	 *
-	 * 千万不要把「有没有 search / actions」放进上面那个 `useMemo` 的 deps。
+	 * 千万不要把「有没有 search / actions」放进上面那个 effect 的 deps。
 	 * 调用方传的是 `extCount > 0 ? {...} : undefined` 这类条件值，第一条规则加进去
 	 * 的那一刻它会 false → true；一旦它进 deps，整个 `ObsidianSettingGroup` 就会
 	 * 重建，而新建的分组是 `append` 到父容器**末尾**的——于是「按扩展名」整组会
@@ -184,7 +201,7 @@ export const SettingGroup: FC<SettingGroupProps> = ({
 		actions: HTMLElement | null;
 	}>({ owner: null, search: null, actions: null });
 	// 分组本身若真的重建了（容器 / 标题变了），槽位跟着作废
-	if (slotsRef.current.owner !== settingGroupData) {
+	if (settingGroupData && slotsRef.current.owner !== settingGroupData) {
 		slotsRef.current = {
 			owner: settingGroupData,
 			search: null,
@@ -193,6 +210,7 @@ export const SettingGroup: FC<SettingGroupProps> = ({
 	}
 	const [, bumpSlots] = useState(0);
 	useEffect(() => {
+		if (!settingGroupData) return;
 		const slots = slotsRef.current;
 		let created = false;
 		if (hasSearch && !slots.search) {
@@ -226,16 +244,6 @@ export const SettingGroup: FC<SettingGroupProps> = ({
 		actionsSlot?.toggleClass("ci-setting-slot--hidden", !hasActions);
 	}, [searchComponent, actionsSlot, hasSearch, hasActions]);
 
-	useEffect(() => {
-		// Set the correct container for children (the .setting-items div)
-		setSettingItemsContainer(settingGroupData.itemsContainer);
-
-		return () => {
-			// Cleanup: remove the entire setting-group
-			settingGroupData.settingGroupEl.remove();
-		};
-	}, [settingGroupData]);
-
 	/*
 	 * 置灰 + 真正不可交互（inert 连键盘聚焦一起挡掉）。
 	 *
@@ -245,6 +253,7 @@ export const SettingGroup: FC<SettingGroupProps> = ({
 	 * 只有标题文字本身留着不灰，否则「为什么全灰了」连个抬头都没有。
 	 */
 	useEffect(() => {
+		if (!settingGroupData) return;
 		const targets = [
 			settingGroupData.itemsContainer,
 			actionsSlot,

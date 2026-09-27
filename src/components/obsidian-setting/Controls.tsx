@@ -1,3 +1,4 @@
+import { useImperativeComponent } from "@src/hooks/useImperativeComponent";
 import { useSettingSlot } from "@src/hooks/useSettingContext";
 import {
 	ButtonComponent,
@@ -14,7 +15,7 @@ import {
 	TooltipOptions,
 	setTooltip,
 } from "obsidian";
-import { FC, ReactNode, useCallback, useEffect, useMemo, useRef } from "react";
+import { FC, ReactNode, useCallback, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 
 /**
@@ -68,20 +69,22 @@ export const Button: FC<ButtonProps> = ({
 }) => {
 	const { slotEl } = useSettingSlot();
 
-	const button = useMemo(() => new ButtonComponent(slotEl), [slotEl]);
-
-	useEffect(() => {
-		return () => button.buttonEl.remove();
-	}, [button]);
+	const button = useImperativeComponent(
+		[slotEl],
+		() => new ButtonComponent(slotEl),
+		(b) => b.buttonEl.remove(),
+	);
 
 	// 只注册一次：`onClick` 是 addEventListener，重复注册会累积（见 useStableCallback）
 	const handleClick = useStableCallback(onClick);
 	useEffect(() => {
+		if (!button) return;
 		button.onClick(handleClick);
 	}, [button, handleClick]);
 
 	// 合并其他属性设置（这些属性变化时一起更新）
 	useEffect(() => {
+		if (!button) return;
 		if (icon) button.setIcon(icon);
 		if (typeof children === "string") button.setButtonText(children);
 		if (className) button.setClass(className);
@@ -98,6 +101,9 @@ export const Button: FC<ButtonProps> = ({
 		}
 	}, [button, icon, children, className, disabled, cta, warning, tooltip]);
 
+	if (!button) {
+		return null;
+	}
 	return <>{createPortal(children, button.buttonEl)}</>;
 };
 
@@ -122,20 +128,22 @@ export const ExtraButton: FC<ExtraButtonProps> = ({
 }) => {
 	const { slotEl } = useSettingSlot();
 
-	const button = useMemo(() => new ExtraButtonComponent(slotEl), [slotEl]);
-
-	useEffect(() => {
-		return () => button.extraSettingsEl.remove();
-	}, [button]);
+	const button = useImperativeComponent(
+		[slotEl],
+		() => new ExtraButtonComponent(slotEl),
+		(b) => b.extraSettingsEl.remove(),
+	);
 
 	// 只注册一次：同 Button，`onClick` 会累积
 	const handleClick = useStableCallback(onClick);
 	useEffect(() => {
+		if (!button) return;
 		button.onClick(handleClick);
 	}, [button, handleClick]);
 
 	// 合并其他属性设置
 	useEffect(() => {
+		if (!button) return;
 		button.setIcon(icon);
 		if (disabled !== undefined) button.setDisabled(disabled);
 		if (tooltip) {
@@ -147,6 +155,9 @@ export const ExtraButton: FC<ExtraButtonProps> = ({
 		}
 	}, [button, icon, disabled, tooltip]);
 
+	if (!button) {
+		return null;
+	}
 	return <>{createPortal(children, button.extraSettingsEl)}</>;
 };
 
@@ -169,20 +180,22 @@ export const Toggle: FC<ToggleProps> = ({
 }) => {
 	const { slotEl } = useSettingSlot();
 
-	const toggle = useMemo(() => new ToggleComponent(slotEl), [slotEl]);
-
-	useEffect(() => {
-		return () => toggle.toggleEl.remove();
-	}, [toggle]);
+	const toggle = useImperativeComponent(
+		[slotEl],
+		() => new ToggleComponent(slotEl),
+		(t) => t.toggleEl.remove(),
+	);
 
 	// 分离 onChange 事件处理
 	const handleChange = useStableCallback(onChange);
 	useEffect(() => {
+		if (!toggle) return;
 		toggle.onChange(handleChange);
 	}, [toggle, handleChange]);
 
 	// 合并其他属性设置
 	useEffect(() => {
+		if (!toggle) return;
 		if (value !== undefined) toggle.setValue(value);
 		if (disabled !== undefined) toggle.setDisabled(disabled);
 		if (tooltip) {
@@ -216,20 +229,22 @@ export const Text: FC<TextProps> = ({
 }) => {
 	const { slotEl } = useSettingSlot();
 
-	const text = useMemo(() => new TextComponent(slotEl), [slotEl]);
-
-	useEffect(() => {
-		return () => text.inputEl.remove();
-	}, [text]);
+	const text = useImperativeComponent(
+		[slotEl],
+		() => new TextComponent(slotEl),
+		(t) => t.inputEl.remove(),
+	);
 
 	// 分离 onChange 事件处理
 	const handleChange = useStableCallback(onChange);
 	useEffect(() => {
+		if (!text) return;
 		text.onChange(handleChange);
 	}, [text, handleChange]);
 
 	// 合并其他属性设置
 	useEffect(() => {
+		if (!text) return;
 		text.setValue(value ?? "");
 		if (placeholder) text.setPlaceholder(placeholder);
 		text.inputEl.readOnly = !!readonly;
@@ -257,20 +272,22 @@ export const TextArea: FC<TextAreaProps> = ({
 }) => {
 	const { slotEl } = useSettingSlot();
 
-	const textArea = useMemo(() => new TextAreaComponent(slotEl), [slotEl]);
-
-	useEffect(() => {
-		return () => textArea.inputEl.remove();
-	}, [textArea]);
+	const textArea = useImperativeComponent(
+		[slotEl],
+		() => new TextAreaComponent(slotEl),
+		(t) => t.inputEl.remove(),
+	);
 
 	// 分离 onChange 事件处理
 	const handleChange = useStableCallback(onChange);
 	useEffect(() => {
+		if (!textArea) return;
 		textArea.onChange(handleChange);
 	}, [textArea, handleChange]);
 
 	// 合并其他属性设置
 	useEffect(() => {
+		if (!textArea) return;
 		if (value !== undefined) textArea.setValue(value);
 		if (placeholder) textArea.setPlaceholder(placeholder);
 		if (disabled !== undefined) textArea.setDisabled(disabled);
@@ -298,33 +315,32 @@ export const Dropdown: FC<DropdownProps> = ({
 }) => {
 	const { slotEl } = useSettingSlot();
 
-	// 不在 useMemo 中添加 options，避免 options 引用变化时重建组件
-	const dropdown = useMemo(() => {
-		return new DropdownComponent(slotEl);
-	}, [slotEl]);
-
-	useEffect(() => {
-		return () => dropdown.selectEl.remove();
-	}, [dropdown]);
+	// 不在创建时添加 options，避免 options 引用变化时重建组件
+	const dropdown = useImperativeComponent(
+		[slotEl],
+		() => new DropdownComponent(slotEl),
+		(d) => d.selectEl.remove(),
+	);
 
 	// 分离 onChange 事件处理
 	const handleChange = useStableCallback(onChange);
 	useEffect(() => {
+		if (!dropdown) return;
 		dropdown.onChange(handleChange);
 	}, [dropdown, handleChange]);
 
 	// 处理 options 更新
 	useEffect(() => {
-		if (options) {
-			// 清空现有选项
-			dropdown.selectEl.empty();
-			// 添加新选项
-			dropdown.addOptions(options);
-		}
+		if (!dropdown || !options) return;
+		// 清空现有选项
+		dropdown.selectEl.empty();
+		// 添加新选项
+		dropdown.addOptions(options);
 	}, [dropdown, options]);
 
 	// 合并其他属性设置
 	useEffect(() => {
+		if (!dropdown) return;
 		if (value !== undefined) dropdown.setValue(value);
 		dropdown.setDisabled(disabled ?? false);
 	}, [dropdown, value, disabled]);
@@ -357,24 +373,26 @@ export const Slider: FC<SliderProps> = ({
 }) => {
 	const { slotEl } = useSettingSlot();
 
-	const slider = useMemo(() => {
-		const s = new SliderComponent(slotEl);
-		s.setLimits(min, max, step);
-		return s;
-	}, [slotEl, min, max, step]);
-
-	useEffect(() => {
-		return () => slider.sliderEl.remove();
-	}, [slider]);
+	const slider = useImperativeComponent(
+		[slotEl, min, max, step],
+		() => {
+			const s = new SliderComponent(slotEl);
+			s.setLimits(min, max, step);
+			return s;
+		},
+		(s) => s.sliderEl.remove(),
+	);
 
 	// 分离 onChange 事件处理
 	const handleChange = useStableCallback(onChange);
 	useEffect(() => {
+		if (!slider) return;
 		slider.onChange(handleChange);
 	}, [slider, handleChange]);
 
 	// 合并其他属性设置
 	useEffect(() => {
+		if (!slider) return;
 		if (value !== undefined) slider.setValue(value);
 		if (disabled !== undefined) slider.setDisabled(disabled);
 		// 不再调 setDynamicTooltip()：Obsidian 现在恒在滑块旁内联显示数值，
@@ -415,11 +433,11 @@ export const Color: FC<ColorProps> = ({
 	const { slotEl } = useSettingSlot();
 	const programmaticSetRef = useRef(false);
 
-	const color = useMemo(() => new ColorComponent(slotEl), [slotEl]);
-
-	useEffect(() => {
-		return () => color.colorPickerEl?.remove();
-	}, [color]);
+	const color = useImperativeComponent(
+		[slotEl],
+		() => new ColorComponent(slotEl),
+		(c) => c.colorPickerEl?.remove(),
+	);
 
 	// 分离 onChange 事件处理
 	const handleChange = useStableCallback(onChange);
@@ -435,6 +453,7 @@ export const Color: FC<ColorProps> = ({
 	const pendingRef = useRef<string | null>(null);
 	const timerRef = useRef<number | null>(null);
 	useEffect(() => {
+		if (!color) return;
 		const commit = (v: string) => {
 			void handleChange(v);
 		};
@@ -469,6 +488,7 @@ export const Color: FC<ColorProps> = ({
 
 	// 合并其他属性设置
 	useEffect(() => {
+		if (!color) return;
 		if (value !== undefined) {
 			programmaticSetRef.current = true;
 			color.setValue(value);
@@ -505,20 +525,22 @@ export const Search: FC<SearchProps> = ({
 }) => {
 	const { slotEl } = useSettingSlot();
 
-	const search = useMemo(() => new SearchComponent(slotEl), [slotEl]);
-
-	useEffect(() => {
-		return () => search.containerEl?.remove();
-	}, [search]);
+	const search = useImperativeComponent(
+		[slotEl],
+		() => new SearchComponent(slotEl),
+		(s) => s.containerEl?.remove(),
+	);
 
 	// 分离 onChange 事件处理
 	const handleChange = useStableCallback(onChange);
 	useEffect(() => {
+		if (!search) return;
 		search.onChange(handleChange);
 	}, [search, handleChange]);
 
 	// 合并其他属性设置
 	useEffect(() => {
+		if (!search) return;
 		if (value !== undefined) search.setValue(value);
 		if (placeholder) search.setPlaceholder(placeholder);
 		if (disabled !== undefined) search.setDisabled(disabled);
@@ -537,22 +559,17 @@ export interface ProgressBarProps {
 	visible?: boolean;
 }
 
-export const ProgressBar: FC<ProgressBarProps> = ({
-	value,
-	visible = true,
-}) => {
+export const ProgressBar: FC<ProgressBarProps> = ({ value, visible = true }) => {
 	const { slotEl } = useSettingSlot();
 
-	const progressBar = useMemo(
-		() => new ProgressBarComponent(slotEl),
+	const progressBar = useImperativeComponent(
 		[slotEl],
+		() => new ProgressBarComponent(slotEl),
+		(p) => p.progressBar?.remove(),
 	);
 
 	useEffect(() => {
-		return () => progressBar.progressBar?.remove();
-	}, [progressBar]);
-
-	useEffect(() => {
+		if (!progressBar) return;
 		if (value !== undefined) progressBar.setValue(value);
 		progressBar.setVisibility(visible);
 	}, [progressBar, value, visible]);
@@ -581,23 +598,22 @@ export const MomentFormat: FC<MomentFormatProps> = ({
 }) => {
 	const { slotEl } = useSettingSlot();
 
-	const momentFormat = useMemo(
-		() => new MomentFormatComponent(slotEl),
+	const momentFormat = useImperativeComponent(
 		[slotEl],
+		() => new MomentFormatComponent(slotEl),
+		(m) => m.inputEl.remove(),
 	);
-
-	useEffect(() => {
-		return () => momentFormat.inputEl.remove();
-	}, [momentFormat]);
 
 	// 分离 onChange 事件处理
 	const handleChange = useStableCallback(onChange);
 	useEffect(() => {
+		if (!momentFormat) return;
 		momentFormat.onChange(handleChange);
 	}, [momentFormat, handleChange]);
 
 	// 合并其他属性设置
 	useEffect(() => {
+		if (!momentFormat) return;
 		if (value !== undefined) momentFormat.setValue(value);
 		if (placeholder) momentFormat.setPlaceholder(placeholder);
 		if (defaultFormat) momentFormat.setDefaultFormat(defaultFormat);

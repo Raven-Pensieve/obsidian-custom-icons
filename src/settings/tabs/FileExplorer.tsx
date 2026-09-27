@@ -889,8 +889,15 @@ export const FileExplorer: FC = () => {
 		/>
 	);
 
-	/** 一条扩展名规则行；`group` 非空时带「从组中移出」按钮 */
-	const renderExtRow = (ext: string, group: string) => {
+	/**
+	 * 一条扩展名规则行；`group` 非空时带「从组中移出」按钮。
+	 *
+	 * `visible` 是分组折叠的实现方式：`SettingItem` 底层是 `new Setting(containerEl)`，
+	 * **构造即 append 到容器末尾**——组内成员若随折叠条件挂载，展开时新行会落到
+	 * 整个列表的底部（未分组段之后），而不是插在组行下面。所以成员行**常驻挂载**、
+	 * 收起时用 `setVisibility` 隐藏：DOM 顺序在首次挂载那一刻就固定正确。
+	 */
+	const renderExtRow = (ext: string, group: string, visible = true) => {
 		const override = extMap[ext];
 		const count = tally.get(ext) ?? 0;
 		// 空图标行是**不生效**的，必须说出来：这是本页唯一允许留空的表，
@@ -904,6 +911,7 @@ export const FileExplorer: FC = () => {
 				key={`extensions-${ext}`}
 				name={`.${ext}`}
 				desc={notes.join(" · ")}
+				visible={visible}
 				className={[
 					group ? "ci-fe__ext-row--grouped" : undefined,
 					selectMode ? "ci-fe__row--selecting" : undefined,
@@ -1538,7 +1546,9 @@ export const FileExplorer: FC = () => {
 					<SettingItem name={extLL.noneMatched()} />
 				)}
 
-				{/* 分组行 + 组内成员（收起时只留组行，成员靠组行上的芯片预览） */}
+				{/* 分组行 + 组内成员（成员常驻挂载、收起时隐藏——见 renderExtRow 的
+				 * 注释：条件挂载会让展开的行 append 到列表底部；收起时组行自己
+				 * 用只读芯片交代组里有什么） */}
 				{visibleGroups.map((group) => {
 					const expanded = isExpanded(group.name, group.iconless);
 					return (
@@ -1552,10 +1562,9 @@ export const FileExplorer: FC = () => {
 								group.members,
 								group.nameMatched,
 							)}
-							{expanded &&
-								group.members.map((ext) =>
-									renderExtRow(ext, group.name),
-								)}
+							{group.members.map((ext) =>
+								renderExtRow(ext, group.name, expanded),
+							)}
 						</Fragment>
 					);
 				})}
