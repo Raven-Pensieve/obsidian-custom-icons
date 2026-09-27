@@ -2,6 +2,10 @@ import { IRibbonIconOverride } from "@src/types/types";
 import { AbstractIconHandler } from "@src/util/IconHandler";
 import { createIconRenderable } from "@src/util/createIconRenderable";
 import { type IconRenderable } from "@src/util/iconRenderable";
+import {
+	getRibbonActionContainers,
+	RIBBON_ACTION_SELECTOR,
+} from "@src/util/ribbonDom";
 import setIcon, { cleanupIcon } from "@src/util/setIcon";
 
 interface IRibbonConfig {
@@ -11,7 +15,9 @@ interface IRibbonConfig {
 
 /**
  * Ribbon 图标处理器
- * 为左侧 Ribbon 按钮（.side-dock-actions .side-dock-ribbon-action）应用自定义图标。
+ * 为左侧 Ribbon 按钮（.side-dock-ribbon-action）应用自定义图标。
+ * 按钮容器经 util/ribbonDom.ts 解析：旧版选择器优先，
+ * 1.13+ DOM 重构后回落 leftRibbon.containerEl。
  *
  * - 以 aria-label（= addRibbonIcon 的 title）作为映射键——DOM 上唯一的按钮标识
  * - 仅覆盖用户显式分配的按钮；分配被删除（重置）时还原原始图标
@@ -24,9 +30,7 @@ interface IRibbonConfig {
 export default class RibbonIconHandler extends AbstractIconHandler<IRibbonConfig> {
 	readonly id = "ribbon";
 
-	private readonly containerSelector =
-		".workspace-ribbon.mod-left .side-dock-actions";
-	private readonly actionSelector = ".side-dock-ribbon-action";
+	private readonly actionSelector = RIBBON_ACTION_SELECTOR;
 	private readonly markerAttribute = "data-ci-ribbon";
 	/** 原生 ribbon 图标为 24×24（区别于设置页的 16） */
 	private readonly iconSize = 24;
@@ -63,14 +67,8 @@ export default class RibbonIconHandler extends AbstractIconHandler<IRibbonConfig
 	}
 
 	private getContainers(): HTMLElement[] {
-		// ribbon 位于 workspace.containerEl 之外、仅存在于主窗口，
-		// 因此查询主窗口 document（containerEl 恒在主窗口，
-		// 其 .doc 即主窗口 document，不受 popout 聚焦影响）
-		const containers =
-			this.app.workspace.containerEl.doc.querySelectorAll<HTMLElement>(
-				this.containerSelector,
-			);
-		return Array.from(containers);
+		// 选择器优先、leftRibbon API 兜底，见 util/ribbonDom.ts
+		return getRibbonActionContainers(this.app);
 	}
 
 	private applyToExistingActions(): void {

@@ -12,10 +12,11 @@ import usePluginSettings from "@src/hooks/usePluginSettings";
 import useSettingsStore from "@src/hooks/useSettingsStore";
 import { LL } from "@src/i18n/i18n";
 import { IRibbonIconOverride, IconType } from "@src/types/types";
+import {
+	getRibbonActionContainers,
+	RIBBON_ACTION_SELECTOR,
+} from "@src/util/ribbonDom";
 import { FC, useMemo, useState } from "react";
-
-const RIBBON_ACTION_SELECTOR =
-	".workspace-ribbon.mod-left .side-dock-actions .side-dock-ribbon-action";
 
 interface RibbonActionInfo {
 	label: string;
@@ -62,20 +63,25 @@ export const Ribbon: FC = () => {
 		const actions: RibbonActionInfo[] = [];
 		const seenLabels = new Set<string>();
 
-		// ribbon 仅存在于主窗口，查询主窗口 document
-		// （workspace.containerEl 恒在主窗口，其 .doc 即主窗口 document）
-		settingsStore.app.workspace.containerEl.doc
-			.querySelectorAll(RIBBON_ACTION_SELECTOR)
-			.forEach((el) => {
-				const label = el.getAttribute("aria-label");
-				if (!label || seenLabels.has(label)) return;
-				seenLabels.add(label);
-				actions.push({
-					label,
-					hasIcon: Boolean(el.querySelector("svg")),
-					...getCurrentIcon(el),
-				});
+		// 选择器优先、leftRibbon API 兜底，见 util/ribbonDom.ts
+		const actionEls = getRibbonActionContainers(
+			settingsStore.app,
+		).flatMap((container) =>
+			Array.from(
+				container.querySelectorAll<HTMLElement>(RIBBON_ACTION_SELECTOR),
+			),
+		);
+
+		actionEls.forEach((el) => {
+			const label = el.getAttribute("aria-label");
+			if (!label || seenLabels.has(label)) return;
+			seenLabels.add(label);
+			actions.push({
+				label,
+				hasIcon: Boolean(el.querySelector("svg")),
+				...getCurrentIcon(el),
 			});
+		});
 
 		// 按标签排序，确保顺序稳定
 		return actions.sort((a, b) => a.label.localeCompare(b.label));
