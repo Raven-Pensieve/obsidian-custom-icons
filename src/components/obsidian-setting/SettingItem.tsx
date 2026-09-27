@@ -4,7 +4,14 @@ import {
 } from "@src/context/SettingContext";
 import { useSettingContainer } from "@src/hooks/useSettingContext";
 import { Setting } from "obsidian";
-import { FC, ReactNode, useEffect, useMemo } from "react";
+import {
+	FC,
+	ReactNode,
+	useEffect,
+	useLayoutEffect,
+	useMemo,
+	useState,
+} from "react";
 import { createPortal } from "react-dom";
 
 export interface SettingItemProps {
@@ -80,7 +87,7 @@ export interface SettingItemProps {
  * <SettingItem
  *   name="My Setting"
  *   desc="This is a description"
- *   control={<Button onClick={() => {}}>Click me</Button>}
+ *   control={<Button onClick={() => {}}>Click</Button>}
  * />
  * ```
  */
@@ -106,25 +113,38 @@ export const SettingItem: FC<SettingItemProps> = ({
 		);
 	}
 
-	// Create Setting instance
-	const setting = useMemo(() => {
-		const s = new Setting(containerEl);
-		if (heading) {
-			s.setHeading();
-		}
-		return s;
-	}, [containerEl, heading]);
+	/*
+	 * Setting 的创建放在 effect 生命周期而非渲染期（useMemo）：渲染期创建在
+	 * React 18 StrictMode（dev 构建）下不可重入——双渲染会留下一个无人认领
+	 * 的空壳行，模拟卸载的 cleanup 又把正式实例摘掉，页面只剩
+	 * setting-item-name 空骨架（生产构建 StrictMode 为 no-op，仅 dev 可见）。
+	 * 不套 useImperativeComponent 是因为 setHeading 要与创建同拍处理。
+	 */
+	const [setting, setSetting] = useState<Setting | null>(null);
 
-	// Cleanup on unmount
-	useEffect(() => {
+	useLayoutEffect(() => {
+		const instance = new Setting(containerEl);
+		if (heading) {
+			instance.setHeading();
+		}
+		setSetting(instance);
 		return () => {
-			setting.clear();
-			setting.settingEl.remove(); // 确保 DOM 元素被移除
+			/*
+			 * 只能整体摘除，绝不能 setting.clear()：clear() 会把
+			 * nameEl / descEl / controlEl 清空，而这些槽位正是下方
+			 * createPortal 的挂载点——槽位先被清空后，React 删除子树时
+			 * 对已不在容器里的节点执行 removeChild，直接抛 NotFoundError
+			 * （切换页签卸载面板、关闭设置时触发）。
+			 * settingEl.remove() 连同子树完整摘除即可：React 对已脱离
+			 * 文档但父子关系完好的容器 removeChild 仍能成功。
+			 */
+			instance.settingEl.remove();
 		};
-	}, [setting]);
+	}, [containerEl, heading]);
 
 	// Apply basic settings (合并多个相关的设置以减少 DOM 操作)
 	useEffect(() => {
+		if (!setting) return;
 		/*
 		 * 字符串的 name / desc 必须**也能被清空**。
 		 *
@@ -161,7 +181,7 @@ export const SettingItem: FC<SettingItemProps> = ({
 
 	// Apply className (需要单独处理，因为需要清理)
 	useEffect(() => {
-		if (!className) return;
+		if (!setting || !className) return;
 
 		const classes = className.split(/\s+/).filter(Boolean);
 		classes.forEach((cls) => {
@@ -176,15 +196,20 @@ export const SettingItem: FC<SettingItemProps> = ({
 
 	// Create slot contexts
 	const slots = useMemo(
-		() => ({
-			info: { setting, slotEl: setting.infoEl },
-			name: { setting, slotEl: setting.nameEl },
-			desc: { setting, slotEl: setting.descEl },
-			control: { setting, slotEl: setting.controlEl },
-			main: { setting, slotEl: setting.settingEl },
-		}),
+		() =>
+			setting && {
+				info: { setting, slotEl: setting.infoEl },
+				name: { setting, slotEl: setting.nameEl },
+				desc: { setting, slotEl: setting.descEl },
+				control: { setting, slotEl: setting.controlEl },
+				main: { setting, slotEl: setting.settingEl },
+			},
 		[setting],
 	);
+
+	if (!setting || !slots) {
+		return null;
+	}
 
 	return (
 		<SettingContext.Provider value={setting}>
