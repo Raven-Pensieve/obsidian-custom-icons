@@ -21,6 +21,31 @@
 
 * 更新相关文档 ([a3212cf](https://github.com/Raven-Pensieve/obsidian-custom-icons/commit/a3212cf46abfa1099bc361a5c3e26241a76b41d0))
 
+## [2.9.0](https://github.com/Raven-Pensieve/obsidian-custom-icons/compare/2.8.0...2.9.0) (2026-09-27)
+
+
+### ✨ 新增功能 (Features)
+
+* 标签页图标支持继承文件浏览器 ([d06b12a](https://github.com/Raven-Pensieve/obsidian-custom-icons/commit/d06b12afaa0f44a4afbd151adb2ca076ac7bc7ea))
+
+
+### 🐛 问题修复 (Bug Fixes)
+
+* 修复 ribbon DOM 查询逻辑 ([d24bee3](https://github.com/Raven-Pensieve/obsidian-custom-icons/commit/d24bee38730f5038112288e3dce0da01cd0fd428))
+* 命令式 Setting 与 React 条件挂载的结构性冲突 ([f61dfc3](https://github.com/Raven-Pensieve/obsidian-custom-icons/commit/f61dfc338be82919f9496c181bdcb7c67aa13da1))
+
+
+### ⚡ 性能优化 (Performance)
+
+* 优化分组扩展配置使用 ([aaae3b8](https://github.com/Raven-Pensieve/obsidian-custom-icons/commit/aaae3b8ef6d9f0c2f15f9bedc9c4271795fb108f))
+* 优化虚拟网格首次加载 ([7a74c1e](https://github.com/Raven-Pensieve/obsidian-custom-icons/commit/7a74c1e5d94a0647948c1e4d7373b042801c5925))
+* 优化设置体验 ([05710ec](https://github.com/Raven-Pensieve/obsidian-custom-icons/commit/05710ecb36b66393de7c281274ef64e46b275407))
+
+
+### 📝 文档 (Documentation)
+
+* 更新相关文档表述 ([f29f4a6](https://github.com/Raven-Pensieve/obsidian-custom-icons/commit/f29f4a6be4a38245b55985c6af7a17f7c2918510))
+
 ## [2.8.0](https://github.com/Raven-Pensieve/obsidian-custom-icons/compare/2.7.0...2.8.0) (2026-08-27)
 
 
