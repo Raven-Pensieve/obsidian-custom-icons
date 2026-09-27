@@ -4,22 +4,31 @@ import type CIPlugin from "@src/main";
 import { IIcon, ITabHeaderIconOverride } from "@src/types/types";
 import { AbstractIconHandler } from "@src/util/IconHandler";
 import { createIconRenderable } from "@src/util/createIconRenderable";
+import { resolveFileIcon } from "@src/util/fileExplorerIcon";
 import { type IconRenderable } from "@src/util/iconRenderable";
 import setIcon, { cleanupIcon } from "@src/util/setIcon";
 import { buildTabKey, resolveTabIcon } from "@src/util/tabHeaderIcon";
 import { EventRef, Menu, WorkspaceLeaf } from "obsidian";
 
+/** 文件视图最小声明（markdown/pdf/图片/Base 等 FileView 子类均有 .file，duck-typing 连第三方视图一起覆盖） */
+interface FileBackedViewLike {
+	file?: { path: string };
+}
+
 interface ITabHeaderConfig {
 	enable: boolean;
 	data: Record<string, ITabHeaderIconOverride>;
 	tabs: Record<string, ITabHeaderIconOverride>;
+	/** 继承文件浏览器图标（默认关），语义见 types.ts tabHeader.inheritFromFileExplorer */
+	inheritFromFileExplorer: boolean;
 }
 
 /**
  * 标签页图标处理器（隐藏原生 + 插入自定义，混合型）。
  *
  * 为工作区标签页头（.workspace-tab-header[data-type]，含侧栏工具页与编辑器标签）
- * 自定义图标，两级解析：单标签（data-type + aria-label）> 按类型（data-type）> 原生。
+ * 自定义图标，三级解析：单标签（data-type + aria-label）> 按类型（data-type）
+ * > 继承文件浏览器（默认关）> 原生。
  *
  * 与其它处理器的定位差异：
  * - vs Ribbon（替换型）：以稳定、非本地化的 data-type 为键，优于 aria-label；
@@ -34,6 +43,13 @@ interface ITabHeaderConfig {
  * - 类型层为兜底，未单配的标签沿用该类型统一图标（编辑器 markdown/canvas 等
  *   多标签场景的批量入口）；仅在设置页配置，右键不写入——与文件浏览器
  *   「右键设精确项、类型映射(extensions)仅设置页」的约定一致。
+ * - 继承层（inheritFromFileExplorer，默认关）：文件标签在前两级未命中时，按文件
+ *   路径复用 fileExplorer 的解析结果（resolveFileIcon 全级联，与文件浏览器所见
+ *   一致，含 fileDefault / 祖先继承）。路径不经 aria-label 猜（仅文件名，同名
+ *   冲突），而是每轮 sweep 遍历 leaves 建 tabHeaderEl → view.file.path 索引；
+ *   非文件视图无 .file 天然不参与。跨作用域读 plugin.settings.fileExplorer
+ *   （与 IconManager 传入的设置同引用，无过期问题）；不受 fileExplorer.enable
+ *   约束——读的是配置表，两个开关各管各的渲染位置。
  *
  * 难点：
  * - 标签页头分布于左右侧栏、主编辑区与所有 popout 窗口，需跨窗口遍历（区别于 Ribbon 仅主窗口）；
@@ -68,6 +84,7 @@ export default class TabHeaderIconHandler extends AbstractIconHandler<ITabHeader
 	private observers: MutationObserver[] = [];
 	private layoutEventRef: EventRef | null = null;
 	private leafMenuEventRef: EventRef | null = null;
+	private renameEventRef: EventRef | null = null;
 
 	constructor(private plugin: CIPlugin) {
 		super();
@@ -81,6 +98,7 @@ export default class TabHeaderIconHandler extends AbstractIconHandler<ITabHeader
 
 		this.registerContextMenu();
 		this.registerLayoutChange();
+		this.registerRename();
 
 		this.app.workspace.onLayoutReady(() => {
 			this.applyToAll();
@@ -100,6 +118,11 @@ export default class TabHeaderIconHandler extends AbstractIconHandler<ITabHeader
 		if (this.leafMenuEventRef) {
 			this.app.workspace.offref(this.leafMenuEventRef);
 			this.leafMenuEventRef = null;
+		}
+
+		if (this.renameEventRef) {
+			this.app.vault.offref(this.renameEventRef);
+			this.renameEventRef = null;
 		}
 
 		this.removeAllIcons();
@@ -138,14 +161,18 @@ export default class TabHeaderIconHandler extends AbstractIconHandler<ITabHeader
 	// ---------------------------------------------------------------------
 
 	private applyToAll(): void {
-		// 一轮 sweep 建一个（见 util/iconRenderable.ts）
+		// 一轮 sweep 建一个（见 util/iconRenderable.ts）；继承索引同批建一次
 		const canRender = createIconRenderable();
-		this.getTabs().forEach((tabEl) => this.applyToTab(tabEl, canRender));
+		const tabIndex = this.buildInheritIndex();
+		this.getTabs().forEach((tabEl) =>
+			this.applyToTab(tabEl, canRender, tabIndex?.get(tabEl)),
+		);
 	}
 
 	private applyToTab(
 		tabEl: HTMLElement,
 		canRender: IconRenderable = createIconRenderable(),
+		filePath?: string,
 	): void {
 		const dataType = tabEl.dataset.type;
 		if (!dataType) return;
@@ -155,8 +182,9 @@ export default class TabHeaderIconHandler extends AbstractIconHandler<ITabHeader
 		);
 		if (!inner) return;
 
-		// 两级解析：单标签（aria-label，建头时原生同步设置，observer 回调时已可用；
-		// 极端时序缺失则仅走类型级，layout-change 重扫自愈）> 类型兜底。
+		// 三级解析：单标签（aria-label，建头时原生同步设置，observer 回调时已可用；
+		// 极端时序缺失则仅走类型级，layout-change 重扫自愈）> 类型兜底 > 文件浏览器
+		// 继承（开关开启且本轮解析得到文件路径时，复用其全级联结果）。
 		// 画不出来的那一级会被跳过，级联继续往下（图标包被停用 / 图标被删）
 		const resolved = resolveTabIcon(
 			this.settings?.tabs,
@@ -164,6 +192,7 @@ export default class TabHeaderIconHandler extends AbstractIconHandler<ITabHeader
 			dataType,
 			tabEl.getAttribute("aria-label"),
 			canRender,
+			this.resolveInheritedFileIcon(filePath, canRender),
 		);
 		const existing = inner.querySelector<HTMLElement>(
 			`:scope > .${this.customIconClass}`,
@@ -217,6 +246,40 @@ export default class TabHeaderIconHandler extends AbstractIconHandler<ITabHeader
 		);
 	}
 
+	/**
+	 * 继承开关开启时遍历 leaves 建 tabHeaderEl → 文件路径 索引；关闭返回
+	 * undefined（零开销）。duck-typing view.file：markdown/pdf/图片/Base 等
+	 * FileView 子类均有该属性，outline/search 等视图没有 → 天然不参与继承；
+	 * iterateAllLeaves 覆盖侧栏与 popout。tabHeaderEl 随 leaf 创建，DOM 里出现
+	 * 该元素时索引即含它；索引 miss（拖拽瞬态等）本轮不继承，layout-change
+	 * 重扫自愈。
+	 */
+	private buildInheritIndex(): Map<HTMLElement, string> | undefined {
+		if (!this.settings?.inheritFromFileExplorer) return undefined;
+		const index = new Map<HTMLElement, string>();
+		this.app.workspace.iterateAllLeaves((leaf) => {
+			const path = (leaf.view as unknown as FileBackedViewLike)?.file
+				?.path;
+			if (path && leaf.tabHeaderEl) index.set(leaf.tabHeaderEl, path);
+		});
+		return index;
+	}
+
+	/** 文件浏览器侧全级联解析结果作继承兜底（未开启/无路径/画不出返回 null 落原生） */
+	private resolveInheritedFileIcon(
+		filePath: string | undefined,
+		canRender: IconRenderable,
+	): IIcon | null {
+		if (!this.settings?.inheritFromFileExplorer || !filePath) return null;
+		// 跨作用域读完整设置（构造时持有的 plugin），与 IconManager 传入的
+		// this.settings 同引用、随 saveSettings 即时更新
+		return resolveFileIcon(
+			filePath,
+			this.plugin.settings.fileExplorer,
+			canRender,
+		);
+	}
+
 	private removeAllIcons(): void {
 		this.getTabs().forEach((tabEl) => {
 			const customEl = tabEl.querySelector<HTMLElement>(
@@ -250,6 +313,9 @@ export default class TabHeaderIconHandler extends AbstractIconHandler<ITabHeader
 				const observer = new MutationObserver((mutations) => {
 					if (!this.isEnabled()) return;
 
+					// 一轮回调建一套（见 util/iconRenderable.ts）；继承索引同批建一次
+					const canRender = createIconRenderable();
+					const tabIndex = this.buildInheritIndex();
 					mutations.forEach((mutation) => {
 						mutation.addedNodes.forEach((node) => {
 							if (!node.instanceOf(HTMLElement)) return;
@@ -260,7 +326,7 @@ export default class TabHeaderIconHandler extends AbstractIconHandler<ITabHeader
 							) {
 								return;
 							}
-							this.applyToElementTree(node);
+							this.applyToElementTree(node, canRender, tabIndex);
 						});
 					});
 				});
@@ -270,14 +336,17 @@ export default class TabHeaderIconHandler extends AbstractIconHandler<ITabHeader
 		});
 	}
 
-	private applyToElementTree(rootEl: HTMLElement): void {
-		const canRender = createIconRenderable();
+	private applyToElementTree(
+		rootEl: HTMLElement,
+		canRender: IconRenderable = createIconRenderable(),
+		tabIndex?: ReadonlyMap<HTMLElement, string>,
+	): void {
 		if (rootEl.matches(this.tabSelector)) {
-			this.applyToTab(rootEl, canRender);
+			this.applyToTab(rootEl, canRender, tabIndex?.get(rootEl));
 		}
 		rootEl
 			.querySelectorAll<HTMLElement>(this.tabSelector)
-			.forEach((el) => this.applyToTab(el, canRender));
+			.forEach((el) => this.applyToTab(el, canRender, tabIndex?.get(el)));
 	}
 
 	// ---------------------------------------------------------------------
@@ -292,6 +361,22 @@ export default class TabHeaderIconHandler extends AbstractIconHandler<ITabHeader
 			// 右键走 workspace 事件，全窗口自动覆盖，无需在此补绑
 			this.applyToAll();
 			this.setupObservers();
+		});
+	}
+
+	// ---------------------------------------------------------------------
+	// vault rename（继承层按路径解析，重命名/移动后需重扫刷新）
+	// ---------------------------------------------------------------------
+
+	private registerRename(): void {
+		if (this.renameEventRef) return;
+		// 文件重命名/移动后标签标题（aria-label）与路径同时变化；observer 只监听
+		// childList，属性变化兜不住——显式监听 rename 重扫（applyToAll 幂等）。
+		// 文件浏览器侧的 rename 迁移仅在配置受影响时触发全局重扫，此处补齐
+		// 「配置未变但标签标题变了」的刷新路径
+		this.renameEventRef = this.app.vault.on("rename", () => {
+			if (!this.isEnabled()) return;
+			this.applyToAll();
 		});
 	}
 

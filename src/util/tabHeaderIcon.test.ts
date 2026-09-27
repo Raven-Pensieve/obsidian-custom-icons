@@ -1,4 +1,4 @@
-import { ITabHeaderIconOverride } from "@src/types/types";
+import { IIcon, ITabHeaderIconOverride } from "@src/types/types";
 import { buildTabKey, parseTabKey, resolveTabIcon } from "./tabHeaderIcon";
 
 const tabOverride = (
@@ -93,6 +93,77 @@ describe("resolveTabIcon", () => {
 				"空.md",
 			),
 		).toMatchObject({ id: "markdown", icon: "file-text" });
+	});
+
+	describe("fileFallback（继承文件浏览器图标，第三级兜底）", () => {
+		/** 调用方用 resolveFileIcon 解析好的结果（含颜色整套沿用） */
+		const fileFallback: IIcon = {
+			id: "YG/春节.md",
+			icon: "sparkles",
+			type: "lucide",
+			color: "#ff0000",
+		};
+
+		it("前两级未命中时使用继承结果（原对象整套返回，颜色随行）", () => {
+			// tabs/data 里只配了 markdown，pdf 标签两级都 miss
+			expect(
+				resolveTabIcon(tabs, data, "pdf", "doc.pdf", undefined, fileFallback),
+			).toBe(fileFallback);
+		});
+
+		it("单标签与类型层仍优先于继承层", () => {
+			expect(
+				resolveTabIcon(
+					tabs,
+					data,
+					"markdown",
+					"春节.md",
+					undefined,
+					fileFallback,
+				),
+			).toMatchObject({ id: "markdown::春节.md", icon: "star" });
+			expect(
+				resolveTabIcon(undefined, data, "markdown", "x.md", undefined, fileFallback),
+			).toMatchObject({ id: "markdown", icon: "file-text" });
+		});
+
+		it("类型层画不出来时级联落到继承层", () => {
+			/** 假装 mdi 包被停用 */
+			const canRender = (icon?: string, type?: string) =>
+				Boolean(icon) && (type === "lucide" || !icon!.startsWith("CI-mdi-"));
+			const deadData: Record<string, ITabHeaderIconOverride> = {
+				markdown: { id: "markdown", icon: "CI-mdi-f", type: "svg" },
+			};
+			expect(
+				resolveTabIcon(
+					undefined,
+					deadData,
+					"markdown",
+					"x.md",
+					canRender,
+					fileFallback,
+				),
+			).toBe(fileFallback);
+		});
+
+		it("继承结果缺 icon 视为未设置，返回 null 保留原生", () => {
+			expect(
+				resolveTabIcon(
+					undefined,
+					undefined,
+					"markdown",
+					"x.md",
+					undefined,
+					{ id: "x.md", icon: "", type: "lucide" },
+				),
+			).toBeNull();
+		});
+
+		it("不传继承结果时行为与旧两级完全一致", () => {
+			expect(
+				resolveTabIcon(undefined, undefined, "markdown", "x.md"),
+			).toBeNull();
+		});
 	});
 
 	describe("图标画不出来时级联继续往下（图标包被停用 / 图标被删）", () => {

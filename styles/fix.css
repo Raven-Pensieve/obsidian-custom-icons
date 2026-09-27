@@ -52,6 +52,12 @@
 	height: 16px;
 }
 
+.mod-root
+	.workspace-tab-header[data-type="markdown"]
+	.workspace-tab-header-inner-icon.custom-icon {
+	display: inline-flex;
+}
+
 /* 书签：组行插入型（折叠三角后），叶子行隐藏原生 + 插入（混合型） */
 
 /* 含自定义图标的行强制 flex 居中（部分主题 .tree-item-self 非 flex，插入后基线错位） */

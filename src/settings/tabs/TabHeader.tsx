@@ -271,6 +271,25 @@ export const TabHeader: FC = () => {
 				<FeatureOffNotice enabled={th.enable} />
 			</SettingGroup>
 
+			{/* 总开关以下全部随它禁用：关着的时候这些配置一条都不生效 */}
+			<SettingGroup disabled={!th.enable}>
+				<SettingItem
+					name={LL.settings.tabHeader.inheritFromFileExplorer.name()}
+					desc={LL.settings.tabHeader.inheritFromFileExplorer.desc()}
+					control={
+						<Toggle
+							value={th.inheritFromFileExplorer}
+							onChange={async (value) => {
+								await settingsStore.updateSettingByPath(
+									"tabHeader.inheritFromFileExplorer",
+									value,
+								);
+							}}
+						/>
+					}
+				/>
+			</SettingGroup>
+
 			<SettingGroup
 				title={LL.settings.tabHeader.mapping.name()}
 				disabled={!th.enable}

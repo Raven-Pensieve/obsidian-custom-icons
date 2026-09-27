@@ -26,13 +26,20 @@ export interface IPluginSettings {
 		/** 继承开关：子文件夹 / 子文件 在无自身配置时继承最近祖先文件夹图标（默认关） */
 		inherit: { subfolder: boolean; file: boolean };
 	};
-	// 标签页头（.workspace-tab-header[data-type]），两级解析：单标签 > 按视图类型
+	// 标签页头（.workspace-tab-header[data-type]），三级解析：单标签 > 按视图类型 > 继承文件浏览器
 	tabHeader: {
 		enable: boolean;
 		/** 按视图类型覆盖（兜底层），key = data-type（如 "file-explorer"、"search"） */
 		data: Record<string, ITabHeaderIconOverride>;
 		/** 单标签覆盖（优先层），key = `${data-type}::${aria-label}`（如 "markdown::春节.md"） */
 		tabs: Record<string, ITabHeaderIconOverride>;
+		/**
+		 * 继承文件浏览器图标（默认关）：文件标签在前两级未命中时，按文件路径
+		 * 复用 fileExplorer 的解析结果（files → extensions → 祖先继承 → fileDefault，
+		 * 与文件浏览器所见一致）。非文件视图（outline/search 等）不受影响；
+		 * 不受 fileExplorer.enable 约束——读的是配置表，各管各的渲染位置。
+		 */
+		inheritFromFileExplorer: boolean;
 	};
 	// 书签面板（data-type="bookmarks"），两级解析：单项覆盖 > 按书签类型
 	bookmarks: {
@@ -247,6 +254,7 @@ export const DEFAULT_SETTINGS: IPluginSettings = {
 		enable: false,
 		data: {},
 		tabs: {},
+		inheritFromFileExplorer: false,
 	},
 	bookmarks: {
 		enable: false,
