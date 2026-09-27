@@ -196,7 +196,11 @@ const en = {
 			addNeedsIcon: "No icon chosen yet",
 			enable: {
 				name: "Enable feature",
-				desc: "Customize icons for workspace tab headers (sidebar tool tabs and editor tabs) with two-level resolution: per-tab overrides take priority, the type mapping acts as fallback for tabs without one, and native icons are kept otherwise. Native icons are hidden, not removed, and are restored automatically when disabled.",
+				desc: "Customize icons for workspace tab headers (sidebar tool tabs and editor tabs) with cascading resolution: per-tab overrides take priority, the type mapping acts as fallback for tabs without one, optionally inheriting file explorer icons, and native icons are kept otherwise. Native icons are hidden, not removed, and are restored automatically when disabled.",
+			},
+			inheritFromFileExplorer: {
+				name: "Inherit file explorer icons",
+				desc: "For file tabs without a per-tab or type icon, reuse what the file explorer shows by file path (per-file → extension → folder inheritance → file default). Non-file views (outline, search, …) are unaffected, and this works even when the file explorer feature itself is off.",
 			},
 			mapping: {
 				name: "Type mapping",
