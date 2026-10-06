@@ -1,5 +1,7 @@
 import * as icons from "lucide-react";
 import { getIconIds } from "obsidian";
+import * as React from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 
 /** Lucide 图标组件实际消费的 props（与 setIcon.ts 渲染时一致） */
 export type LucideIconProps = {
@@ -131,6 +133,35 @@ export interface LucideCatalogEntry {
 	builtin: boolean;
 }
 
+/**
+ * 本插件注册进 Obsidian 注册表的差集图标名（kebab-case，注册 id 为 `CI-lucide-<name>`）。
+ *
+ * 供 `describeIconId` 区分「注册表里的 `CI-lucide-` id 是 lucide 差集还是别的来源」，
+ * 标签据此落 `lucide-extra` 而非误报 `pack` 残留 / `builtin`。
+ * 注意目录（`getLucideIconCatalog`）**不依赖**它：差集注册 id 带 `CI-` 前缀，
+ * 不会命中 builtin 判定的 `lucide-` 前缀过滤，天然无自污染。
+ */
+const registeredExtraNames = new Set<string>();
+
+/** 标记差集图标名「已由本插件注册」（注册完成后调用，见 CustomIconLibHandler） */
+export function markLucideExtrasRegistered(names: Iterable<string>): void {
+	for (const name of names) {
+		registeredExtraNames.add(name);
+	}
+}
+
+/** 撤销标记（注销差集时调用，名单须与注册时一致） */
+export function unmarkLucideExtrasRegistered(names: Iterable<string>): void {
+	for (const name of names) {
+		registeredExtraNames.delete(name);
+	}
+}
+
+/** 该 lucide 名是否由本插件注册进注册表（差集，非 Obsidian 原生） */
+export function isSelfRegisteredLucideExtra(name: string): boolean {
+	return registeredExtraNames.has(name);
+}
+
 let cachedCatalog: LucideCatalogEntry[] | null = null;
 
 /**
@@ -232,4 +263,28 @@ export function getLucideIcon(
 	}
 
 	return component;
+}
+
+/**
+ * 差集图标注册进 Obsidian 注册表用的规范 SVG 字符串（lucide 默认参数：
+ * strokeWidth 2 / currentColor，自带 xmlns 与 `lucide lucide-<name>` 类名）。
+ *
+ * 与 `setIcon.ts` 的现场渲染不同：这里要的是**字符串**（`addIcon` 的入参），
+ * 不注入 className / color——消费方经 Obsidian `setIcon` 使用时由它补 `svg-icon` 类。
+ *
+ * **根节点的 width/height 必须剥掉**（只剥根节点，子元素如 `<rect width>` 是
+ * 图形尺寸不能动）：Obsidian 给插件注册的图标套一层 `viewBox="0 0 100 100"`
+ * 的外层 svg，内层若带固定 24×24，就只占外层坐标系的 24/100，渲染出来
+ * 缩到正常尺寸的两成多。图标包 / 用户 SVG 的内容不带固定尺寸，正因如此
+ * 它们不受影响。
+ */
+export function renderLucideIconMarkup(name: string): string | null {
+	const IconComponent = getLucideIcon(name);
+	if (!IconComponent) {
+		return null;
+	}
+	const markup = renderToStaticMarkup(React.createElement(IconComponent));
+	return markup.replace(/^<svg\s[^>]*>/, (tag) =>
+		tag.replace(/\s(?:width|height)="[^"]*"/g, ""),
+	);
 }

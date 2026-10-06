@@ -1,7 +1,14 @@
+import { CI_LUCIDE_PREFIX } from "@src/api/describeIcon";
 import IconPackStore from "@src/service/icon-packs/IconPackStore";
 import { sanitizeSvg } from "@src/service/icon-packs/sanitize";
 import { packIconId } from "@src/service/icon-packs/types";
 import { ICustomIconLib, IIconPackManifest } from "@src/types/types";
+import {
+	getExtraLucideIconNames,
+	markLucideExtrasRegistered,
+	renderLucideIconMarkup,
+	unmarkLucideExtrasRegistered,
+} from "@src/util/getLucideIcons";
 import { AbstractIconHandler } from "../util/IconHandler";
 import { cleanSvg } from "../util/svgUtils";
 import { addIcon, removeIcon } from "obsidian";
@@ -43,6 +50,17 @@ export default class CustomIconLibHandler extends AbstractIconHandler<ICustomIco
 	 * 不能用「这一轮的设置」反推该注销谁——删掉的那个 id 已经不在设置里了。
 	 */
 	private appliedSvgIds = new Set<string>();
+
+	/**
+	 * 本会话已注册进注册表的 Lucide 差集图标名（注册 id 为 `CI-lucide-<name>`）。
+	 *
+	 * `null` = 尚未注册过；空数组 = 注册过但差集为空。差集不随设置变化、
+	 * bundle 更新必然伴随插件重载，故一次会话注册一次即可（重复 applyAll 幂等）。
+	 * 见 issue #127：注册是为了让其他插件能用 Obsidian 原生 `setIcon` 画差集。
+	 * **不能用 `lucide-<name>` 形态**——Obsidian 的 `getIcon` 对该前缀只查自带
+	 * lucide 集，插件注册的 lucide-* id 画不出来（见 describeIcon.ts）。
+	 */
+	private appliedLucideExtras: string[] | null = null;
 
 	constructor(private iconPackStore: IconPackStore) {
 		super();
@@ -115,6 +133,71 @@ export default class CustomIconLibHandler extends AbstractIconHandler<ICustomIco
 				this.cleanupPack(id);
 			}
 		}
+
+		// Lucide 差集：无条件注册，不随设置变化
+		this.applyLucideExtras();
+	}
+
+	/**
+	 * 把 Lucide 差集（bundle 里有、Obsidian 原生未内置的那批）以 `CI-lucide-<name>`
+	 * 注册进 Obsidian 注册表（issue #127），让其他插件能用原生 `setIcon` 画。
+	 *
+	 * 与 Obsidian 内置（`lucide-<name>`）、本插件其它前缀（`CI-<packId>-`）都不同，
+	 * 互不覆盖。**与 lucide 图标包共用 `CI-lucide-` 命名空间**（Iconify `lucide` 集
+	 * 装的就是同一批图标的文件版）：包启用时由包接管、差集退避——两边写的是同一批
+	 * id，谁在场都一样，退避只是避免注销时误删对方的注册。
+	 */
+	private applyLucideExtras(): void {
+		// lucide 包启用：包 apply 在本轮已写满 CI-lucide-*，差集退避。
+		// 只丢状态不 removeIcon——id 内容没变，删了反而会把包的注册一起带走
+		if (this.settings?.packs?.["lucide"]?.enabled) {
+			if (this.appliedLucideExtras) {
+				unmarkLucideExtrasRegistered(this.appliedLucideExtras);
+				this.appliedLucideExtras = null;
+			}
+			return;
+		}
+		if (this.appliedLucideExtras !== null) {
+			return;
+		}
+		// 用户 SVG 可能占用同名 id（如导入时叫 "lucide-blender"）：SVG 注册在前，
+		// 差集让位，与 describe 的「SVG 优先」判定保持同一优先级
+		const userClaimed = new Set(
+			(this.settings?.svg ?? [])
+				.filter((icon) => icon.id && icon.content)
+				.map((icon) => this.svgIconId(icon.id)),
+		);
+		const registered: string[] = [];
+		for (const name of getExtraLucideIconNames()) {
+			if (userClaimed.has(`${CI_LUCIDE_PREFIX}${name}`)) {
+				continue;
+			}
+			const svg = renderLucideIconMarkup(name);
+			if (!svg) {
+				continue;
+			}
+			addIcon(`${CI_LUCIDE_PREFIX}${name}`, svg);
+			registered.push(name);
+		}
+		markLucideExtrasRegistered(registered);
+		this.appliedLucideExtras = registered;
+		if (registered.length > 0) {
+			this.revision++;
+		}
+	}
+
+	private cleanupLucideExtras(): void {
+		if (this.appliedLucideExtras === null) {
+			return;
+		}
+		for (const name of this.appliedLucideExtras) {
+			removeIcon(`${CI_LUCIDE_PREFIX}${name}`);
+		}
+		unmarkLucideExtrasRegistered(this.appliedLucideExtras);
+		if (this.appliedLucideExtras.length > 0) {
+			this.revision++;
+		}
+		this.appliedLucideExtras = null;
 	}
 
 	private applyPack(manifest: IIconPackManifest): void {
@@ -165,6 +248,8 @@ export default class CustomIconLibHandler extends AbstractIconHandler<ICustomIco
 		for (const id of Array.from(this.appliedPacks.keys())) {
 			this.cleanupPack(id);
 		}
+
+		this.cleanupLucideExtras();
 	}
 
 	isEnabled(): boolean {

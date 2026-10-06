@@ -7,6 +7,18 @@ export const CI_PREFIX = "CI-";
 export const LUCIDE_PREFIX = "lucide-";
 
 /**
+ * 本插件注册 Lucide 差集用的前缀（`CI-lucide-<name>`）。
+ *
+ * **不能用 `lucide-<name>`**：Obsidian 的 `getIcon` 对 `lucide-` 前缀只查它
+ * 自带的 lucide 集，插件 `addIcon` 写入的注册表对该前缀形同虚设——
+ * `getIconIds()` 会列出（选择器能看到），`getIcon`/`setIcon` 却永远返回空。
+ *
+ * 与 lucide 图标包（Iconify `lucide` 集）的注册 id `CI-lucide-<name>` 是同一
+ * 命名空间：包启用时由包接管（见 CustomIconLibHandler 的退避逻辑）。
+ */
+export const CI_LUCIDE_PREFIX = "CI-lucide-";
+
+/**
  * `describeIconId` 真正读到的那几件事。
  *
  * 只声明这么多（而不是收下整个 `CIPlugin`）是为了让这段逻辑能在 jest 的 node
@@ -26,6 +38,13 @@ export interface DescribeIconDeps {
 	inRegistry(id: string): boolean;
 	/** 该 lucide 名在本插件 bundle 的 lucide-react 里吗（含 Obsidian 未内置的差集） */
 	hasLucide(name: string): boolean;
+	/**
+	 * 该 lucide 名是否由**本插件**注册进注册表（差集，非 Obsidian 原生）。
+	 *
+	 * 差集以 `CI-lucide-<name>` 注册（issue #127），`describe()` 靠这份知识
+	 * 把这类 id 标成 `lucide-extra`，而不是误报成 `pack` 残留或 `builtin`。
+	 */
+	selfRegisteredLucide(name: string): boolean;
 }
 
 /**
@@ -77,6 +96,31 @@ export function describeIconId(
 			};
 		}
 
+		// 本插件注册的 Lucide 差集（`CI-lucide-<name>`）。放在包判定之后：
+		// lucide 图标包启用时同一批 id 归包描述
+		if (id.startsWith(CI_LUCIDE_PREFIX)) {
+			const lucideName = id.slice(CI_LUCIDE_PREFIX.length);
+			if (deps.selfRegisteredLucide(lucideName)) {
+				// 注册被移除的窗口（如包停用清库后）降回 "api" 档，renderTo 仍画得出
+				if (deps.inRegistry(id)) {
+					return {
+						id,
+						source: "lucide-extra",
+						name: lucideName,
+						renderable: "registry",
+					};
+				}
+				if (deps.hasLucide(lucideName)) {
+					return {
+						id,
+						source: "lucide-extra",
+						name: lucideName,
+						renderable: "api",
+					};
+				}
+			}
+		}
+
 		// CI- 开头却不属于本插件的任何来源：可能是别的插件注册的，
 		// 也可能是已失效的残留（图标被删 / 包被停用）——后者必须判成 null，
 		// 那正是方案 §1.1 要消灭的「resolve 成功却画不出东西」
@@ -90,7 +134,7 @@ export function describeIconId(
 		if (deps.inRegistry(id)) {
 			return { id, source: "builtin", name, renderable: "registry" };
 		}
-		// 差集：注册表里没有，但本插件 bundle 的 lucide-react 里有，
+		// 差集（含别名差集）：不在注册表里，但本插件 bundle 的 lucide-react 里有，
 		// 只有 api.renderTo 画得出来（见 §3.2）
 		if (deps.hasLucide(name)) {
 			return { id, source: "lucide-extra", name, renderable: "api" };
