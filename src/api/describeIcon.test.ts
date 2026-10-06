@@ -11,10 +11,14 @@ function deps(overrides?: {
 	packs?: Record<string, { name: string; icons: string[] }>;
 	registry?: string[];
 	lucide?: string[];
+	selfRegisteredLucide?: string[];
 }): DescribeIconDeps {
 	const packs = overrides?.packs ?? {};
 	const registry = new Set(overrides?.registry ?? []);
 	const lucide = new Set(overrides?.lucide ?? []);
+	const selfRegisteredLucide = new Set(
+		overrides?.selfRegisteredLucide ?? [],
+	);
 	const packNames: Record<string, string> = {};
 	for (const [id, pack] of Object.entries(packs)) {
 		packNames[id] = pack.name;
@@ -37,6 +41,7 @@ function deps(overrides?: {
 		},
 		inRegistry: (id) => registry.has(id),
 		hasLucide: (name) => lucide.has(name),
+		selfRegisteredLucide: (name) => selfRegisteredLucide.has(name),
 	};
 }
 
@@ -157,6 +162,48 @@ describe("describeIconId", () => {
 
 		test("两边都没有 → null", () => {
 			expect(describeIconId("lucide-不存在", deps())).toBeNull();
+		});
+	});
+
+	describe("Lucide 差集（CI-lucide- 形态，issue #127）", () => {
+		test("本插件注册的差集 → lucide-extra / registry 档", () => {
+			const info = describeIconId(
+				"CI-lucide-blender",
+				deps({
+					registry: ["CI-lucide-blender"],
+					lucide: ["blender"],
+					selfRegisteredLucide: ["blender"],
+				}),
+			);
+			expect(info).toEqual({
+				id: "CI-lucide-blender",
+				source: "lucide-extra",
+				name: "blender",
+				renderable: "registry",
+			});
+		});
+
+		test("自注册但注册表已被清（包停用清库后的窗口）→ 降回 api 档", () => {
+			const info = describeIconId(
+				"CI-lucide-blender",
+				deps({ lucide: ["blender"], selfRegisteredLucide: ["blender"] }),
+			);
+			expect(info).toEqual({
+				id: "CI-lucide-blender",
+				source: "lucide-extra",
+				name: "blender",
+				renderable: "api",
+			});
+		});
+
+		test("非自注册的 CI-lucide- id 不冒充差集，走既有兜底", () => {
+			// lucide 包停用后的残留：不在注册表 → null（§1.1 空白路径）
+			expect(
+				describeIconId(
+					"CI-lucide-blender",
+					deps({ lucide: ["blender"] }),
+				),
+			).toBeNull();
 		});
 	});
 

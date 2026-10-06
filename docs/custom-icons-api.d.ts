@@ -56,15 +56,21 @@ export type CustomIconsSource =
 	| "user-svg"
 	/** 某个已启用图标包里的图标（注册 id `CI-<packId>-<name>`） */
 	| "pack"
-	/** 本插件 bundle 的 lucide-react 比 Obsidian 内置多出来的那批（**不在注册表里**） */
+	/**
+	 * 本插件 bundle 的 lucide-react 比 Obsidian 内置多出来的那批。
+	 * 由本插件以 `CI-lucide-<name>` 注册进注册表（issue #127，**禁用本插件即消失**；
+	 * 不用 `lucide-<name>`：Obsidian 的 `getIcon` 对该前缀只查自带 lucide 集，
+	 * 插件注册的 lucide-* id 画不出来）。未注册窗口内为 `renderable: "api"` 档。
+	 */
 	| "lucide-extra";
 
 /**
  * 这个图标现在能被谁画出来。
  *
- * - `"registry"`：在 `getIconIds()` 里，消费方用公共 `setIcon` 就能画，
- *   **本插件被禁用也不影响**（前提是图标本体还在）；
- * - `"api"`：只有 {@link CustomIconsApi.renderTo} 能画（= Lucide 差集）。
+ * - `"registry"`：在 `getIconIds()` 里，消费方用公共 `setIcon` 就能画。
+ *   对 `builtin` / `user-svg` / `pack`，**本插件被禁用也不影响**（前提是图标本体还在）；
+ *   对 `lucide-extra` 是本插件注册的，禁用即从注册表消失；
+ * - `"api"`：只有 {@link CustomIconsApi.renderTo} 能画（Lucide 差集未注册时的形态）。
  *   消费方若把这种 id **写进用户文件**，本插件一禁用那个记号就画不出来了。
  */
 export type CustomIconsRenderable = "registry" | "api";
@@ -125,10 +131,10 @@ export interface CustomIconsPickerOptions {
 	colorEditable?: boolean;
 	include?: {
 		/**
-		 * 是否列出 Lucide 差集（`renderable: "api"` 那一档）。
+		 * 是否列出 Lucide 差集（`source: "lucide-extra"` 那批）。
 		 *
 		 * **默认 `false`**：消费方多半会把选中的 id 写进用户文件，
-		 * 而那一档在本插件被禁用后就画不出来了（方案 §3.2）。
+		 * 而差集是本插件注册的，在本插件被禁用后就画不出来了（方案 §3.2）。
 		 */
 		lucideExtras?: boolean;
 	};
@@ -170,7 +176,8 @@ export interface CustomIconsApi {
 	readonly revision: number;
 
 	/**
-	 * 把图标画进 `el`（替换其内容）。**唯一能画出 Lucide 差集的入口。**
+	 * 把图标画进 `el`（替换其内容）。对任何来源都成立的**唯一渲染入口**，
+	 * 包括未注册窗口内的 Lucide 差集。
 	 *
 	 * @returns 是否真的画出了东西。返回 `false` 时**不改动 `el`**，
 	 *   调用方应当保留原文——留白比原文难诊断得多。

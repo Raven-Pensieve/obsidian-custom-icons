@@ -1,7 +1,10 @@
 import CIPlugin from "@src/main";
 import { IconType } from "@src/types/types";
 import { buildPackLookup } from "@src/util/iconExists";
-import { hasLucideIcon } from "@src/util/getLucideIcons";
+import {
+	hasLucideIcon,
+	isSelfRegisteredLucideExtra,
+} from "@src/util/getLucideIcons";
 import { IconRef } from "@src/util/iconRef";
 import { buildIconSources } from "@src/util/iconSources";
 import openPluginView from "@src/util/openPluginView";
@@ -11,6 +14,7 @@ import { IconPickerModal } from "@src/components/icon-picker/IconPickerModal";
 import { getIcon } from "obsidian";
 import {
 	CI_PREFIX,
+	CI_LUCIDE_PREFIX,
 	LUCIDE_PREFIX,
 	describeIconId,
 	type DescribeIconDeps,
@@ -32,10 +36,18 @@ import {
  */
 function toRegistryId(ref: IconRef): string {
 	if (ref.type === "lucide") {
-		// 差集图标同样给 `lucide-` 形态：它今天不在注册表里，但等 Obsidian 哪天
-		// 内置了同名图标，同一个 id 会自动从 "api" 档升到 "registry" 档，
-		// 用户文件里已经写下的记号不用改。
-		return `${LUCIDE_PREFIX}${ref.id}`;
+		// Obsidian 的 getIcon 对 "lucide-" 前缀只查它自带的 lucide 集，
+		// 插件注册的 lucide-* id 永远画不出来（见 describeIcon.ts 的 CI_LUCIDE_PREFIX）。
+		// 故按可解析性三段分发：原生内置发 lucide-<name>；差集发 CI-lucide-<name>；
+		// 都不在（如别名差集未注册）回落 lucide-<name>，走 "api" 档现场渲染。
+		const native = `${LUCIDE_PREFIX}${ref.id}`;
+		if (getIcon(native)) {
+			return native;
+		}
+		if (getIcon(`${CI_LUCIDE_PREFIX}${ref.id}`)) {
+			return `${CI_LUCIDE_PREFIX}${ref.id}`;
+		}
+		return native;
 	}
 	return ref.id.startsWith(CI_PREFIX) ? ref.id : `${CI_PREFIX}${ref.id}`;
 }
@@ -81,6 +93,7 @@ export function createCustomIconsApi(plugin: CIPlugin): CustomIconsApi {
 			packNames,
 			inRegistry,
 			hasLucide: hasLucideIcon,
+			selfRegisteredLucide: isSelfRegisteredLucideExtra,
 		};
 		cached = lens;
 		return lens;
@@ -92,8 +105,8 @@ export function createCustomIconsApi(plugin: CIPlugin): CustomIconsApi {
 
 	/** 契约 id → 内部 `IconRef`，用于喂给 `setIcon` 与图标选择器 */
 	const toIconRef = (info: CustomIconsIconInfo): IconRef => {
-		// 差集只能走 lucide-react 现场渲染；注册表里有的一律走 obsidianSetIcon
-		// （`svg` 分支），省掉一次 renderToStaticMarkup
+		// 未注册的差集只能走 lucide-react 现场渲染；注册表里有的一律走
+		// obsidianSetIcon（`svg` 分支），省掉一次 renderToStaticMarkup
 		if (info.renderable === "api") {
 			return { type: "lucide", id: info.name };
 		}
