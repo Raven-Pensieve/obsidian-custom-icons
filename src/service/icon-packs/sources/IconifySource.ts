@@ -41,6 +41,21 @@ const CATALOG_URLS = [
 	"https://cdn.jsdelivr.net/npm/@iconify/json@latest/collections.json",
 ];
 
+/** 目录里不再列出的集合前缀 */
+const CATALOG_HIDDEN_PREFIXES = new Set(["lucide"]);
+
+/**
+ * 过滤目录中的冗余集合：lucide 的差集（Obsidian 未内置部分）已由插件内置
+ * 注册为 `CI-lucide-<name>`（issue #127），再把 1780 图标的整集装成包只剩冗余
+ * （还会与内置注册共用 `CI-lucide-` 命名空间）。存量安装不受影响——已装的
+ * 继续可用、可卸载，启用时差集自动退避（见 CustomIconLibHandler）。
+ */
+export function excludeRedundantCollections(
+	collections: ICollectionInfo[],
+): ICollectionInfo[] {
+	return collections.filter((c) => !CATALOG_HIDDEN_PREFIXES.has(c.prefix));
+}
+
 /**
  * Iconify 数据源（方案 A）
  *
@@ -62,22 +77,23 @@ export class IconifySource implements IIconSource {
 		fetchedAt: number;
 	}> {
 		const cached = force ? null : await this.store.readCatalog();
-		// 版本不符的旧缓存（如无 samples 字段）视为过期，重新拉取后落盘迁移
+		// 版本不符的旧缓存（如无 samples 字段）视为过期，重新拉取后落盘迁移。
+		// 过滤对缓存路径同样生效：磁盘上可能存着过滤前写下的 lucide 条目
 		if (
 			cached &&
 			cached.version === CATALOG_CACHE_VERSION &&
 			cached.collections?.length
 		) {
 			return {
-				collections: cached.collections,
+				collections: excludeRedundantCollections(cached.collections),
 				fromCache: true,
 				fetchedAt: cached.fetchedAt,
 			};
 		}
 
 		const raw = await fetchJson<IconifyCollections>(CATALOG_URLS);
-		const collections: ICollectionInfo[] = Object.entries(raw)
-			.map(([prefix, info]) => ({
+		const collections: ICollectionInfo[] = excludeRedundantCollections(
+			Object.entries(raw).map(([prefix, info]) => ({
 				prefix,
 				name: info.name ?? prefix,
 				total: info.total,
@@ -86,8 +102,8 @@ export class IconifySource implements IIconSource {
 					? { title: info.license.title, spdx: info.license.spdx }
 					: undefined,
 				samples: info.samples?.slice(0, 12),
-			}))
-			.sort((a, b) => a.name.localeCompare(b.name));
+			})),
+		).sort((a, b) => a.name.localeCompare(b.name));
 
 		await this.store.writeCatalog(collections);
 		return { collections, fromCache: false, fetchedAt: Date.now() };
