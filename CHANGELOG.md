@@ -21,6 +21,14 @@
 
 * 更新相关文档 ([a3212cf](https://github.com/Raven-Pensieve/obsidian-custom-icons/commit/a3212cf46abfa1099bc361a5c3e26241a76b41d0))
 
+## [2.10.0](https://github.com/Raven-Pensieve/obsidian-custom-icons/compare/2.9.0...2.10.0) (2026-10-06)
+
+
+### ✨ 新增功能 (Features)
+
+* Iconify 目录移除 lucide 集，差集已由内置注册覆盖 ([ffc785c](https://github.com/Raven-Pensieve/obsidian-custom-icons/commit/ffc785c599acc3c7f74de6f921d674f958a1d66c))
+* Lucide 差集图标注册进 Obsidian 注册表，供其他插件 setIcon 渲染 ([ccc3b9b](https://github.com/Raven-Pensieve/obsidian-custom-icons/commit/ccc3b9b0a7ad15743f3100b7170d32026cd3ca8c))
+
 ## [2.9.0](https://github.com/Raven-Pensieve/obsidian-custom-icons/compare/2.8.0...2.9.0) (2026-09-27)
 
 
