@@ -21,6 +21,13 @@
 
 * 更新相关文档 ([a3212cf](https://github.com/Raven-Pensieve/obsidian-custom-icons/commit/a3212cf46abfa1099bc361a5c3e26241a76b41d0))
 
+## [2.10.1](https://github.com/Raven-Pensieve/obsidian-custom-icons/compare/2.10.0...2.10.1) (2026-10-10)
+
+
+### 🐛 问题修复 (Bug Fixes)
+
+* 继承层从 viewState 取文件路径，修复重启后未加载标签丢图标 ([4f55f89](https://github.com/Raven-Pensieve/obsidian-custom-icons/commit/4f55f89102ca15ef92977b33abee24c2a472f669))
+
 ## [2.10.0](https://github.com/Raven-Pensieve/obsidian-custom-icons/compare/2.9.0...2.10.0) (2026-10-06)
 
 
