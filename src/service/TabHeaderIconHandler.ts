@@ -15,6 +15,19 @@ interface FileBackedViewLike {
 	file?: { path: string };
 }
 
+/**
+ * 从 leaf 的 stashed viewState 提取文件路径。重启后未加载的标签（deferred
+ * view 包装）没有 view.file，但 viewState.state.file 仍在——Obsidian 原生
+ * tab-header hover-link 即用此取法（app.js：`getViewState().state?.file`）。
+ */
+function getViewStateFile(leaf: WorkspaceLeaf): string | undefined {
+	const state = leaf.getViewState()?.state as
+		| { file?: unknown }
+		| null
+		| undefined;
+	return typeof state?.file === "string" ? state.file : undefined;
+}
+
 interface ITabHeaderConfig {
 	enable: boolean;
 	data: Record<string, ITabHeaderIconOverride>;
@@ -252,14 +265,17 @@ export default class TabHeaderIconHandler extends AbstractIconHandler<ITabHeader
 	 * FileView 子类均有该属性，outline/search 等视图没有 → 天然不参与继承；
 	 * iterateAllLeaves 覆盖侧栏与 popout。tabHeaderEl 随 leaf 创建，DOM 里出现
 	 * 该元素时索引即含它；索引 miss（拖拽瞬态等）本轮不继承，layout-change
-	 * 重扫自愈。
+	 * 重扫自愈。deferred leaf（重启后未加载的标签）view 是原生包装无 .file，
+	 * 回落 viewState.state.file（见 getViewStateFile），否则这些标签重启后
+	 * 全部丢继承图标（issue #130）。
 	 */
 	private buildInheritIndex(): Map<HTMLElement, string> | undefined {
 		if (!this.settings?.inheritFromFileExplorer) return undefined;
 		const index = new Map<HTMLElement, string>();
 		this.app.workspace.iterateAllLeaves((leaf) => {
-			const path = (leaf.view as unknown as FileBackedViewLike)?.file
-				?.path;
+			const path =
+				(leaf.view as unknown as FileBackedViewLike)?.file?.path ??
+				getViewStateFile(leaf);
 			if (path && leaf.tabHeaderEl) index.set(leaf.tabHeaderEl, path);
 		});
 		return index;
