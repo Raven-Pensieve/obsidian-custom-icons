@@ -893,6 +893,40 @@ type RootTranslation = {
 				resetIcon: string
 			}
 		}
+		internalLinks: {
+			/**
+			 * 内​部​链​接
+			 */
+			name: string
+			enable: {
+				/**
+				 * 启​用​功​能
+				 */
+				name: string
+				/**
+				 * 在​正​文​的​内​部​链​接​前​显​示​目​标​文​件​已​设​置​的​图​标​（​阅​读​模​式​与​实​时​预​览​；​源​码​模​式​不​显​示​）​。​图​标​沿​用​文​件​浏​览​器​的​配​置​，​映​射​只​需​维​护​一​份​。
+				 */
+				desc: string
+			}
+			resolve: {
+				/**
+				 * 图​标​解​析
+				 */
+				name: string
+				/**
+				 * 仅​精​确​映​射​ ​=​ ​只​显​示​在​文​件​浏​览​器​中​单​独​设​置​过​图​标​的​文​件​；​完​整​级​联​ ​=​ ​与​文​件​浏​览​器​相​同​的​解​析​（​扩​展​名​规​则​ ​→​ ​文​件​夹​继​承​ ​→​ ​默​认​图​标​）​。
+				 */
+				desc: string
+				/**
+				 * 仅​精​确​映​射
+				 */
+				explicit: string
+				/**
+				 * 完​整​级​联
+				 */
+				cascade: string
+			}
+		}
 		experimental: {
 			/**
 			 * 实​验​性
@@ -2740,6 +2774,40 @@ export type TranslationFunctions = {
 				 * 重置图标
 				 */
 				resetIcon: () => LocalizedString
+			}
+		}
+		internalLinks: {
+			/**
+			 * 内部链接
+			 */
+			name: () => LocalizedString
+			enable: {
+				/**
+				 * 启用功能
+				 */
+				name: () => LocalizedString
+				/**
+				 * 在正文的内部链接前显示目标文件已设置的图标（阅读模式与实时预览；源码模式不显示）。图标沿用文件浏览器的配置，映射只需维护一份。
+				 */
+				desc: () => LocalizedString
+			}
+			resolve: {
+				/**
+				 * 图标解析
+				 */
+				name: () => LocalizedString
+				/**
+				 * 仅精确映射 = 只显示在文件浏览器中单独设置过图标的文件；完整级联 = 与文件浏览器相同的解析（扩展名规则 → 文件夹继承 → 默认图标）。
+				 */
+				desc: () => LocalizedString
+				/**
+				 * 仅精确映射
+				 */
+				explicit: () => LocalizedString
+				/**
+				 * 完整级联
+				 */
+				cascade: () => LocalizedString
 			}
 		}
 		experimental: {

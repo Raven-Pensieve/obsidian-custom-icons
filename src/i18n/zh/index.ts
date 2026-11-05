@@ -269,6 +269,19 @@ const zh = {
 				resetIcon: "重置图标",
 			},
 		},
+		internalLinks: {
+			name: "内部链接",
+			enable: {
+				name: "启用功能",
+				desc: "在正文的内部链接前显示目标文件已设置的图标（阅读模式与实时预览；源码模式不显示）。图标沿用文件浏览器的配置，映射只需维护一份。",
+			},
+			resolve: {
+				name: "图标解析",
+				desc: "仅精确映射 = 只显示在文件浏览器中单独设置过图标的文件；完整级联 = 与文件浏览器相同的解析（扩展名规则 → 文件夹继承 → 默认图标）。",
+				explicit: "仅精确映射",
+				cascade: "完整级联",
+			},
+		},
 		experimental: {
 			name: "实验性",
 			keepPluginFirst: {

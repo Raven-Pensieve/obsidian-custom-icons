@@ -260,6 +260,19 @@ const en = {
 				resetIcon: "Reset icon",
 			},
 		},
+		internalLinks: {
+			name: "Internal links",
+			enable: {
+				name: "Enable feature",
+				desc: "Show the target file's configured icon before internal links in notes (reading view and live preview; source mode is untouched). Icons reuse the file explorer's mappings — maintain them once.",
+			},
+			resolve: {
+				name: "Icon resolution",
+				desc: "Exact mappings only = only files that have an icon set individually in the file explorer; full cascade = the same resolution as the file explorer (extension rules → folder inheritance → default icons).",
+				explicit: "Exact mappings only",
+				cascade: "Full cascade",
+			},
+		},
 		experimental: {
 			name: "Experimental",
 			keepPluginFirst: {
