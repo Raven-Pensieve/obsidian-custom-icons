@@ -95,34 +95,53 @@ function buildDecorations(
 			to,
 			enter: (node) => {
 				/*
-				 * 节点判定（Obsidian 1.13 实测，dev/261105 方案 T1）：
-				 * - wikilink 的 `[[`/`]]` 是独立 formatting 节点，href 内容节点
-				 *   是 **hmd-internal-link**；带别名时没有整体节点，href 段是
-				 *   **hmd-internal-link_link-has-alias**（文本恰为纯 href），
-				 *   pipe / 别名节点同 token 但不含 link-has-alias，被排除；
-				 * - md 格式链接的 **link** 节点只盖标签文本，目标在节点之后的
-				 *   ](…) 里，从原文尾部截取；外部 URL 解析落空自然跳过；
-				 * - 嵌入（![[..]] / ![..](..)）与嵌入祖先一律不装饰。
+				 * 节点判定（Obsidian 1.13 实测，dev/261106 方案）：
+				 *
+				 * HyperMD 把「所有适用类型」的 token 下划线拼进**同一个节点名**，
+				 * 上下文（标题/加粗/列表/引用/表格…）不是祖先嵌套而是名字前缀——
+				 * `header_header-1_hmd-internal-link`、`hmd-internal-link_strong`、
+				 * `hmd-internal-link_list-1`、`hmd-internal-link_quote_quote-1`。
+				 * 故只能按 token 判定，**精确名匹配只命中裸段落**（首版 bug）。
+				 *
+				 * - wikilink href 节点：token `hmd-internal-link`；排除
+				 *   `link-alias` / `link-alias-pipe`（别名链接的别名段与管道符，
+				 *   href 段带 `link-has-alias` 不受排除影响）；
+				 * - md 链接标签节点：token `link`；排除 `formatting`（括号）、
+				 *   `hmd-barelink`（裸链 / 脚注引用 / 标注徽章 `[!note]`）、
+				 *   `hmd-footnote`、`hmd-internal-link`（wikilink 不走 md 提取）；
+				 * - 嵌入（![[..]] / ![..](..)）：token `hmd-embed` 一律不装饰
+				 *   （HyperMD 里嵌入没有独立祖先节点，token 就在自身名字里）。
 				 */
 				const name = node.type.name ?? "";
 				const tokens = name.split("_");
+				const has = (token: string) => tokens.includes(token);
+				const isEmbed = has("hmd-embed") || has("embed");
+				if (isEmbed) return;
 				const isWikiHref =
-					name === "internal-link" || // 旧版树名兜底
-					(tokens.includes("hmd-internal-link") &&
-						(tokens.length === 1 || tokens.includes("link-has-alias")));
-				const isMdLink = name === "link";
+					has("hmd-internal-link") ||
+					name === "internal-link"; // 旧版树名兜底
+				const isMdLink =
+					has("link") &&
+					!isWikiHref &&
+					!has("formatting") &&
+					!has("hmd-barelink") &&
+					!has("hmd-footnote");
 				if (!isWikiHref && !isMdLink) return;
+				// 别名 wikilink 的别名段与管道符：同 token 但不是 href
+				if (isWikiHref && (has("link-alias") || has("link-alias-pipe"))) {
+					return;
+				}
 				if (
 					node.from > 0 &&
 					view.state.sliceDoc(node.from - 1, node.from) === "!"
 				) {
 					return;
 				}
-				// 嵌入内部的链接（![[..]] 的 href 节点在 hmd-embed 祖先之下）
-				let parent = node.node.parent;
-				while (parent) {
-					if (parent.type.name?.includes("embed")) return;
-					parent = parent.parent;
+				if (
+					node.from > 0 &&
+					view.state.sliceDoc(node.from - 1, node.from) === "!"
+				) {
+					return;
 				}
 				/*
 				 * 让位窗口取**整个链接跨度**而非 href 节点：`[[`/`]]` 括号是独立
