@@ -338,7 +338,20 @@ export default class SettingsStore {
 		this.#normalizeFileExplorerSettings(draft);
 		this.#normalizeTabHeaderSettings(draft);
 		this.#normalizeBookmarksSettings(draft);
+		this.#normalizeInternalLinksSettings(draft);
 		return draft;
+	}
+
+	/**
+	 * internalLinks 只有一个枚举字段需要收敛：手改 data.json 写进来的
+	 * 非法 resolve 值回落 explicit，而不是把脏值带进解析层。
+	 */
+	#normalizeInternalLinksSettings(settings: IPluginSettings): void {
+		if (settings.internalLinks.resolve !== "explicit") {
+			if (settings.internalLinks.resolve !== "cascade") {
+				settings.internalLinks.resolve = "explicit";
+			}
+		}
 	}
 
 	#normalizeBookmarksSettings(settings: IPluginSettings): void {

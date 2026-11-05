@@ -46,8 +46,19 @@ export interface IPluginSettings {
 		enable: boolean;
 		/** 单项覆盖（优先层），key = String(ctime)（书签稳定 id，重命名/移动不失效） */
 		items: Record<string, IBookmarkIconOverride>;
-		/** 类型默认层（兜底），key = BookmarkKind（file/folder/group/search/graph/url） */
+		/** 类型默认层（兜底层），key = BookmarkKind（file/folder/group/search/graph/url） */
 		types: Record<string, IBookmarkIconOverride>;
+	};
+	// 正文内部链接（a.internal-link）：按目标文件复用 fileExplorer 图标
+	internalLinks: {
+		enable: boolean;
+		/**
+		 * 解析档位：explicit = 仅 files[path] 精确映射（默认，只给「单独配过图标」
+		 * 的文件显示）；cascade = 与文件浏览器相同的全级联（files → extensions →
+		 * 祖先继承 → fileDefault）。两档都过 canRender 失效判定；
+		 * 不受 fileExplorer.enable 约束——读的是配置表，各管各的渲染位置。
+		 */
+		resolve: "explicit" | "cascade";
 	};
 	// 实验性功能
 	experimental: {
@@ -260,6 +271,10 @@ export const DEFAULT_SETTINGS: IPluginSettings = {
 		enable: false,
 		items: {},
 		types: {},
+	},
+	internalLinks: {
+		enable: false,
+		resolve: "explicit",
 	},
 	experimental: {
 		keepPluginFirst: false,
