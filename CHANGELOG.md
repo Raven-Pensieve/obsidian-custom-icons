@@ -21,6 +21,21 @@
 
 * 更新相关文档 ([a3212cf](https://github.com/Raven-Pensieve/obsidian-custom-icons/commit/a3212cf46abfa1099bc361a5c3e26241a76b41d0))
 
+## [2.11.0](https://github.com/Raven-Pensieve/obsidian-custom-icons/compare/2.10.1...2.11.0) (2026-11-05)
+
+
+### ✨ 新增功能 (Features)
+
+* InternalLinkIconHandler 正文内部链接图标双管线渲染 ([655c17b](https://github.com/Raven-Pensieve/obsidian-custom-icons/commit/655c17b11ecd74aa4e41b44b02c94c8c295c70ab))
+* internalLinks 设置页与四语言文案 ([e6fcf3b](https://github.com/Raven-Pensieve/obsidian-custom-icons/commit/e6fcf3b70854b915533a58a6c4488579b99d39d5))
+* 内部链接图标解析纯函数 internalLinkIcon 与单测 ([eba18be](https://github.com/Raven-Pensieve/obsidian-custom-icons/commit/eba18be7fae051d7f1d0d63a64be86aea5e20cc0))
+
+
+### 🐛 问题修复 (Bug Fixes)
+
+* 实时预览未配色链接图标与阅读模式颜色不一致 ([ca862d8](https://github.com/Raven-Pensieve/obsidian-custom-icons/commit/ca862d8ad6c2a211606ec1a8a4e2308b2f98c183))
+* 设置页下拉改选后显示回跳；移除 internalLinks 归一化 ([8293e5d](https://github.com/Raven-Pensieve/obsidian-custom-icons/commit/8293e5d046fa5ba03bf5a8d7a9d1afffcebe1cb6))
+
 ## [2.10.1](https://github.com/Raven-Pensieve/obsidian-custom-icons/compare/2.10.0...2.10.1) (2026-10-10)
 
 
