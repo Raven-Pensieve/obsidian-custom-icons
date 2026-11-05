@@ -21,6 +21,13 @@
 
 * 更新相关文档 ([a3212cf](https://github.com/Raven-Pensieve/obsidian-custom-icons/commit/a3212cf46abfa1099bc361a5c3e26241a76b41d0))
 
+## [2.11.1](https://github.com/Raven-Pensieve/obsidian-custom-icons/compare/2.11.0...2.11.1) (2026-11-05)
+
+
+### 🐛 问题修复 (Bug Fixes)
+
+* 实时预览标题/加粗/列表/引用/表格等语法上下文的链接图标不生效 ([492ec2c](https://github.com/Raven-Pensieve/obsidian-custom-icons/commit/492ec2c22624d8813d6e70b260c68f3e7b19b753))
+
 ## [2.11.0](https://github.com/Raven-Pensieve/obsidian-custom-icons/compare/2.10.1...2.11.0) (2026-11-05)
 
 
