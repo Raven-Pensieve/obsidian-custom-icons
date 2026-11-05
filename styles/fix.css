@@ -111,3 +111,12 @@
 	width: 100%;
 	height: 100%;
 }
+
+/* 实时预览：widget 与链接 span 是兄弟节点，currentColor 只解析到 .cm-line 的
+   正文色（实测 rgb(34,34,34) vs 链接色 rgb(138,92,245)）；显式取内部链接色
+   变量，与阅读模式（图标在锚点内、自然继承链接色）对齐。
+   阅读模式不受此规则影响（.markdown-preview-view 不在 .markdown-source-view
+   内），那里的 currentColor 还能跟随悬停变色，保持不动 */
+.markdown-source-view .custom-icon-internal-link-icon {
+	color: var(--link-color, var(--text-accent));
+}
