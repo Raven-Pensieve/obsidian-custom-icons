@@ -338,20 +338,11 @@ export default class SettingsStore {
 		this.#normalizeFileExplorerSettings(draft);
 		this.#normalizeTabHeaderSettings(draft);
 		this.#normalizeBookmarksSettings(draft);
-		this.#normalizeInternalLinksSettings(draft);
+		// internalLinks 无需归一化：resolve 是二值枚举，消费端
+		// （resolveLinkIcon / handler 取值）只认 "cascade"、其余一律按
+		// explicit 退化——总函数本身就是防线；mergeWithDefaults 又会拦掉
+		// 类型不符的脏值，剩不到需要归一化的场景。
 		return draft;
-	}
-
-	/**
-	 * internalLinks 只有一个枚举字段需要收敛：手改 data.json 写进来的
-	 * 非法 resolve 值回落 explicit，而不是把脏值带进解析层。
-	 */
-	#normalizeInternalLinksSettings(settings: IPluginSettings): void {
-		if (settings.internalLinks.resolve !== "explicit") {
-			if (settings.internalLinks.resolve !== "cascade") {
-				settings.internalLinks.resolve = "explicit";
-			}
-		}
 	}
 
 	#normalizeBookmarksSettings(settings: IPluginSettings): void {
