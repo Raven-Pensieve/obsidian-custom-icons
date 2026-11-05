@@ -260,6 +260,19 @@ const zh_TW = {
 				resetIcon: "重置圖示",
 			},
 		},
+		internalLinks: {
+			name: "內部連結",
+			enable: {
+				name: "啟用功能",
+				desc: "在正文的內部連結前顯示目標檔案已設定的圖示（閱讀模式與即時預覽；原始碼模式不顯示）。圖示沿用檔案總管的設定，對應只需維護一份。",
+			},
+			resolve: {
+				name: "圖示解析",
+				desc: "僅精確對應 = 只顯示在檔案總管中單獨設定過圖示的檔案；完整級聯 = 與檔案總管相同的解析（副檔名規則 → 資料夾繼承 → 預設圖示）。",
+				explicit: "僅精確對應",
+				cascade: "完整級聯",
+			},
+		},
 		experimental: {
 			name: "實驗性",
 			keepPluginFirst: {

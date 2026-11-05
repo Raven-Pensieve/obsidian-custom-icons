@@ -5,6 +5,7 @@ import { Bookmarks } from "./tabs/Bookmarks";
 import { CommunityPlugin } from "./tabs/CommunityPlugin";
 import { Experimental } from "./tabs/Experimental";
 import { FileExplorer } from "./tabs/FileExplorer";
+import { InternalLinks } from "./tabs/InternalLinks";
 import { Ribbon } from "./tabs/Ribbon";
 import { TabHeader } from "./tabs/TabHeader";
 
@@ -34,6 +35,11 @@ export const Settings: FC = () => {
 			id: "bookmarks",
 			title: LL.settings.bookmarks.name(),
 			content: <Bookmarks />,
+		},
+		{
+			id: "internal-links",
+			title: LL.settings.internalLinks.name(),
+			content: <InternalLinks />,
 		},
 		{
 			id: "experimental",
