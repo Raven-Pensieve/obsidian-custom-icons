@@ -329,21 +329,22 @@ export const Dropdown: FC<DropdownProps> = ({
 		dropdown.onChange(handleChange);
 	}, [dropdown, handleChange]);
 
-	// 处理 options 更新
-	useEffect(() => {
-		if (!dropdown || !options) return;
-		// 清空现有选项
-		dropdown.selectEl.empty();
-		// 添加新选项
-		dropdown.addOptions(options);
-	}, [dropdown, options]);
-
-	// 合并其他属性设置
+	// 处理 options / value / disabled 更新（合并为一个 effect）。
+	// empty+addOptions 会把原生选中态重置回首项，必须在**同一次** effect 里
+	// 用受控 value 恢复——拆成两个 effect 时，「value 未变但 options 引用变了」
+	// 的重渲（如调用方传内联字面量）会跳过 setValue，下拉显示就此回跳、
+	// 与真实设置脱节（实测：改选后 UI 弹回旧值而 settings 已更新）。
 	useEffect(() => {
 		if (!dropdown) return;
+		if (options) {
+			// 清空现有选项
+			dropdown.selectEl.empty();
+			// 添加新选项
+			dropdown.addOptions(options);
+		}
 		if (value !== undefined) dropdown.setValue(value);
 		dropdown.setDisabled(disabled ?? false);
-	}, [dropdown, value, disabled]);
+	}, [dropdown, options, value, disabled]);
 
 	return null;
 };
