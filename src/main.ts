@@ -12,6 +12,7 @@ import CommunityPluginIconHandler from "./service/CommunityPluginIconHandler";
 import CustomIconLibHandler from "./service/CustomIconLibHandler";
 import BookmarksIconHandler from "./service/BookmarksIconHandler";
 import FileExplorerIconHandler from "./service/FileExplorerIconHandler";
+import InternalLinkIconHandler from "./service/InternalLinkIconHandler";
 import KeepPluginFirstHandler from "./service/KeepPluginFirstHandler";
 import RibbonIconHandler from "./service/RibbonIconHandler";
 import TabHeaderIconHandler from "./service/TabHeaderIconHandler";
@@ -183,6 +184,7 @@ export default class CIPlugin extends Plugin {
 		this.iconManager.registerHandler(new FileExplorerIconHandler(this));
 		this.iconManager.registerHandler(new TabHeaderIconHandler(this));
 		this.iconManager.registerHandler(new BookmarksIconHandler(this));
+		this.iconManager.registerHandler(new InternalLinkIconHandler(this));
 		// 实验性功能（非图标处理器，仅复用生命周期编排）
 		this.iconManager.registerHandler(
 			new KeepPluginFirstHandler(this.manifest.id),

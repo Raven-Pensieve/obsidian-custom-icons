@@ -89,3 +89,25 @@
 	> .tree-item-icon:not(.collapse-icon):not(.custom-icon-bookmarks-icon) {
 	display: none;
 }
+
+/* 正文内部链接：锚点内、文本前插入图标。
+   1em 跟随字号（标题里的链接自动放大），负 vertical-align 与基线对齐；
+   setIcon 以 size:null 渲染（剥掉 width/height），尺寸完全交给这里的 CSS */
+.custom-icon-internal-link-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex: 0 0 auto;
+	width: 1em;
+	height: 1em;
+	margin-right: var(--size-4-1);
+	vertical-align: -0.125em;
+	color: currentColor;
+}
+
+.custom-icon-internal-link-icon .svg-icon,
+.custom-icon-internal-link-icon svg {
+	display: block;
+	width: 100%;
+	height: 100%;
+}
