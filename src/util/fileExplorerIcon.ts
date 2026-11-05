@@ -238,7 +238,7 @@ export function splitExtCandidates(
  * 级联便自然往下走到 folderDefault / fileDefault，而不是卡在一块空白上。
  * 设置一个字都不动——重新启用图标包即刻恢复。
  */
-function hasIcon(
+export function hasIcon(
 	override: IFileExplorerIconOverride | IIcon | undefined,
 	canRender: IconRenderable,
 ): override is IFileExplorerIconOverride {
@@ -250,7 +250,7 @@ function hasIcon(
 	);
 }
 
-function toIcon(
+export function toIcon(
 	id: string,
 	source: IFileExplorerIconOverride | IIcon,
 ): IIcon {
