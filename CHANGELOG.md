@@ -21,6 +21,13 @@
 
 * 更新相关文档 ([a3212cf](https://github.com/Raven-Pensieve/obsidian-custom-icons/commit/a3212cf46abfa1099bc361a5c3e26241a76b41d0))
 
+## [2.12.0](https://github.com/Raven-Pensieve/obsidian-custom-icons/compare/2.11.1...2.12.0) (2026-11-19)
+
+
+### ✨ 新增功能 (Features)
+
+* **i18n:** add Spanish translation ([2d40d4a](https://github.com/Raven-Pensieve/obsidian-custom-icons/commit/2d40d4ab492841ce7a960089845624af5a0d95d3))
+
 ## [2.11.1](https://github.com/Raven-Pensieve/obsidian-custom-icons/compare/2.11.0...2.11.1) (2026-11-05)
 
 
